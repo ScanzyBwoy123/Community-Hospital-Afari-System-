@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHA Staff Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-100">
+    <div class="min-h-screen flex items-center justify-center px-4 py-10">
+        <div class="w-full max-w-md">
+            <!-- Hospital branding -->
+            <div class="text-center mb-8">
+                <div
+                    class="mx-auto w-20 h-20 rounded-full
+                           bg-blue-900 text-white
+                           flex items-center justify-center
+                           text-2xl font-black shadow-lg"
+                >
+                    CHA
+                </div>
+                <h1 class="text-2xl font-black text-slate-900 mt-5">
+                    Community Hospital Afari
+                </h1>
+                <p class="text-slate-500 mt-1">
+                    Secure Staff Portal
+                </p>
+            </div>
+            <!-- Login card -->
+            <div class="bg-white rounded-3xl shadow-xl border p-7">
+                <h2 class="text-xl font-black text-slate-900">
+                    Staff Login
+                </h2>
+                <p class="text-sm text-slate-500 mt-1">
+                    Sign in using your authorized hospital account.
+                </p>
+                <form id="loginForm" class="mt-7 space-y-5">
+                    <div>
+                        <label
+                            for="email"
+                            class="block text-sm font-bold text-slate-700"
+                        >
+                            Email Address
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            required
+                            autocomplete="email"
+                            class="w-full mt-2 px-4 py-3
+                                   border border-slate-300
+                                   rounded-xl outline-none
+                                   focus:ring-2 focus:ring-blue-600"
+                            placeholder="staff@hospital.com"
+                        >
+                    </div>
+                    <div>
+                        <label
+                            for="password"
+                            class="block text-sm font-bold text-slate-700"
+                        >
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            required
+                            autocomplete="current-password"
+                            class="w-full mt-2 px-4 py-3
+                                   border border-slate-300
+                                   rounded-xl outline-none
+                                   focus:ring-2 focus:ring-blue-600"
+                            placeholder="Enter your password"
+                        >
+                    </div>
+                    <button
+                        id="loginButton"
+                        type="submit"
+                        class="w-full bg-blue-900
+                               hover:bg-blue-800
+                               text-white font-black
+                               py-4 rounded-xl
+                               transition"
+                    >
+                        Sign In
+                    </button>
+                </form>
+                <!-- Status -->
+                <div
+                    id="loginStatus"
+                    class="hidden mt-5 p-4 rounded-xl text-sm"
+                ></div>
+                <div class="mt-7 pt-5 border-t text-center">
+                    <a
+                        href="index.html"
+                        class="text-sm font-bold text-blue-800 hover:underline"
+                    >
+                        ← Return to Hospital Website
+                    </a>
+                </div>
+            </div>
+            <p class="text-center text-xs text-slate-400 mt-6">
+                Authorized personnel only.
+            </p>
+        </div>
+    </div>
+    <!-- =====================================================
+         SUPABASE CONFIGURATION
+    ====================================================== -->
+    <script src="js/supabase.js"></script>
+    <!-- =====================================================
+         LOGIN LOGIC
+    ====================================================== -->
+    <script>
+        const loginForm =
+            document.getElementById("loginForm");
+        const loginButton =
+            document.getElementById("loginButton");
+        const loginStatus =
+            document.getElementById("loginStatus");
+        function showStatus(message, type) {
+            loginStatus.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700"
+            );
+            if (type === "error") {
+                loginStatus.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+            } else if (type === "success") {
+                loginStatus.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+            } else {
+                loginStatus.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+            }
+            loginStatus.textContent = message;
+        }
+        loginForm.addEventListener(
+            "submit",
+            async function(event) {
+                event.preventDefault();
+                const email =
+                    document
+                        .getElementById("email")
+                        .value
+                        .trim();
+                const password =
+                    document
+                        .getElementById("password")
+                        .value;
+                if (!window.CHA_SUPABASE) {
+                    showStatus(
+                        "The hospital authentication system is not configured correctly.",
+                        "error"
+                    );
+                    return;
+                }
+                loginButton.disabled = true;
+                loginButton.textContent =
+                    "Signing in...";
+                showStatus(
+                    "Connecting securely...",
+                    "info"
+                );
+                try {
+                    const {
+                        data,
+                        error
+                    } =
+                        await window.CHA_SUPABASE.auth.signInWithPassword({
+                            email: email,
+                            password: password
+                        });
+                    if (error) {
+                        throw error;
+                    }
+                    if (!data.user) {
+                        throw new Error(
+                            "Authentication did not return a user."
+                        );
+                    }
+                    const {
+                        data: profile,
+                        error: profileError
+                    } =
+                        await window.CHA_SUPABASE
+                            .from("staff_profiles")
+                            .select(
+                                "id, full_name, role, department_id, is_active"
+                            )
+                            .eq(
+                                "id",
+                                data.user.id
+                            )
+                            .single();
+                    if (profileError) {
+                        throw profileError;
+                    }
+                    if (!profile || !profile.is_active) {
+                        await window.CHA_SUPABASE.auth.signOut();
+                        throw new Error(
+                            "Your staff account is inactive. Please contact hospital administration."
+                        );
+                    }
+                    showStatus(
+                        "Login successful. Opening Staff Portal...",
+                        "success"
+                    );
+                    /*
+                     * Dashboard will be created in the next step.
+                     */
+                    setTimeout(function() {
+                        window.location.href =
+                            "staff-dashboard.html";
+                    }, 800);
+                } catch (error) {
+                    console.error(
+                        "CHA Staff Login Error:",
+                        error
+                    );
+                    showStatus(
+                        error.message ||
+                        "Unable to sign in. Please check your details and try again.",
+                        "error"
+                    );
+                    loginButton.disabled = false;
+                    loginButton.textContent =
+                        "Sign In";
+                }
+            }
+        );
+    </script>
+</body>
+</html>
