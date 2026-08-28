@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Book an Appointment | Community Hospital Afari</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-slate-100">
+
+<header class="bg-blue-900 text-white">
+    <div class="max-w-4xl mx-auto px-4 py-5">
+        <div class="font-black text-xl">
+            COMMUNITY HOSPITAL AFARI
+        </div>
+
+        <div class="text-blue-200 text-sm">
+            Your Health, Our Priority
+        </div>
+    </div>
+</header>
+
+
+<main class="max-w-2xl mx-auto px-4 py-8">
+
+    <div class="bg-white rounded-3xl shadow-xl p-6 md:p-8">
+
+        <h1 class="text-3xl font-black text-slate-900">
+            Book an Appointment
+        </h1>
+
+        <p class="text-slate-500 mt-2">
+            Submit your appointment request and the hospital
+            will review and confirm it.
+        </p>
+
+
+        <form id="appointmentForm" class="mt-8 space-y-5">
+
+            <div>
+                <label class="font-bold text-sm">
+                    Full Name
+                </label>
+
+                <input
+                    id="patientName"
+                    type="text"
+                    required
+                    class="w-full mt-2 p-3 border rounded-xl"
+                    placeholder="Enter your full name"
+                >
+            </div>
+
+
+            <div>
+                <label class="font-bold text-sm">
+                    Phone Number
+                </label>
+
+                <input
+                    id="patientPhone"
+                    type="tel"
+                    required
+                    class="w-full mt-2 p-3 border rounded-xl"
+                    placeholder="+233..."
+                >
+            </div>
+
+
+            <div>
+                <label class="font-bold text-sm">
+                    Department
+                </label>
+
+                <select
+                    id="department"
+                    required
+                    class="w-full mt-2 p-3 border rounded-xl bg-white"
+                >
+                    <option value="">
+                        Select department
+                    </option>
+                </select>
+            </div>
+
+
+            <div class="grid md:grid-cols-2 gap-4">
+
+                <div>
+                    <label class="font-bold text-sm">
+                        Preferred Date
+                    </label>
+
+                    <input
+                        id="appointmentDate"
+                        type="date"
+                        required
+                        class="w-full mt-2 p-3 border rounded-xl"
+                    >
+                </div>
+
+
+                <div>
+                    <label class="font-bold text-sm">
+                        Preferred Time
+                    </label>
+
+                    <input
+                        id="appointmentTime"
+                        type="time"
+                        required
+                        class="w-full mt-2 p-3 border rounded-xl"
+                    >
+                </div>
+
+            </div>
+
+
+            <div>
+                <label class="font-bold text-sm">
+                    Reason for Visit
+                </label>
+
+                <textarea
+                    id="reason"
+                    rows="4"
+                    class="w-full mt-2 p-3 border rounded-xl"
+                    placeholder="Briefly describe your reason for the appointment"
+                ></textarea>
+            </div>
+
+
+            <button
+                id="submitButton"
+                type="submit"
+                class="w-full bg-blue-900 hover:bg-blue-800
+                       text-white font-black py-4 rounded-xl"
+            >
+                Submit Appointment Request
+            </button>
+
+        </form>
+
+
+        <div
+            id="result"
+            class="hidden mt-6 p-5 rounded-2xl"
+        ></div>
+
+    </div>
+
+</main>
+
+
+<script src="js/supabase.js"></script>
+
+<script>
+
+const form =
+    document.getElementById("appointmentForm");
+
+const department =
+    document.getElementById("department");
+
+const result =
+    document.getElementById("result");
+
+const submitButton =
+    document.getElementById("submitButton");
+
+
+async function loadDepartments() {
+
+    const {
+        data,
+        error
+    } =
+        await window.CHA_SUPABASE
+            .from("departments")
+            .select("id, name")
+            .eq("is_active", true)
+            .order("name");
+
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
+
+
+    data.forEach(function(item) {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            item.id;
+
+        option.textContent =
+            item.name;
+
+        department.appendChild(option);
+
+    });
+
+}
+
+
+function showResult(message, success) {
+
+    result.classList.remove(
+        "hidden",
+        "bg-green-50",
+        "text-green-800",
+        "bg-red-50",
+        "text-red-800"
+    );
+
+
+    if (success) {
+
+        result.classList.add(
+            "bg-green-50",
+            "text-green-800"
+        );
+
+    } else {
+
+        result.classList.add(
+            "bg-red-50",
+            "text-red-800"
+        );
+
+    }
+
+
+    result.innerHTML = message;
+
+}
+
+
+form.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        submitButton.disabled = true;
+
+        submitButton.textContent =
+            "Submitting...";
+
+
+        try {
+
+            const patientName =
+                document
+                    .getElementById("patientName")
+                    .value
+                    .trim();
+
+
+            const patientPhone =
+                document
+                    .getElementById("patientPhone")
+                    .value
+                    .trim();
+
+
+            const departmentId =
+                department.value;
+
+
+            const preferredDate =
+                document
+                    .getElementById("appointmentDate")
+                    .value;
+
+
+            const preferredTime =
+                document
+                    .getElementById("appointmentTime")
+                    .value;
+
+
+            const reason =
+                document
+                    .getElementById("reason")
+                    .value
+                    .trim();
+
+
+            if (!departmentId) {
+
+                throw new Error(
+                    "Please select a department."
+                );
+
+            }
+
+
+            const {
+                data,
+                error
+            } =
+                await window.CHA_SUPABASE
+                    .from("appointments")
+                    .insert({
+                        appointment_number: "",
+                        patient_name: patientName,
+                        patient_phone: patientPhone,
+                        department_id: departmentId,
+                        preferred_date: preferredDate,
+                        preferred_time: preferredTime,
+                        reason: reason,
+                        status: "pending"
+                    })
+                    .select(
+                        "appointment_number"
+                    )
+                    .single();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            showResult(
+                `
+                <h3 class="font-black text-lg">
+                    Appointment Request Received
+                </h3>
+
+                <p class="mt-2">
+                    Your request has been submitted successfully.
+                </p>
+
+                <p class="mt-3 font-bold">
+                    Appointment Reference:
+                    ${data.appointment_number}
+                </p>
+
+                <p class="mt-2 text-sm">
+                    Please keep this reference for your records.
+                    The hospital will review your request.
+                </p>
+                `,
+                true
+            );
+
+
+            form.reset();
+
+
+        } catch (error) {
+
+            console.error(
+                "Appointment error:",
+                error
+            );
+
+
+            showResult(
+                error.message ||
+                "Unable to submit appointment request.",
+                false
+            );
+
+        }
+
+
+        submitButton.disabled = false;
+
+        submitButton.textContent =
+            "Submit Appointment Request";
+
+    }
+);
+
+
+loadDepartments();
+
+</script>
+
+</body>
+</html>
