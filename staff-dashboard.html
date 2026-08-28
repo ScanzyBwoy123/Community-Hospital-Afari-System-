@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHA Staff Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+    <header class="bg-blue-900 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="min-h-20 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white
+                               text-blue-900 flex items-center
+                               justify-center font-black"
+                    >
+                        CHA
+                    </div>
+                    <div>
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+                        <div class="text-blue-200 text-sm">
+                            Staff Portal
+                        </div>
+                    </div>
+                </div>
+                <button
+                    id="logoutButton"
+                    class="bg-red-600 hover:bg-red-700
+                           px-4 py-2 rounded-lg
+                           font-bold"
+                >
+                    Logout
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Loading -->
+        <div
+            id="loading"
+            class="bg-white rounded-2xl shadow p-8 text-center"
+        >
+            <div class="text-3xl">
+                🔐
+            </div>
+            <p class="font-bold mt-3">
+                Checking staff authentication...
+            </p>
+        </div>
+        <!-- Dashboard -->
+        <div
+            id="dashboard"
+            class="hidden"
+        >
+            <!-- Welcome -->
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+                <p class="text-sm text-slate-500">
+                    Welcome back
+                </p>
+                <h1
+                    id="staffName"
+                    class="text-3xl font-black mt-1"
+                >
+                    Staff Member
+                </h1>
+                <div class="flex flex-wrap gap-3 mt-4">
+                    <span
+                        id="staffRole"
+                        class="bg-blue-100 text-blue-800
+                               px-3 py-1 rounded-full
+                               text-sm font-bold"
+                    ></span>
+                    <span
+                        id="staffDepartment"
+                        class="bg-green-100 text-green-800
+                               px-3 py-1 rounded-full
+                               text-sm font-bold"
+                    ></span>
+                </div>
+            </section>
+            <!-- Dashboard cards -->
+            <section
+                class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+            >
+                <button
+                    class="dashboard-card"
+                    data-section="patients"
+                >
+                    <div class="text-4xl">
+                        🧑‍⚕️
+                    </div>
+                    <h2 class="font-black text-xl mt-4">
+                        Patients
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2">
+                        Access authorized patient information.
+                    </p>
+                </button>
+                <button
+                    class="dashboard-card"
+                    data-section="appointments"
+                >
+                    <div class="text-4xl">
+                        📅
+                    </div>
+                    <h2 class="font-black text-xl mt-4">
+                        Appointments
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2">
+                        Review and manage appointment requests.
+                    </p>
+                </button>
+                <button
+                    class="dashboard-card"
+                    data-section="messages"
+                >
+                    <div class="text-4xl">
+                        💬
+                    </div>
+                    <h2 class="font-black text-xl mt-4">
+                        Department Inbox
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2">
+                        Communicate with other hospital departments.
+                    </p>
+                </button>
+                <button
+                    class="dashboard-card"
+                    data-section="laboratory"
+                >
+                    <div class="text-4xl">
+                        🧪
+                    </div>
+                    <h2 class="font-black text-xl mt-4">
+                        Laboratory
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2">
+                        Access authorized laboratory results.
+                    </p>
+                </button>
+                <button
+                    class="dashboard-card"
+                    data-section="records"
+                >
+                    <div class="text-4xl">
+                        📋
+                    </div>
+                    <h2 class="font-black text-xl mt-4">
+                        Medical Records
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2">
+                        Manage authorized patient records.
+                    </p>
+                </button>
+                <button
+                    id="adminCard"
+                    class="dashboard-card hidden"
+                    data-section="administration"
+                >
+                    <div class="text-4xl">
+                        ⚙️
+                    </div>
+                    <h2 class="font-black text-xl mt-4">
+                        Administration
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2">
+                        Manage hospital staff and system settings.
+                    </p>
+                </button>
+            </section>
+            <!-- Information -->
+            <section class="mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-6">
+                <h2 class="font-black text-lg">
+                    🔐 Security Notice
+                </h2>
+                <p class="text-sm text-blue-900 mt-2">
+                    This portal is restricted to authorized Community
+                    Hospital Afari staff. Patient information must only
+                    be accessed when required for legitimate hospital
+                    duties.
+                </p>
+            </section>
+        </div>
+    </main>
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+    <script src="js/supabase.js"></script>
+    <!-- =====================================================
+         DASHBOARD LOGIC
+    ====================================================== -->
+    <script>
+        const loading =
+            document.getElementById("loading");
+        const dashboard =
+            document.getElementById("dashboard");
+        const staffName =
+            document.getElementById("staffName");
+        const staffRole =
+            document.getElementById("staffRole");
+        const staffDepartment =
+            document.getElementById("staffDepartment");
+        const adminCard =
+            document.getElementById("adminCard");
+        async function loadStaffDashboard() {
+            try {
+                if (!window.CHA_SUPABASE) {
+                    throw new Error(
+                        "Supabase is not configured."
+                    );
+                }
+                const {
+                    data: authData,
+                    error: authError
+                } =
+                    await window.CHA_SUPABASE.auth.getUser();
+                if (authError || !authData.user) {
+                    window.location.href =
+                        "staff-login.html";
+                    return;
+                }
+                const user =
+                    authData.user;
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                    await window.CHA_SUPABASE
+                        .from("staff_profiles")
+                        .select(`
+                            id,
+                            full_name,
+                            role,
+                            is_active,
+                            department_id,
+                            departments (
+                                name
+                            )
+                        `)
+                        .eq("id", user.id)
+                        .single();
+                if (profileError) {
+                    throw profileError;
+                }
+                if (!profile || !profile.is_active) {
+                    await window.CHA_SUPABASE.auth.signOut();
+                    window.location.href =
+                        "staff-login.html";
+                    return;
+                }
+                staffName.textContent =
+                    profile.full_name;
+                staffRole.textContent =
+                    "Role: " +
+                    profile.role;
+                staffDepartment.textContent =
+                    "Department: " +
+                    (
+                        profile.departments?.name ||
+                        "Not assigned"
+                    );
+                if (profile.role === "admin") {
+                    adminCard.classList.remove(
+                        "hidden"
+                    );
+                }
+                loading.classList.add(
+                    "hidden"
+                );
+                dashboard.classList.remove(
+                    "hidden"
+                );
+            } catch (error) {
+                console.error(
+                    "CHA Dashboard Error:",
+                    error
+                );
+                loading.innerHTML = `
+                    <div class="text-3xl">
+                        ⚠️
+                    </div>
+                    <p class="font-bold mt-3 text-red-700">
+                        Unable to load Staff Portal
+                    </p>
+                    <p class="text-sm text-slate-500 mt-2">
+                        ${error.message || "Please try again."}
+                    </p>
+                    <button
+                        onclick="window.location.href='staff-login.html'"
+                        class="mt-5 bg-blue-900 text-white
+                               px-5 py-3 rounded-xl font-bold"
+                    >
+                        Return to Login
+                    </button>
+                `;
+            }
+        }
+        // ----------------------------------------------------
+        // Logout
+        // ----------------------------------------------------
+        document
+            .getElementById("logoutButton")
+            .addEventListener(
+                "click",
+                async function() {
+                    await window.CHA_SUPABASE.auth.signOut();
+                    window.location.href =
+                        "staff-login.html";
+                }
+            );
+        // ----------------------------------------------------
+        // Dashboard cards
+        // ----------------------------------------------------
+        document
+            .querySelectorAll(".dashboard-card")
+            .forEach(function(card) {
+                card.addEventListener(
+                    "click",
+                    function() {
+                        const section =
+                            this.dataset.section;
+                        alert(
+                            section +
+                            " module will be connected next."
+                        );
+                    }
+                );
+            });
+        loadStaffDashboard();
+    </script>
+    <!-- =====================================================
+         CARD STYLING
+    ====================================================== -->
+    <style>
+        .dashboard-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: left;
+            box-shadow:
+                0 4px 10px rgba(0,0,0,0.04);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 12px 25px rgba(0,0,0,0.08);
+        }
+    </style>
+</body>
+</html>
