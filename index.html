@@ -881,11 +881,13 @@ document
     });
 document
     .getElementById("staffLoginButton")
-    .addEventListener("click", function () {
-        alert(
-            "Secure Staff Portal will be connected in the next build stage."
-        );
-    });
+    .addEventListener(
+        "click",
+        function() {
+            window.location.href =
+                "staff-login.html";
+        }
+    );
 document.getElementById("year").textContent =
     new Date().getFullYear();
 renderServices();
