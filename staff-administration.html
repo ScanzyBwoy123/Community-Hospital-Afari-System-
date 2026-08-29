@@ -999,7 +999,98 @@ document
 
         }
 
+// ====================================================
+// REJECT STAFF
+// ====================================================
 
+async function rejectStaff(staffId) {
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to reject this staff registration?\n\nThe pending staff profile and authentication account will be removed."
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    showStatus(
+        "Rejecting staff registration...",
+        "info"
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                "/.netlify/functions/reject-staff",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        staffProfileId: staffId
+                    })
+                }
+            );
+
+
+        let result;
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "The rejection server returned an invalid response."
+            );
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Unable to reject staff registration."
+            );
+
+        }
+
+
+        showStatus(
+            result.message ||
+            "Staff registration rejected successfully.",
+            "success"
+        );
+
+
+        await loadPendingStaff();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Staff Rejection Error:",
+            error
+        );
+
+        showStatus(
+            error.message ||
+            "Unable to reject staff registration.",
+            "error"
+        );
+
+    }
+
+}
 
         // ====================================================
         // REFRESH
