@@ -492,25 +492,90 @@ registerForm.addEventListener(
             "info"
         );
         try {
-            /* ---------------------------------------------
-               CREATE SUPABASE AUTH ACCOUNT
-            --------------------------------------------- */
-            const {
-                data: authData,
-                error: authError
-            } =
-                await window.CHA_SUPABASE.auth.signUp({
-                    email: email,
-                    password: password
-                });
-            if (authError) {
-                throw authError;
-            }
-            if (!authData.user) {
-                throw new Error(
-                    "Account creation did not return a user."
-                );
-            }
+        // ============================================================
+// SECURE STAFF REGISTRATION
+// ============================================================
+
+const response = await fetch(
+    "/.netlify/functions/register-staff",
+    {
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+            fullName: fullName,
+
+            staffId: staffId,
+
+            email: email,
+
+            password: password,
+
+            phone: phone,
+
+            role: role,
+
+            departmentId: departmentId
+
+        })
+    }
+);
+
+
+// ------------------------------------------------------------
+// Read server response
+// ------------------------------------------------------------
+
+let result;
+
+try {
+
+    result = await response.json();
+
+} catch (jsonError) {
+
+    throw new Error(
+        "The registration server returned an invalid response."
+    );
+
+}
+
+
+// ------------------------------------------------------------
+// Handle server error
+// ------------------------------------------------------------
+
+if (!response.ok) {
+
+    throw new Error(
+        result.error ||
+        "Unable to complete staff registration."
+    );
+
+}
+
+
+// ------------------------------------------------------------
+// SUCCESS
+// ------------------------------------------------------------
+
+showStatus(
+    result.message ||
+    "Registration submitted successfully. Your account is pending hospital administration approval.",
+    "success"
+);
+
+
+registerForm.reset();
+
+
+// Reload departments
+
+await loadDepartments();
             /* ---------------------------------------------
                CREATE STAFF PROFILE
                IMPORTANT:
