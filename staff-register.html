@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHA Staff Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-100">
+<div class="min-h-screen flex items-center justify-center px-4 py-10">
+    <div class="w-full max-w-lg">
+        <!-- Hospital branding -->
+        <div class="text-center mb-8">
+            <div
+                class="mx-auto w-20 h-20 rounded-full
+                       bg-blue-900 text-white
+                       flex items-center justify-center
+                       text-2xl font-black shadow-lg"
+            >
+                CHA
+            </div>
+            <h1 class="text-2xl font-black text-slate-900 mt-5">
+                Community Hospital Afari
+            </h1>
+            <p class="text-slate-500 mt-1">
+                Staff Registration
+            </p>
+        </div>
+        <!-- Registration card -->
+        <div class="bg-white rounded-3xl shadow-xl border p-7">
+            <h2 class="text-xl font-black text-slate-900">
+                Create Staff Account
+            </h2>
+            <p class="text-sm text-slate-500 mt-1">
+                Submit your information for hospital administration approval.
+            </p>
+            <form id="registerForm" class="mt-7 space-y-5">
+                <!-- Full name -->
+                <div>
+                    <label
+                        for="fullName"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Full Name
+                    </label>
+                    <input
+                        id="fullName"
+                        type="text"
+                        required
+                        autocomplete="name"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="Enter your full name"
+                    >
+                </div>
+                <!-- Staff ID -->
+                <div>
+                    <label
+                        for="staffId"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Staff ID
+                    </label>
+                    <input
+                        id="staffId"
+                        type="text"
+                        required
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="Enter your staff ID"
+                    >
+                </div>
+                <!-- Email -->
+                <div>
+                    <label
+                        for="email"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Email Address
+                    </label>
+                    <input
+                        id="email"
+                        type="email"
+                        required
+                        autocomplete="email"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="your@email.com"
+                    >
+                </div>
+                <!-- Phone -->
+                <div>
+                    <label
+                        for="phone"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Phone Number
+                    </label>
+                    <input
+                        id="phone"
+                        type="tel"
+                        required
+                        autocomplete="tel"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="+233..."
+                    >
+                </div>
+                <!-- Department -->
+                <div>
+                    <label
+                        for="department"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Department
+                    </label>
+                    <select
+                        id="department"
+                        required
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                    >
+                        <option value="">
+                            Select your department
+                        </option>
+                    </select>
+                </div>
+                <!-- Role -->
+                <div>
+                    <label
+                        for="role"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Staff Position
+                    </label>
+                    <select
+                        id="role"
+                        required
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                    >
+                        <option value="">
+                            Select your position
+                        </option>
+                        <option value="Nurse">
+                            Nurse
+                        </option>
+                        <option value="Doctor">
+                            Doctor
+                        </option>
+                        <option value="Midwife">
+                            Midwife
+                        </option>
+                        <option value="Pharmacist">
+                            Pharmacist
+                        </option>
+                        <option value="Laboratory Staff">
+                            Laboratory Staff
+                        </option>
+                        <option value="Receptionist">
+                            Receptionist
+                        </option>
+                        <option value="Medical Records Staff">
+                            Medical Records Staff
+                        </option>
+                        <option value="Accounts Staff">
+                            Accounts Staff
+                        </option>
+                        <option value="Store Staff">
+                            Store Staff
+                        </option>
+                        <option value="Other Staff">
+                            Other Staff
+                        </option>
+                    </select>
+                </div>
+                <!-- Password -->
+                <div>
+                    <label
+                        for="password"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Password
+                    </label>
+                    <input
+                        id="password"
+                        type="password"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="At least 8 characters"
+                    >
+                    <p class="text-xs text-slate-500 mt-2">
+                        Password must contain at least 8 characters.
+                    </p>
+                </div>
+                <!-- Confirm password -->
+                <div>
+                    <label
+                        for="confirmPassword"
+                        class="block text-sm font-bold text-slate-700"
+                    >
+                        Confirm Password
+                    </label>
+                    <input
+                        id="confirmPassword"
+                        type="password"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="Enter password again"
+                    >
+                </div>
+                <!-- Submit -->
+                <button
+                    id="registerButton"
+                    type="submit"
+                    class="w-full bg-blue-900
+                           hover:bg-blue-800
+                           text-white font-black
+                           py-4 rounded-xl
+                           transition"
+                >
+                    Submit Registration
+                </button>
+            </form>
+            <!-- Status -->
+            <div
+                id="registerStatus"
+                class="hidden mt-5 p-4 rounded-xl text-sm"
+            ></div>
+            <!-- Login link -->
+            <div class="mt-7 pt-5 border-t text-center">
+                <p class="text-sm text-slate-500">
+                    Already have an approved account?
+                </p>
+                <a
+                    href="staff-login.html"
+                    class="inline-block mt-2
+                           text-sm font-bold
+                           text-blue-800 hover:underline"
+                >
+                    Go to Staff Login →
+                </a>
+            </div>
+            <!-- Website -->
+            <div class="mt-4 text-center">
+                <a
+                    href="index.html"
+                    class="text-sm text-slate-500 hover:underline"
+                >
+                    ← Return to Hospital Website
+                </a>
+            </div>
+        </div>
+        <p class="text-center text-xs text-slate-400 mt-6">
+            Registration does not grant immediate staff access.
+            Hospital administration must approve your account.
+        </p>
+    </div>
+</div>
+<!-- Supabase configuration -->
+<script src="js/supabase.js"></script>
+<script>
+const registerForm =
+    document.getElementById("registerForm");
+const registerButton =
+    document.getElementById("registerButton");
+const registerStatus =
+    document.getElementById("registerStatus");
+const departmentSelect =
+    document.getElementById("department");
+function showStatus(message, type) {
+    registerStatus.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+    if (type === "error") {
+        registerStatus.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+    } else if (type === "success") {
+        registerStatus.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+    } else {
+        registerStatus.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+    }
+    registerStatus.textContent = message;
+}
+/* ============================================================
+   LOAD DEPARTMENTS
+============================================================ */
+async function loadDepartments() {
+    departmentSelect.innerHTML = `
+        <option value="">
+            Loading departments...
+        </option>
+    `;
+    try {
+        if (!window.CHA_SUPABASE) {
+            throw new Error(
+                "Hospital database is not configured."
+            );
+        }
+        const {
+            data,
+            error
+        } = await window.CHA_SUPABASE
+            .from("departments")
+            .select("id, name")
+            .eq("is_active", true)
+            .order("name");
+        if (error) {
+            throw error;
+        }
+        if (!data || data.length === 0) {
+            throw new Error(
+                "No active hospital departments were found."
+            );
+        }
+        departmentSelect.innerHTML = `
+            <option value="">
+                Select your department
+            </option>
+        `;
+        data.forEach(function(department) {
+            const option =
+                document.createElement("option");
+            option.value = department.id;
+            option.textContent =
+                department.name;
+            departmentSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error(
+            "CHA department loading error:",
+            error
+        );
+        departmentSelect.innerHTML = `
+            <option value="">
+                Unable to load departments
+            </option>
+        `;
+    }
+}
+/* ============================================================
+   STAFF REGISTRATION
+============================================================ */
+registerForm.addEventListener(
+    "submit",
+    async function(event) {
+        event.preventDefault();
+        if (!window.CHA_SUPABASE) {
+            showStatus(
+                "The hospital authentication system is not configured correctly.",
+                "error"
+            );
+            return;
+        }
+        const fullName =
+            document
+                .getElementById("fullName")
+                .value
+                .trim();
+        const staffId =
+            document
+                .getElementById("staffId")
+                .value
+                .trim();
+        const email =
+            document
+                .getElementById("email")
+                .value
+                .trim();
+        const phone =
+            document
+                .getElementById("phone")
+                .value
+                .trim();
+        const departmentId =
+            departmentSelect.value;
+        const role =
+            document
+                .getElementById("role")
+                .value;
+        const password =
+            document
+                .getElementById("password")
+                .value;
+        const confirmPassword =
+            document
+                .getElementById("confirmPassword")
+                .value;
+        if (!fullName) {
+            showStatus(
+                "Please enter your full name.",
+                "error"
+            );
+            return;
+        }
+        if (!staffId) {
+            showStatus(
+                "Please enter your staff ID.",
+                "error"
+            );
+            return;
+        }
+        if (!email) {
+            showStatus(
+                "Please enter your email address.",
+                "error"
+            );
+            return;
+        }
+        if (!phone) {
+            showStatus(
+                "Please enter your phone number.",
+                "error"
+            );
+            return;
+        }
+        if (!departmentId) {
+            showStatus(
+                "Please select your department.",
+                "error"
+            );
+            return;
+        }
+        if (!role) {
+            showStatus(
+                "Please select your staff position.",
+                "error"
+            );
+            return;
+        }
+        if (password.length < 8) {
+            showStatus(
+                "Password must contain at least 8 characters.",
+                "error"
+            );
+            return;
+        }
+        if (password !== confirmPassword) {
+            showStatus(
+                "Passwords do not match.",
+                "error"
+            );
+            return;
+        }
+        registerButton.disabled = true;
+        registerButton.textContent =
+            "Creating account...";
+        showStatus(
+            "Creating your staff account securely...",
+            "info"
+        );
+        try {
+            /* ---------------------------------------------
+               CREATE SUPABASE AUTH ACCOUNT
+            --------------------------------------------- */
+            const {
+                data: authData,
+                error: authError
+            } =
+                await window.CHA_SUPABASE.auth.signUp({
+                    email: email,
+                    password: password
+                });
+            if (authError) {
+                throw authError;
+            }
+            if (!authData.user) {
+                throw new Error(
+                    "Account creation did not return a user."
+                );
+            }
+            /* ---------------------------------------------
+               CREATE STAFF PROFILE
+               IMPORTANT:
+               is_active = false
+               --------------------------------------------- */
+            const {
+                error: profileError
+            } =
+                await window.CHA_SUPABASE
+                    .from("staff_profiles")
+                    .insert({
+                        id: authData.user.id,
+                        full_name: fullName,
+                        staff_id: staffId,
+                        role: role,
+                        department_id: departmentId,
+                        phone: phone,
+                        is_active: false
+                    });
+            if (profileError) {
+                /*
+                 * If profile creation fails, attempt to
+                 * sign the user out so they cannot continue
+                 * into the staff portal.
+                 */
+                await window.CHA_SUPABASE.auth.signOut();
+                throw profileError;
+            }
+            /* ---------------------------------------------
+               SUCCESS
+            --------------------------------------------- */
+            showStatus(
+                "Registration submitted successfully. Your account is now pending hospital administration approval. You will be able to log in after your account is approved.",
+                "success"
+            );
+            registerForm.reset();
+            /*
+             * Reload departments after resetting the form.
+             */
+            await loadDepartments();
+        } catch (error) {
+            console.error(
+                "CHA Staff Registration Error:",
+                error
+            );
+            let message =
+                error.message ||
+                "Unable to create your staff account. Please try again.";
+            /*
+             * Make common Supabase errors easier to understand.
+             */
+            if (
+                message
+                    .toLowerCase()
+                    .includes("already registered")
+            ) {
+                message =
+                    "This email address is already registered. Please use the Staff Login page.";
+            }
+            showStatus(
+                message,
+                "error"
+            );
+        }
+        registerButton.disabled = false;
+        registerButton.textContent =
+            "Submit Registration";
+    }
+);
+/* ============================================================
+   INITIALIZE
+============================================================ */
+loadDepartments();
+</script>
+</body>
+</html>
