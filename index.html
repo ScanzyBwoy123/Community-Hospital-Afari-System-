@@ -733,17 +733,145 @@ document
             .getElementById("mobileMenu")
             .classList.toggle("hidden");
     });
-document
-    .getElementById("appointmentForm")
-    .addEventListener("submit", function (event) {
-        event.preventDefault();
-        const message =
-            document.getElementById("appointmentMessage");
-        message.className =
-            "mt-5 p-4 rounded-xl bg-blue-50 text-blue-800";
-        message.textContent =
-            "Your appointment request has been received by this website. The secure hospital appointment backend will be connected next.";
-    });
+// ============================================================
+// REAL APPOINTMENT BOOKING — SUPABASE
+// ============================================================
+const appointmentForm =
+    document.getElementById("appointmentForm");
+const appointmentMessage =
+    document.getElementById("appointmentMessage");
+appointmentForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    appointmentMessage.className =
+        "mt-5 p-4 rounded-xl bg-blue-50 text-blue-800";
+    appointmentMessage.textContent =
+        "Submitting your appointment request...";
+    const submitButton =
+        appointmentForm.querySelector("button[type='submit']");
+    submitButton.disabled = true;
+    submitButton.textContent = "Submitting...";
+    try {
+        // Make sure Supabase is available
+        if (!window.CHA_SUPABASE) {
+            throw new Error(
+                "Hospital appointment system is temporarily unavailable."
+            );
+        }
+        const patientName =
+            document.getElementById("patientName").value.trim();
+        const patientPhone =
+            document.getElementById("patientPhone").value.trim();
+        const departmentName =
+            document.getElementById("appointmentDepartment").value;
+        const preferredDate =
+            document.getElementById("appointmentDate").value;
+        const preferredTime =
+            document.getElementById("appointmentTime").value;
+        const reason =
+            document.getElementById("appointmentReason").value.trim();
+        const notes =
+            document.getElementById("appointmentNotes").value.trim();
+        if (!patientName) {
+            throw new Error("Please enter the patient's name.");
+        }
+        if (!patientPhone) {
+            throw new Error("Please enter a phone number.");
+        }
+        if (!departmentName) {
+            throw new Error("Please select a department or service.");
+        }
+        if (!preferredDate) {
+            throw new Error("Please select a preferred date.");
+        }
+        if (!preferredTime) {
+            throw new Error("Please select a preferred time.");
+        }
+        // Find the department in the database
+        const {
+            data: departmentData,
+            error: departmentError
+        } = await window.CHA_SUPABASE
+            .from("departments")
+            .select("id, name")
+            .eq("name", departmentName)
+            .eq("is_active", true)
+            .maybeSingle();
+        if (departmentError) {
+            throw departmentError;
+        }
+        if (!departmentData) {
+            throw new Error(
+                "The selected hospital department could not be found."
+            );
+        }
+        // Create the real appointment
+        const {
+            data,
+            error
+        } = await window.CHA_SUPABASE
+            .from("appointments")
+            .insert({
+                appointment_number: "",
+                patient_name: patientName,
+                patient_phone: patientPhone,
+                department_id: departmentData.id,
+                preferred_date: preferredDate,
+                preferred_time: preferredTime,
+                reason: reason,
+                notes: notes,
+                status: "pending"
+            })
+            .select("appointment_number")
+            .single();
+        if (error) {
+            throw error;
+        }
+        // Successful booking
+        appointmentMessage.className =
+            "mt-5 p-5 rounded-xl bg-green-50 text-green-800";
+        appointmentMessage.innerHTML = `
+            <div class="font-black text-lg">
+                ✅ Appointment Request Submitted
+            </div>
+            <p class="mt-2">
+                Your appointment request has been successfully
+                sent to Community Hospital Afari.
+            </p>
+            <div class="mt-4 p-4 bg-white rounded-xl border border-green-200">
+                <div class="text-sm text-slate-500">
+                    Appointment Reference
+                </div>
+                <div class="text-2xl font-black text-cha-blue mt-1">
+                    ${data.appointment_number}
+                </div>
+            </div>
+            <p class="mt-3 text-sm">
+                Please keep this reference. Hospital staff will
+                review your request and confirm the appointment.
+            </p>
+        `;
+        appointmentForm.reset();
+    } catch (error) {
+        console.error(
+            "CHA appointment error:",
+            error
+        );
+        appointmentMessage.className =
+            "mt-5 p-5 rounded-xl bg-red-50 text-red-800";
+        appointmentMessage.innerHTML = `
+            <div class="font-black">
+                ❌ Appointment could not be submitted
+            </div>
+            <p class="mt-2">
+                ${error.message ||
+                "Something went wrong. Please try again."}
+            </p>
+        `;
+    }
+    submitButton.disabled = false;
+    submitButton.textContent =
+        "📅 Submit Appointment Request";
+});
 document
     .getElementById("openAiDoctor")
     .addEventListener("click", function () {
@@ -764,5 +892,7 @@ renderServices();
 renderDepartments();
 populateAppointmentDepartments();
 </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
 </body>
 </html>
