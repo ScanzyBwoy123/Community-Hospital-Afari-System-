@@ -257,45 +257,28 @@ exports.handler = async function (event) {
                 .maybeSingle();
 
 
-        if (staffCheckError) {
+        console.error(
+    "Staff ID check error:",
+    staffCheckError
+);
 
-            console.error(
-                "Staff ID check error:",
-                staffCheckError
-            );
-
-
-            return {
-                statusCode: 500,
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-                body: JSON.stringify({
-                    error:
-                        "Unable to verify the Staff ID."
-                })
-            };
-
-        }
-
-
-        if (existingStaff) {
-
-            return {
-                statusCode: 409,
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-                body: JSON.stringify({
-                    error:
-                        "This Staff ID is already registered."
-                })
-            };
-
-        }
-
+return {
+    statusCode: 500,
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        error:
+            "Staff ID check failed: " +
+            (staffCheckError.message || "Unknown database error"),
+        code:
+            staffCheckError.code || null,
+        details:
+            staffCheckError.details || null,
+        hint:
+            staffCheckError.hint || null
+    })
+};
 
         // ====================================================
         // CHECK WHETHER EMAIL ALREADY EXISTS
