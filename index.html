@@ -712,19 +712,58 @@ function renderDepartments() {
         </div>
     `).join("");
 }
-function populateAppointmentDepartments() {
+async function populateAppointmentDepartments() {
     const select =
         document.getElementById("appointmentDepartment");
+
     select.innerHTML = `
         <option value="">
-            Select a service
+            Loading departments...
         </option>
-        ${CHA_SERVICES.map(service => `
-            <option value="${service.name}">
-                ${service.name}
-            </option>
-        `).join("")}
     `;
+
+    try {
+        const {
+            data,
+            error
+        } = await window.CHA_SUPABASE
+            .from("departments")
+            .select("id, name")
+            .eq("is_active", true)
+            .order("name");
+
+        if (error) {
+            throw error;
+        }
+
+        select.innerHTML = `
+            <option value="">
+                Select department
+            </option>
+        `;
+
+        data.forEach(function(department) {
+            const option =
+                document.createElement("option");
+
+            option.value = department.id;
+            option.textContent = department.name;
+
+            select.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error(
+            "Department loading error:",
+            error
+        );
+
+        select.innerHTML = `
+            <option value="">
+                Unable to load departments
+            </option>
+        `;
+    }
 }
 document
     .getElementById("menuButton")
@@ -761,8 +800,8 @@ appointmentForm.addEventListener("submit", async function (event) {
             document.getElementById("patientName").value.trim();
         const patientPhone =
             document.getElementById("patientPhone").value.trim();
-        const departmentName =
-            document.getElementById("appointmentDepartment").value;
+        const departmentId =
+    document.getElementById("appointmentDepartment").value;
         const preferredDate =
             document.getElementById("appointmentDate").value;
         const preferredTime =
@@ -777,32 +816,14 @@ appointmentForm.addEventListener("submit", async function (event) {
         if (!patientPhone) {
             throw new Error("Please enter a phone number.");
         }
-        if (!departmentName) {
-            throw new Error("Please select a department or service.");
-        }
+        if (!departmentId) {
+    throw new Error("Please select a department.");
+}
         if (!preferredDate) {
             throw new Error("Please select a preferred date.");
         }
         if (!preferredTime) {
             throw new Error("Please select a preferred time.");
-        }
-        // Find the department in the database
-        const {
-            data: departmentData,
-            error: departmentError
-        } = await window.CHA_SUPABASE
-            .from("departments")
-            .select("id, name")
-            .eq("name", departmentName)
-            .eq("is_active", true)
-            .maybeSingle();
-        if (departmentError) {
-            throw departmentError;
-        }
-        if (!departmentData) {
-            throw new Error(
-                "The selected hospital department could not be found."
-            );
         }
         // Create the real appointment
         const {
@@ -814,7 +835,7 @@ appointmentForm.addEventListener("submit", async function (event) {
                 appointment_number: "",
                 patient_name: patientName,
                 patient_phone: patientPhone,
-                department_id: departmentData.id,
+                department_id: departmentId,
                 preferred_date: preferredDate,
                 preferred_time: preferredTime,
                 reason: reason,
