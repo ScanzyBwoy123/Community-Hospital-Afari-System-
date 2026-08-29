@@ -175,42 +175,53 @@ const submitButton =
 
 
 async function loadDepartments() {
-
-    const {
-        data,
-        error
-    } =
-        await window.CHA_SUPABASE
+    try {
+        const {
+            data,
+            error
+        } = await window.CHA_SUPABASE
             .from("departments")
-            .select("id, name")
-            .eq("is_active", true)
+            .select("id, name, is_active")
             .order("name");
 
+        if (error) {
+            console.error("DEPARTMENT ERROR:", error);
 
-    if (error) {
+            department.innerHTML = `
+                <option value="">
+                    Unable to load departments
+                </option>
+            `;
 
-        console.error(error);
+            return;
+        }
 
-        return;
+        console.log("DEPARTMENTS:", data);
 
+        department.innerHTML = `
+            <option value="">
+                Select department
+            </option>
+        `;
+
+        data
+            .filter(item => item.is_active)
+            .forEach(function(item) {
+                const option =
+                    document.createElement("option");
+
+                option.value = item.id;
+                option.textContent = item.name;
+
+                department.appendChild(option);
+            });
+
+    } catch (error) {
+        console.error(
+            "DEPARTMENT LOAD ERROR:",
+            error
+        );
     }
-
-
-    data.forEach(function(item) {
-
-        const option =
-            document.createElement("option");
-
-        option.value =
-            item.id;
-
-        option.textContent =
-            item.name;
-
-        department.appendChild(option);
-
-    });
-
 }
 
 
