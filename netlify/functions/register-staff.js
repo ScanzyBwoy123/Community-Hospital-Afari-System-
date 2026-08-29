@@ -264,23 +264,28 @@ exports.handler = async function (event) {
         // so we don't leave an incomplete staff account.
         // ----------------------------------------------------
         if (profileError) {
-            console.error(
-                "Staff profile creation error:",
-                profileError
-            );
-            await supabase.auth.admin.deleteUser(
-                user.id
-            );
-            return {
-                statusCode: 500,
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    error: "Unable to create the staff profile. Registration was not completed."
-                })
-            };
-        }
+    console.error(
+        "Staff profile creation error:",
+        profileError
+    );
+
+    await supabase.auth.admin.deleteUser(
+        user.id
+    );
+
+    return {
+        statusCode: 500,
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            error:
+                "Staff profile error: " +
+                (profileError.message ||
+                    "Unknown database error")
+        })
+    };
+}
         // ----------------------------------------------------
         // SUCCESS
         // ----------------------------------------------------
