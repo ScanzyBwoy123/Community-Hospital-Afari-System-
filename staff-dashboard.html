@@ -345,7 +345,11 @@
     "staff-appointments.html";
                     return;
                 }
-
+if (section === "administration") {
+    window.location.href =
+        "staff-administration.html";
+    return;
+}
                 alert(
                     section +
                     " module will be connected next."
