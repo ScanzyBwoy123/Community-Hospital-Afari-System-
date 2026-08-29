@@ -356,18 +356,21 @@ async function loadAppointments() {
             await window.CHA_SUPABASE
                 .from("appointments")
                 .select(`
-                    id,
-                    appointment_number,
-                    patient_name,
-                    patient_phone,
-                    department_id,
-                    preferred_date,
-                    preferred_time,
-                    reason,
-                    notes,
-                    status,
-                    created_at
-                `)
+    id,
+    appointment_number,
+    patient_name,
+    patient_phone,
+    department_id,
+    departments (
+        name
+    ),
+    preferred_date,
+    preferred_time,
+    reason,
+    notes,
+    status,
+    created_at
+`)
                 .order(
                     "preferred_date",
                     {
@@ -513,7 +516,25 @@ async function loadAppointments() {
                                     </div>
 
                                 </div>
+<div>
+    <p
+        class="text-xs
+               text-slate-400
+               uppercase
+               font-bold"
+    >
+        Department
+    </p>
 
+    <p
+        class="font-bold mt-1"
+    >
+        ${escapeHTML(
+            appointment.departments?.name ||
+            "Not assigned"
+        )}
+    </p>
+</div>
                                 <div class="mt-5">
 
                                     <p
