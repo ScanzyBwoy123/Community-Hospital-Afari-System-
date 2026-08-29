@@ -1,6 +1,15 @@
 // ============================================================
 // COMMUNITY HOSPITAL AFARI
 // SECURE STAFF REGISTRATION FUNCTION
+//
+// FLOW:
+// 1. Validate registration details
+// 2. Verify department
+// 3. Check Staff ID
+// 4. Create Supabase Auth user
+// 5. Existing database trigger creates staff_profiles row
+// 6. Update that automatically-created profile
+// 7. Keep new staff inactive until admin approval
 // ============================================================
 
 const { createClient } = require("@supabase/supabase-js");
@@ -29,7 +38,28 @@ exports.handler = async function (event) {
         // READ REQUEST
         // ====================================================
 
-        const body = JSON.parse(event.body || "{}");
+        let body = {};
+
+        try {
+            body = JSON.parse(event.body || "{}");
+        } catch (parseError) {
+
+            return {
+                statusCode: 400,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "Invalid registration request."
+                })
+            };
+        }
+
+
+        // ====================================================
+        // GET REGISTRATION VALUES
+        // ====================================================
 
         const fullName =
             String(body.fullName || "").trim();
@@ -49,7 +79,9 @@ exports.handler = async function (event) {
             String(body.phone || "").trim();
 
         const role =
-            String(body.role || "").trim().toLowerCase();
+            String(body.role || "")
+                .trim()
+                .toLowerCase();
 
         const departmentId =
             String(body.departmentId || "").trim();
@@ -68,10 +100,12 @@ exports.handler = async function (event) {
             !role ||
             !departmentId
         ) {
+
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     error:
@@ -82,14 +116,16 @@ exports.handler = async function (event) {
 
 
         // ====================================================
-        // PASSWORD VALIDATION
+        // VALIDATE PASSWORD
         // ====================================================
 
         if (password.length < 8) {
+
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     error:
@@ -100,7 +136,7 @@ exports.handler = async function (event) {
 
 
         // ====================================================
-        // SUPABASE ENVIRONMENT VARIABLES
+        // SUPABASE SERVER CONFIGURATION
         // ====================================================
 
         const supabaseUrl =
@@ -109,7 +145,11 @@ exports.handler = async function (event) {
         const serviceRoleKey =
             process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-        if (!supabaseUrl || !serviceRoleKey) {
+
+        if (
+            !supabaseUrl ||
+            !serviceRoleKey
+        ) {
 
             console.error(
                 "Missing Supabase server environment variables."
@@ -118,7 +158,8 @@ exports.handler = async function (event) {
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     error:
@@ -171,7 +212,8 @@ exports.handler = async function (event) {
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     error:
@@ -188,7 +230,8 @@ exports.handler = async function (event) {
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     error:
@@ -223,15 +266,14 @@ exports.handler = async function (event) {
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     error:
-                        "Staff ID check failed.",
+                        "Unable to verify the Staff ID.",
                     details:
-                        staffCheckError.message,
-                    code:
-                        staffCheckError.code || null
+                        staffCheckError.message
                 })
             };
         }
@@ -242,7 +284,8 @@ exports.handler = async function (event) {
             return {
                 statusCode: 409,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     error:
@@ -256,19 +299,20 @@ exports.handler = async function (event) {
         // CHECK EMAIL IN SUPABASE AUTH
         // ====================================================
 
-        let page = 1;
         let emailExists = false;
+        let page = 1;
 
         while (!emailExists) {
 
             const {
-                data: usersPage,
+                data: usersData,
                 error: usersError
             } =
                 await supabase.auth.admin.listUsers({
                     page: page,
                     perPage: 1000
                 });
+
 
             if (usersError) {
 
@@ -292,27 +336,34 @@ exports.handler = async function (event) {
                 };
             }
 
+
             const users =
-                usersPage &&
-                Array.isArray(usersPage.users)
-                    ? usersPage.users
+                usersData &&
+                Array.isArray(usersData.users)
+                    ? usersData.users
                     : [];
+
 
             emailExists =
                 users.some(function (user) {
+
                     return (
                         String(user.email || "")
+                            .trim()
                             .toLowerCase() ===
                         email
                     );
+
                 });
 
+
             if (
-                users.length < 1000 ||
-                emailExists
+                emailExists ||
+                users.length < 1000
             ) {
                 break;
             }
+
 
             page++;
         }
@@ -343,9 +394,13 @@ exports.handler = async function (event) {
             error: authError
         } =
             await supabase.auth.admin.createUser({
+
                 email: email,
+
                 password: password,
+
                 email_confirm: false
+
             });
 
 
@@ -393,117 +448,109 @@ exports.handler = async function (event) {
 
 
         // ====================================================
-        // CREATE STAFF PROFILE
+        // WAIT FOR DATABASE TRIGGER
         //
-        // IMPORTANT:
-        // The profile uses ONLY columns that actually exist:
+        // Your Supabase database has:
         //
-        // id
-        // full_name
-        // staff_id
-        // role
-        // department_id
-        // phone
-        // is_active
+        // on_auth_user_created
+        //
+        // which executes:
+        //
+        // handle_new_staff_user()
+        //
+        // That trigger creates the staff_profiles row.
         // ====================================================
 
-        const {
-            data: profile,
-            error: profileError
-        } =
-            await supabase
-                .from("staff_profiles")
-                .insert({
-                    id: user.id,
-                    full_name: fullName,
-                    staff_id: staffId,
-                    role: role,
-                    department_id: departmentId,
-                    phone: phone,
-                    is_active: false
-                })
-                .select(
-                    "id, full_name, staff_id, role, department_id, phone, is_active"
-                )
-                .single();
+        let profile = null;
+        let profileError = null;
+
+        for (
+            let attempt = 1;
+            attempt <= 5;
+            attempt++
+        ) {
+
+            const result =
+                await supabase
+                    .from("staff_profiles")
+                    .select(
+                        "id, full_name, staff_id, role, department_id, phone, is_active"
+                    )
+                    .eq("id", user.id)
+                    .maybeSingle();
+
+
+            profile =
+                result.data;
+
+            profileError =
+                result.error;
+
+
+            if (profileError) {
+
+                console.error(
+                    "Staff profile lookup error:",
+                    profileError
+                );
+
+                break;
+            }
+
+
+            if (profile) {
+                break;
+            }
+
+
+            // Give the database trigger a short moment
+            // to finish creating the profile.
+
+            await new Promise(
+                function(resolve) {
+                    setTimeout(
+                        resolve,
+                        300
+                    );
+                }
+            );
+        }
 
 
         // ====================================================
-        // PROFILE CREATION FAILED
+        // PROFILE COULD NOT BE FOUND
         // ====================================================
 
         if (profileError) {
 
+            await supabase.auth.admin
+                .deleteUser(user.id);
+
+            return {
+                statusCode: 500,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "Unable to verify the automatically-created staff profile.",
+                    details:
+                        profileError.message
+                })
+            };
+        }
+
+
+        if (!profile) {
+
             console.error(
-                "Staff profile creation error:",
-                profileError
+                "Auth user was created, but the staff profile trigger did not create a profile."
             );
 
 
-            // -----------------------------------------------
-            // Remove Auth user created by this registration
-            // -----------------------------------------------
-
-            const {
-                error: deleteUserError
-            } =
-                await supabase.auth.admin
-                    .deleteUser(user.id);
-
-
-            if (deleteUserError) {
-
-                console.error(
-                    "Auth cleanup error:",
-                    deleteUserError
-                );
-            }
-
-
-            // -----------------------------------------------
-            // Duplicate primary key
-            // -----------------------------------------------
-
-            if (
-                profileError.code === "23505"
-            ) {
-
-                return {
-                    statusCode: 409,
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body: JSON.stringify({
-                        error:
-                            "A staff profile with this authentication ID already exists."
-                    })
-                };
-            }
-
-
-            // -----------------------------------------------
-            // Check constraint
-            // -----------------------------------------------
-
-            if (
-                profileError.code === "23514"
-            ) {
-
-                return {
-                    statusCode: 400,
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body: JSON.stringify({
-                        error:
-                            "The selected staff position is not accepted by the hospital database.",
-                        details:
-                            profileError.message
-                    })
-                };
-            }
+            await supabase.auth.admin
+                .deleteUser(user.id);
 
 
             return {
@@ -514,11 +561,88 @@ exports.handler = async function (event) {
                 },
                 body: JSON.stringify({
                     error:
-                        "Unable to create the staff profile.",
+                        "The staff profile could not be created automatically. Please contact hospital administration."
+                })
+            };
+        }
+
+
+        // ====================================================
+        // UPDATE AUTOMATICALLY-CREATED PROFILE
+        //
+        // IMPORTANT:
+        // We UPDATE instead of INSERT.
+        //
+        // This prevents the duplicate UUID error.
+        // ====================================================
+
+        const {
+            data: updatedProfile,
+            error: updateProfileError
+        } =
+            await supabase
+                .from("staff_profiles")
+                .update({
+
+                    full_name:
+                        fullName,
+
+                    staff_id:
+                        staffId,
+
+                    role:
+                        role,
+
+                    department_id:
+                        departmentId,
+
+                    phone:
+                        phone,
+
+                    is_active:
+                        false
+
+                })
+                .eq(
+                    "id",
+                    user.id
+                )
+                .select(
+                    "id, full_name, staff_id, role, department_id, phone, is_active"
+                )
+                .single();
+
+
+        // ====================================================
+        // PROFILE UPDATE FAILED
+        // ====================================================
+
+        if (updateProfileError) {
+
+            console.error(
+                "Staff profile update error:",
+                updateProfileError
+            );
+
+
+            await supabase.auth.admin
+                .deleteUser(user.id);
+
+
+            return {
+                statusCode: 500,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "Unable to complete the staff profile.",
                     details:
-                        profileError.message,
+                        updateProfileError.message,
                     code:
-                        profileError.code || null
+                        updateProfileError.code ||
+                        null
                 })
             };
         }
@@ -546,25 +670,25 @@ exports.handler = async function (event) {
                 staff: {
 
                     id:
-                        profile.id,
+                        updatedProfile.id,
 
                     full_name:
-                        profile.full_name,
+                        updatedProfile.full_name,
 
                     staff_id:
-                        profile.staff_id,
+                        updatedProfile.staff_id,
 
                     role:
-                        profile.role,
+                        updatedProfile.role,
 
                     department:
                         department.name,
 
                     phone:
-                        profile.phone,
+                        updatedProfile.phone,
 
                     is_active:
-                        false
+                        updatedProfile.is_active
 
                 }
 
@@ -575,7 +699,7 @@ exports.handler = async function (event) {
     } catch (error) {
 
         // ====================================================
-        // UNEXPECTED SERVER ERROR
+        // UNEXPECTED ERROR
         // ====================================================
 
         console.error(
