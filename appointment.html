@@ -315,15 +315,13 @@ form.addEventListener(
                 await window.CHA_SUPABASE
                     .from("appointments")
                     .insert({
-                        appointment_number: "",
-                        patient_name: patientName,
-                        patient_phone: patientPhone,
-                        department_id: departmentId,
-                        preferred_date: preferredDate,
-                        preferred_time: preferredTime,
-                        reason: reason,
-                        status: "pending"
-                    })
+    patient_name: patientName,
+    patient_phone: patientPhone,
+    department_id: departmentId,
+    preferred_date: preferredDate,
+    preferred_time: preferredTime,
+    reason: reason
+})
                     .select(
                         "appointment_number"
                     )
