@@ -789,25 +789,51 @@
 ); 
 
                 document
-                    .querySelectorAll(
-                        ".approve-button"
-                    )
-                    .forEach(
-                        function(button) {
+    .querySelectorAll(
+        ".approve-button"
+    )
+    .forEach(
+        function(button) {
 
-                            button.addEventListener(
-                                "click",
-                                function() {
+            button.addEventListener(
+                "click",
+                function() {
 
-                                    approveStaff(
-                                        this.dataset.id
-                                    );
-
-                                }
-                            );
-
-                        }
+                    approveStaff(
+                        this.dataset.id
                     );
+
+                }
+            );
+
+        }
+    );
+
+
+// ====================================================
+// REJECT BUTTONS
+// ====================================================
+
+document
+    .querySelectorAll(
+        ".reject-button"
+    )
+    .forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    rejectStaff(
+                        this.dataset.id
+                    );
+
+                }
+            );
+
+        }
+    );
 
             }
 
