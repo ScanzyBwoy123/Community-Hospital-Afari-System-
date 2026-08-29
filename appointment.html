@@ -253,12 +253,8 @@ form.addEventListener(
 
         event.preventDefault();
 
-
         submitButton.disabled = true;
-
-        submitButton.textContent =
-            "Submitting...";
-
+        submitButton.textContent = "Submitting...";
 
         try {
 
@@ -268,29 +264,24 @@ form.addEventListener(
                     .value
                     .trim();
 
-
             const patientPhone =
                 document
                     .getElementById("patientPhone")
                     .value
                     .trim();
 
-
             const departmentId =
                 department.value;
-console.log("Department ID:", departmentId);
 
             const preferredDate =
                 document
                     .getElementById("appointmentDate")
                     .value;
 
-
             const preferredTime =
                 document
                     .getElementById("appointmentTime")
                     .value;
-
 
             const reason =
                 document
@@ -298,67 +289,72 @@ console.log("Department ID:", departmentId);
                     .value
                     .trim();
 
+            if (!patientName) {
+                throw new Error(
+                    "Please enter your full name."
+                );
+            }
+
+            if (!patientPhone) {
+                throw new Error(
+                    "Please enter your phone number."
+                );
+            }
 
             if (!departmentId) {
-
                 throw new Error(
                     "Please select a department."
                 );
-
             }
 
+            if (!preferredDate) {
+                throw new Error(
+                    "Please select a preferred date."
+                );
+            }
 
-            const {
-                data,
-                error
-            } =
+            if (!preferredTime) {
+                throw new Error(
+                    "Please select a preferred time."
+                );
+            }
+
+            const { error } =
                 await window.CHA_SUPABASE
                     .from("appointments")
                     .insert({
-    patient_name: patientName,
-    patient_phone: patientPhone,
-    department_id: departmentId,
-    preferred_date: preferredDate,
-    preferred_time: preferredTime,
-    reason: reason
-})
-                    .select(
-                        "appointment_number"
-                    )
-                    .single();
-
+                        patient_name: patientName,
+                        patient_phone: patientPhone,
+                        department_id: departmentId,
+                        preferred_date: preferredDate,
+                        preferred_time: preferredTime,
+                        reason: reason
+                    });
 
             if (error) {
                 throw error;
             }
 
-
             showResult(
                 `
                 <h3 class="font-black text-lg">
-                    Appointment Request Received
+                    ✅ Appointment Request Submitted
                 </h3>
 
                 <p class="mt-2">
-                    Your request has been submitted successfully.
-                </p>
-
-                <p class="mt-3 font-bold">
-                    Appointment Reference:
-                    ${data.appointment_number}
+                    Your appointment request has been successfully
+                    sent to Community Hospital Afari.
                 </p>
 
                 <p class="mt-2 text-sm">
-                    Please keep this reference for your records.
-                    The hospital will review your request.
+                    The hospital will review your request and
+                    contact you using the phone number provided.
                 </p>
                 `,
                 true
             );
 
-
             form.reset();
-
 
         } catch (error) {
 
@@ -367,25 +363,28 @@ console.log("Department ID:", departmentId);
                 error
             );
 
-
             showResult(
-                error.message ||
-                "Unable to submit appointment request.",
+                `
+                <strong>
+                    ❌ Appointment could not be submitted
+                </strong>
+
+                <p class="mt-2">
+                    ${error.message ||
+                    "Unable to submit appointment request."}
+                </p>
+                `,
                 false
             );
 
         }
 
-
         submitButton.disabled = false;
-
         submitButton.textContent =
             "Submit Appointment Request";
 
     }
 );
-
-
 loadDepartments();
 
 </script>
