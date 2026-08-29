@@ -10,23 +10,16 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        CHA Staff Registration
-    </title>
+    <title>CHA Staff Registration</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-
         body {
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
         }
-
     </style>
 
 </head>
@@ -34,9 +27,7 @@
 
 <body class="min-h-screen bg-slate-100">
 
-<div
-    class="min-h-screen flex items-center justify-center px-4 py-10"
->
+<div class="min-h-screen flex items-center justify-center px-4 py-10">
 
     <div class="w-full max-w-lg">
 
@@ -201,6 +192,7 @@
                         id="staffId"
                         type="text"
                         required
+                        autocomplete="off"
                         class="
                             w-full
                             mt-2
@@ -215,6 +207,17 @@
                         "
                         placeholder="Example: CHA-001"
                     >
+
+                    <p
+                        class="
+                            text-xs
+                            text-slate-500
+                            mt-2
+                        "
+                    >
+                        Enter the unique Staff ID assigned to you
+                        by the hospital.
+                    </p>
 
                 </div>
 
@@ -310,7 +313,12 @@
                      DEPARTMENT
                      
                      IMPORTANT:
-                     This comes from the departments table.
+                     Department comes from the departments table.
+                     Example:
+                     Laboratory
+                     Emergency
+                     Administration
+                     Accounts / Billing
                 ================================================== -->
 
                 <div>
@@ -372,10 +380,8 @@
                      STAFF POSITION / ROLE
                      
                      IMPORTANT:
-                     This is NOT the department.
-                     
-                     Laboratory = department
-                     Laboratory Staff = position
+                     This is the person's job position,
+                     NOT the department.
                 ================================================== -->
 
                 <div>
@@ -446,7 +452,7 @@
                         </option>
 
 
-                        <option value="laboratory">
+                        <option value="laboratory_staff">
                             Laboratory Staff
                         </option>
 
@@ -593,7 +599,7 @@
 
 
                 <!-- =================================================
-                     SUBMIT BUTTON
+                     SUBMIT
                 ================================================== -->
 
                 <button
@@ -620,7 +626,7 @@
 
 
             <!-- =====================================================
-                 STATUS MESSAGE
+                 STATUS
             ====================================================== -->
 
             <div
@@ -637,7 +643,7 @@
 
 
             <!-- =====================================================
-                 LOGIN LINK
+                 LOGIN
             ====================================================== -->
 
             <div
@@ -649,12 +655,7 @@
                 "
             >
 
-                <p
-                    class="
-                        text-sm
-                        text-slate-500
-                    "
-                >
+                <p class="text-sm text-slate-500">
                     Already have an approved account?
                 </p>
 
@@ -678,7 +679,7 @@
 
 
             <!-- =====================================================
-                 WEBSITE LINK
+                 WEBSITE
             ====================================================== -->
 
             <div
@@ -762,7 +763,7 @@ const roleSelect =
 
 
 // ============================================================
-// STATUS MESSAGE
+// SHOW STATUS
 // ============================================================
 
 function showStatus(
@@ -811,6 +812,7 @@ function showStatus(
 
     registerStatus.textContent =
         message;
+
 }
 
 
@@ -1018,7 +1020,7 @@ registerForm.addEventListener(
 
 
         // ====================================================
-        // VALIDATION
+        // VALIDATE FORM
         // ====================================================
 
         if (!fullName) {
@@ -1140,7 +1142,7 @@ registerForm.addEventListener(
 
 
         // ====================================================
-        // SEND REGISTRATION TO NETLIFY FUNCTION
+        // SEND TO NETLIFY FUNCTION
         // ====================================================
 
         try {
@@ -1190,7 +1192,7 @@ registerForm.addEventListener(
 
 
             // =================================================
-            // READ SERVER RESPONSE
+            // READ RESPONSE
             // =================================================
 
             let result;
@@ -1214,7 +1216,7 @@ registerForm.addEventListener(
 
 
             // =================================================
-            // SERVER ERROR
+            // HANDLE ERROR
             // =================================================
 
             if (!response.ok) {
@@ -1282,7 +1284,7 @@ registerForm.addEventListener(
 
 
 // ============================================================
-// INITIALIZE PAGE
+// INITIALIZE
 // ============================================================
 
 loadDepartments();
