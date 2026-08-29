@@ -286,8 +286,25 @@
     </div>
 </div>
 <!-- Supabase configuration -->
-<script src="js/supabase.js"></script>
-<script>
+<select
+    id="role"
+    required
+    class="w-full mt-2 px-4 py-3 border border-slate-300 rounded-xl"
+>
+    <option value="">Select role</option>
+    <option value="staff">Staff</option>
+    <option value="doctor">Doctor</option>
+    <option value="nurse">Nurse</option>
+    <option value="midwife">Midwife</option>
+    <option value="receptionist">Receptionist</option>
+    <option value="pharmacist">Pharmacist</option>
+    <option value="laboratory">Laboratory Staff</option>
+    <option value="medical_records">Medical Records Staff</option>
+    <option value="accounts">Accounts Staff</option>
+    <option value="ambulance">Ambulance Staff</option>
+    <option value="theatre">Theatre Staff</option>
+    <option value="stores">Stores Staff</option>
+</select>
 const registerForm =
     document.getElementById("registerForm");
 const registerButton =
