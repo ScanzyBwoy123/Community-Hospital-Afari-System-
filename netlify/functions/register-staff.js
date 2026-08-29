@@ -12,7 +12,6 @@ exports.handler = async function (event) {
     // ========================================================
 
     if (event.httpMethod !== "POST") {
-
         return {
             statusCode: 405,
             headers: {
@@ -22,9 +21,7 @@ exports.handler = async function (event) {
                 error: "Method not allowed."
             })
         };
-
     }
-
 
     try {
 
@@ -32,36 +29,27 @@ exports.handler = async function (event) {
         // READ REQUEST
         // ====================================================
 
-        const body =
-            JSON.parse(event.body || "{}");
-
+        const body = JSON.parse(event.body || "{}");
 
         const fullName =
             String(body.fullName || "").trim();
 
-
         const staffId =
             String(body.staffId || "").trim();
-
 
         const email =
             String(body.email || "")
                 .trim()
                 .toLowerCase();
 
-
         const password =
             String(body.password || "");
-
 
         const phone =
             String(body.phone || "").trim();
 
-
         const role =
-            String(body.role || "").trim()
-                .toLowerCase();
-
+            String(body.role || "").trim().toLowerCase();
 
         const departmentId =
             String(body.departmentId || "").trim();
@@ -80,84 +68,68 @@ exports.handler = async function (event) {
             !role ||
             !departmentId
         ) {
-
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     error:
                         "All staff registration fields are required."
                 })
             };
-
         }
 
 
         // ====================================================
-        // VALIDATE PASSWORD
+        // PASSWORD VALIDATION
         // ====================================================
 
         if (password.length < 8) {
-
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     error:
                         "Password must contain at least 8 characters."
                 })
             };
-
         }
 
 
         // ====================================================
-        // SUPABASE SERVER CONFIGURATION
+        // SUPABASE ENVIRONMENT VARIABLES
         // ====================================================
 
         const supabaseUrl =
             process.env.SUPABASE_URL;
 
-
         const serviceRoleKey =
             process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-
-        if (
-            !supabaseUrl ||
-            !serviceRoleKey
-        ) {
+        if (!supabaseUrl || !serviceRoleKey) {
 
             console.error(
                 "Missing Supabase server environment variables."
             );
 
-
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     error:
                         "Server authentication system is not configured."
                 })
             };
-
         }
 
 
         // ====================================================
-        // CREATE SERVER-SIDE SUPABASE CLIENT
-        //
-        // SERVICE ROLE KEY NEVER GOES TO THE BROWSER.
+        // SERVER-SIDE SUPABASE CLIENT
         // ====================================================
 
         const supabase =
@@ -183,17 +155,9 @@ exports.handler = async function (event) {
         } =
             await supabase
                 .from("departments")
-                .select(
-                    "id, name, is_active"
-                )
-                .eq(
-                    "id",
-                    departmentId
-                )
-                .eq(
-                    "is_active",
-                    true
-                )
+                .select("id, name")
+                .eq("id", departmentId)
+                .eq("is_active", true)
                 .maybeSingle();
 
 
@@ -204,19 +168,18 @@ exports.handler = async function (event) {
                 departmentError
             );
 
-
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     error:
-                        "Unable to verify the selected department."
+                        "Unable to verify the selected department.",
+                    details:
+                        departmentError.message
                 })
             };
-
         }
 
 
@@ -225,15 +188,13 @@ exports.handler = async function (event) {
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     error:
                         "The selected department is not available."
                 })
             };
-
         }
 
 
@@ -247,89 +208,114 @@ exports.handler = async function (event) {
         } =
             await supabase
                 .from("staff_profiles")
-                .select(
-    "id, staff_id"
-)
-                .eq(
-                    "staff_id",
-                    staffId
-                )
+                .select("id, staff_id")
+                .eq("staff_id", staffId)
                 .maybeSingle();
 
 
-        console.error(
-    "Staff ID check error:",
-    staffCheckError
-);
-
-return {
-    statusCode: 500,
-    headers: {
-        "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-        error:
-            "Staff ID check failed: " +
-            (staffCheckError.message || "Unknown database error"),
-        code:
-            staffCheckError.code || null,
-        details:
-            staffCheckError.details || null,
-        hint:
-            staffCheckError.hint || null
-    })
-};
-
-        // ====================================================
-        // CHECK WHETHER EMAIL ALREADY EXISTS
-        // ====================================================
-
-        const {
-            data: existingUsers,
-            error: usersError
-        } =
-            await supabase.auth.admin.listUsers({
-                page: 1,
-                perPage: 1000
-            });
-
-
-        if (usersError) {
+        if (staffCheckError) {
 
             console.error(
-                "Auth user check error:",
-                usersError
+                "Staff ID check error:",
+                staffCheckError
             );
-
 
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     error:
-                        "Unable to verify the email address."
+                        "Staff ID check failed.",
+                    details:
+                        staffCheckError.message,
+                    code:
+                        staffCheckError.code || null
                 })
             };
-
         }
 
 
-        const emailExists =
-            (existingUsers.users || [])
-                .some(function (user) {
+        if (existingStaff) {
 
-                    return (
-                        String(
-                            user.email || ""
-                        )
-                            .toLowerCase()
-                            === email
-                    );
+            return {
+                statusCode: 409,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "This Staff ID is already registered."
+                })
+            };
+        }
 
+
+        // ====================================================
+        // CHECK EMAIL IN SUPABASE AUTH
+        // ====================================================
+
+        let page = 1;
+        let emailExists = false;
+
+        while (!emailExists) {
+
+            const {
+                data: usersPage,
+                error: usersError
+            } =
+                await supabase.auth.admin.listUsers({
+                    page: page,
+                    perPage: 1000
                 });
+
+            if (usersError) {
+
+                console.error(
+                    "Auth user check error:",
+                    usersError
+                );
+
+                return {
+                    statusCode: 500,
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        error:
+                            "Unable to verify the email address.",
+                        details:
+                            usersError.message
+                    })
+                };
+            }
+
+            const users =
+                usersPage &&
+                Array.isArray(usersPage.users)
+                    ? usersPage.users
+                    : [];
+
+            emailExists =
+                users.some(function (user) {
+                    return (
+                        String(user.email || "")
+                            .toLowerCase() ===
+                        email
+                    );
+                });
+
+            if (
+                users.length < 1000 ||
+                emailExists
+            ) {
+                break;
+            }
+
+            page++;
+        }
 
 
         if (emailExists) {
@@ -345,12 +331,11 @@ return {
                         "This email address is already registered. Please use the Staff Login page."
                 })
             };
-
         }
 
 
         // ====================================================
-        // CREATE AUTH USER
+        // CREATE SUPABASE AUTH USER
         // ====================================================
 
         const {
@@ -358,13 +343,9 @@ return {
             error: authError
         } =
             await supabase.auth.admin.createUser({
-
                 email: email,
-
                 password: password,
-
                 email_confirm: false
-
             });
 
 
@@ -374,7 +355,6 @@ return {
                 "Auth user creation error:",
                 authError
             );
-
 
             return {
                 statusCode: 400,
@@ -388,11 +368,11 @@ return {
                         "Unable to create the staff account."
                 })
             };
-
         }
 
 
         const user =
+            authData &&
             authData.user;
 
 
@@ -409,14 +389,22 @@ return {
                         "Authentication account was not created."
                 })
             };
-
         }
 
 
         // ====================================================
         // CREATE STAFF PROFILE
         //
-        // NEW STAFF ARE INACTIVE UNTIL ADMIN APPROVES THEM.
+        // IMPORTANT:
+        // The profile uses ONLY columns that actually exist:
+        //
+        // id
+        // full_name
+        // staff_id
+        // role
+        // department_id
+        // phone
+        // is_active
         // ====================================================
 
         const {
@@ -426,28 +414,13 @@ return {
             await supabase
                 .from("staff_profiles")
                 .insert({
-
-                    id:
-                        user.id,
-
-                    full_name:
-                        fullName,
-
-                    staff_id:
-                        staffId,
-
-                    role:
-                        role,
-
-                    department_id:
-                        departmentId,
-
-                    phone:
-                        phone,
-
-                    is_active:
-                        false
-
+                    id: user.id,
+                    full_name: fullName,
+                    staff_id: staffId,
+                    role: role,
+                    department_id: departmentId,
+                    phone: phone,
+                    is_active: false
                 })
                 .select(
                     "id, full_name, staff_id, role, department_id, phone, is_active"
@@ -468,16 +441,14 @@ return {
 
 
             // -----------------------------------------------
-            // Remove the newly-created Auth account.
+            // Remove Auth user created by this registration
             // -----------------------------------------------
 
             const {
                 error: deleteUserError
             } =
                 await supabase.auth.admin
-                    .deleteUser(
-                        user.id
-                    );
+                    .deleteUser(user.id);
 
 
             if (deleteUserError) {
@@ -486,17 +457,15 @@ return {
                     "Auth cleanup error:",
                     deleteUserError
                 );
-
             }
 
 
             // -----------------------------------------------
-            // Handle duplicate UUID specifically.
+            // Duplicate primary key
             // -----------------------------------------------
 
             if (
-                profileError.code ===
-                "23505"
+                profileError.code === "23505"
             ) {
 
                 return {
@@ -507,10 +476,33 @@ return {
                     },
                     body: JSON.stringify({
                         error:
-                            "A staff profile with this authentication account already exists. Please use another email address or contact hospital administration."
+                            "A staff profile with this authentication ID already exists."
                     })
                 };
+            }
 
+
+            // -----------------------------------------------
+            // Check constraint
+            // -----------------------------------------------
+
+            if (
+                profileError.code === "23514"
+            ) {
+
+                return {
+                    statusCode: 400,
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        error:
+                            "The selected staff position is not accepted by the hospital database.",
+                        details:
+                            profileError.message
+                    })
+                };
             }
 
 
@@ -522,10 +514,13 @@ return {
                 },
                 body: JSON.stringify({
                     error:
-                        "Unable to create the staff profile. Registration was not completed."
+                        "Unable to create the staff profile.",
+                    details:
+                        profileError.message,
+                    code:
+                        profileError.code || null
                 })
             };
-
         }
 
 
@@ -574,14 +569,13 @@ return {
                 }
 
             })
-
         };
 
 
     } catch (error) {
 
         // ====================================================
-        // UNEXPECTED ERROR
+        // UNEXPECTED SERVER ERROR
         // ====================================================
 
         console.error(
@@ -600,11 +594,13 @@ return {
 
             body: JSON.stringify({
                 error:
-                    "An unexpected server error occurred. Please try again."
+                    "An unexpected server error occurred.",
+                details:
+                    error &&
+                    error.message
+                        ? error.message
+                        : String(error)
             })
-
         };
-
     }
-
 };
