@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CHA Staff Administration</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="bg-blue-900 text-white shadow-lg">
+
+        <div class="max-w-7xl mx-auto px-4">
+
+            <div class="min-h-20 flex items-center justify-between gap-4">
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-12 h-12 rounded-full bg-white
+                               text-blue-900 flex items-center
+                               justify-center font-black"
+                    >
+                        CHA
+                    </div>
+
+                    <div>
+
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+
+                        <div class="text-blue-200 text-sm">
+                            Staff Administration
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="backButton"
+                    class="bg-white text-blue-900
+                           hover:bg-blue-50
+                           px-4 py-2
+                           rounded-lg
+                           font-bold"
+                >
+                    ← Dashboard
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- Loading -->
+
+        <div
+            id="loading"
+            class="bg-white rounded-2xl shadow p-8 text-center"
+        >
+
+            <div class="text-3xl">
+                🔐
+            </div>
+
+            <p class="font-bold mt-3">
+                Checking administrator access...
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             ADMINISTRATION
+        ================================================== -->
+
+        <div
+            id="adminPage"
+            class="hidden"
+        >
+
+            <!-- Page heading -->
+
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+
+                <div class="flex flex-col sm:flex-row
+                            sm:items-center
+                            sm:justify-between
+                            gap-4">
+
+                    <div>
+
+                        <p class="text-sm text-slate-500">
+                            Hospital Administration
+                        </p>
+
+                        <h1
+                            class="text-3xl font-black text-slate-900 mt-1"
+                        >
+                            Staff Management
+                        </h1>
+
+                        <p class="text-sm text-slate-500 mt-2">
+                            Review staff registrations and approve
+                            authorized hospital personnel.
+                        </p>
+
+                    </div>
+
+                    <button
+                        id="refreshButton"
+                        class="bg-blue-900
+                               hover:bg-blue-800
+                               text-white
+                               px-5 py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PENDING STAFF
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-2xl shadow overflow-hidden"
+            >
+
+                <div
+                    class="p-6 border-b border-slate-200"
+                >
+
+                    <div
+                        class="flex flex-col sm:flex-row
+                               sm:items-center
+                               sm:justify-between
+                               gap-3"
+                    >
+
+                        <div>
+
+                            <h2
+                                class="text-xl font-black"
+                            >
+                                Pending Staff Registrations
+                            </h2>
+
+                            <p
+                                class="text-sm text-slate-500 mt-1"
+                            >
+                                These accounts are waiting for
+                                administrator approval.
+                            </p>
+
+                        </div>
+
+                        <span
+                            id="pendingCount"
+                            class="inline-flex
+                                   items-center
+                                   justify-center
+                                   bg-yellow-100
+                                   text-yellow-800
+                                   px-3 py-1
+                                   rounded-full
+                                   text-sm
+                                   font-black"
+                        >
+                            0 Pending
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Status -->
+
+                <div
+                    id="adminStatus"
+                    class="hidden m-6 p-4 rounded-xl text-sm"
+                ></div>
+
+
+
+                <!-- Empty -->
+
+                <div
+                    id="emptyState"
+                    class="hidden p-10 text-center"
+                >
+
+                    <div class="text-5xl">
+                        ✅
+                    </div>
+
+                    <h3
+                        class="font-black text-xl mt-4"
+                    >
+                        No Pending Registrations
+                    </h3>
+
+                    <p
+                        class="text-slate-500 text-sm mt-2"
+                    >
+                        There are currently no staff accounts
+                        waiting for approval.
+                    </p>
+
+                </div>
+
+
+
+                <!-- Table -->
+
+                <div
+                    id="tableContainer"
+                    class="hidden overflow-x-auto"
+                >
+
+                    <table class="w-full text-sm">
+
+                        <thead
+                            class="bg-slate-50 border-b"
+                        >
+
+                            <tr>
+
+                                <th
+                                    class="text-left
+                                           px-6 py-4
+                                           font-black"
+                                >
+                                    Staff
+                                </th>
+
+                                <th
+                                    class="text-left
+                                           px-6 py-4
+                                           font-black"
+                                >
+                                    Staff ID
+                                </th>
+
+                                <th
+                                    class="text-left
+                                           px-6 py-4
+                                           font-black"
+                                >
+                                    Position
+                                </th>
+
+                                <th
+                                    class="text-left
+                                           px-6 py-4
+                                           font-black"
+                                >
+                                    Department
+                                </th>
+
+                                <th
+                                    class="text-left
+                                           px-6 py-4
+                                           font-black"
+                                >
+                                    Phone
+                                </th>
+
+                                <th
+                                    class="text-left
+                                           px-6 py-4
+                                           font-black"
+                                >
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="pendingTableBody"
+                            class="divide-y"
+                        ></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECURITY NOTICE
+            ================================================== -->
+
+            <section
+                class="mt-8
+                       bg-blue-50
+                       border border-blue-100
+                       rounded-2xl
+                       p-6"
+            >
+
+                <h2 class="font-black text-lg">
+                    🔐 Administrator Security
+                </h2>
+
+                <p
+                    class="text-sm
+                          text-blue-900
+                          mt-2"
+                >
+                    Only authorized hospital administrators should
+                    approve staff accounts. Verify the staff ID,
+                    position, department and other information before
+                    approving an account.
+                </p>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         SUPABASE CONFIGURATION
+    ====================================================== -->
+
+    <script src="js/supabase.js"></script>
+
+
+
+    <!-- =====================================================
+         ADMINISTRATION LOGIC
+    ====================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
+
+        const loading =
+            document.getElementById("loading");
+
+        const adminPage =
+            document.getElementById("adminPage");
+
+        const pendingCount =
+            document.getElementById("pendingCount");
+
+        const pendingTableBody =
+            document.getElementById("pendingTableBody");
+
+        const tableContainer =
+            document.getElementById("tableContainer");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+        const adminStatus =
+            document.getElementById("adminStatus");
+
+        const refreshButton =
+            document.getElementById("refreshButton");
+
+        const backButton =
+            document.getElementById("backButton");
+
+
+
+        // ====================================================
+        // STATUS MESSAGE
+        // ====================================================
+
+        function showStatus(message, type) {
+
+            adminStatus.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700"
+            );
+
+
+            if (type === "error") {
+
+                adminStatus.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+
+            }
+
+            else if (type === "success") {
+
+                adminStatus.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+
+            }
+
+            else {
+
+                adminStatus.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+
+            }
+
+
+            adminStatus.textContent =
+                message;
+
+        }
+
+
+
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+
+        function escapeHTML(value) {
+
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+
+        // ====================================================
+        // CHECK ADMIN
+        // ====================================================
+
+        async function checkAdministrator() {
+
+            if (!window.CHA_SUPABASE) {
+
+                throw new Error(
+                    "Supabase is not configured."
+                );
+
+            }
+
+
+            const {
+                data: authData,
+                error: authError
+            } =
+                await window.CHA_SUPABASE.auth.getUser();
+
+
+            if (
+                authError ||
+                !authData ||
+                !authData.user
+            ) {
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+
+            const user =
+                authData.user;
+
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await window.CHA_SUPABASE
+                    .from("staff_profiles")
+                    .select(`
+                        id,
+                        role,
+                        is_active
+                    `)
+                    .eq(
+                        "id",
+                        user.id
+                    )
+                    .single();
+
+
+            if (profileError) {
+
+                throw profileError;
+
+            }
+
+
+            if (
+                !profile ||
+                !profile.is_active ||
+                profile.role !== "admin"
+            ) {
+
+                await window.CHA_SUPABASE.auth.signOut();
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+
+            return user;
+
+        }
+
+
+
+        // ====================================================
+        // LOAD PENDING STAFF
+        // ====================================================
+
+        async function loadPendingStaff() {
+
+            tableContainer.classList.add(
+                "hidden"
+            );
+
+            emptyState.classList.add(
+                "hidden"
+            );
+
+
+            pendingTableBody.innerHTML = "";
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("staff_profiles")
+                        .select(`
+                            id,
+                            full_name,
+                            staff_id,
+                            role,
+                            department_id,
+                            phone,
+                            is_active,
+                            departments (
+                                name
+                            )
+                        `)
+                        .eq(
+                            "is_active",
+                            false
+                        )
+                        .order(
+                            "full_name",
+                            {
+                                ascending: true
+                            }
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                const pending =
+                    data || [];
+
+
+                pendingCount.textContent =
+                    pending.length +
+                    (
+                        pending.length === 1
+                            ? " Pending"
+                            : " Pending"
+                    );
+
+
+                if (
+                    pending.length === 0
+                ) {
+
+                    emptyState.classList.remove(
+                        "hidden"
+                    );
+
+                    return;
+
+                }
+
+
+                pending.forEach(
+                    function(staff) {
+
+                        const row =
+                            document.createElement(
+                                "tr"
+                            );
+
+
+                        row.className =
+                            "hover:bg-slate-50";
+
+
+                        const departmentName =
+                            staff.departments?.name ||
+                            "Not assigned";
+
+
+                        row.innerHTML = `
+
+                            <td class="px-6 py-5">
+
+                                <div class="font-black text-slate-900">
+                                    ${escapeHTML(
+                                        staff.full_name
+                                    )}
+                                </div>
+
+                            </td>
+
+
+                            <td class="px-6 py-5">
+
+                                <span
+                                    class="font-mono
+                                           text-xs
+                                           bg-slate-100
+                                           px-2 py-1
+                                           rounded"
+                                >
+                                    ${escapeHTML(
+                                        staff.staff_id
+                                    )}
+                                </span>
+
+                            </td>
+
+
+                            <td class="px-6 py-5">
+
+                                <span
+                                    class="inline-flex
+                                           bg-blue-100
+                                           text-blue-800
+                                           px-2 py-1
+                                           rounded-full
+                                           text-xs
+                                           font-bold"
+                                >
+                                    ${escapeHTML(
+                                        formatRole(
+                                            staff.role
+                                        )
+                                    )}
+                                </span>
+
+                            </td>
+
+
+                            <td class="px-6 py-5">
+
+                                ${escapeHTML(
+                                    departmentName
+                                )}
+
+                            </td>
+
+
+                            <td class="px-6 py-5">
+
+                                ${escapeHTML(
+                                    staff.phone
+                                )}
+
+                            </td>
+
+
+                            <td class="px-6 py-5">
+
+                                <button
+                                    class="approve-button
+                                           bg-green-600
+                                           hover:bg-green-700
+                                           text-white
+                                           px-4 py-2
+                                           rounded-lg
+                                           font-bold"
+                                    data-id="${escapeHTML(
+                                        staff.id
+                                    )}"
+                                >
+                                    ✓ Approve
+                                </button>
+
+                            </td>
+
+                        `;
+
+
+                        pendingTableBody.appendChild(
+                            row
+                        );
+
+                    }
+                );
+
+
+                tableContainer.classList.remove(
+                    "hidden"
+                );
+
+
+                document
+                    .querySelectorAll(
+                        ".approve-button"
+                    )
+                    .forEach(
+                        function(button) {
+
+                            button.addEventListener(
+                                "click",
+                                function() {
+
+                                    approveStaff(
+                                        this.dataset.id
+                                    );
+
+                                }
+                            );
+
+                        }
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Pending Staff Error:",
+                    error
+                );
+
+
+                showStatus(
+                    "Unable to load pending staff: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // FORMAT ROLE
+        // ====================================================
+
+        function formatRole(role) {
+
+            const roles = {
+
+                admin:
+                    "Administrator",
+
+                staff:
+                    "Staff",
+
+                doctor:
+                    "Doctor",
+
+                nurse:
+                    "Nurse",
+
+                midwife:
+                    "Midwife",
+
+                receptionist:
+                    "Receptionist",
+
+                pharmacist:
+                    "Pharmacist",
+
+                laboratory_staff:
+                    "Laboratory Staff",
+
+                medical_records:
+                    "Medical Records Staff",
+
+                accounts:
+                    "Accounts Staff",
+
+                ambulance:
+                    "Ambulance Staff",
+
+                theatre:
+                    "Theatre Staff",
+
+                stores:
+                    "Stores Staff"
+
+            };
+
+
+            return (
+                roles[role] ||
+                role ||
+                "Unknown"
+            );
+
+        }
+
+
+
+        // ====================================================
+        // APPROVE STAFF
+        // ====================================================
+
+        async function approveStaff(staffId) {
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to approve this staff account?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            showStatus(
+                "Approving staff account...",
+                "info"
+            );
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("staff_profiles")
+                        .update({
+                            is_active: true
+                        })
+                        .eq(
+                            "id",
+                            staffId
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                showStatus(
+                    "Staff account approved successfully.",
+                    "success"
+                );
+
+
+                await loadPendingStaff();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Staff Approval Error:",
+                    error
+                );
+
+
+                showStatus(
+                    "Unable to approve staff account: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // REFRESH
+        // ====================================================
+
+        refreshButton.addEventListener(
+            "click",
+            async function() {
+
+                refreshButton.disabled =
+                    true;
+
+                refreshButton.textContent =
+                    "Refreshing...";
+
+
+                await loadPendingStaff();
+
+
+                refreshButton.disabled =
+                    false;
+
+                refreshButton.textContent =
+                    "↻ Refresh";
+
+            }
+        );
+
+
+
+        // ====================================================
+        // BACK TO DASHBOARD
+        // ====================================================
+
+        backButton.addEventListener(
+            "click",
+            function() {
+
+                window.location.href =
+                    "staff-dashboard.html";
+
+            }
+        );
+
+
+
+        // ====================================================
+        // INITIALIZE
+        // ====================================================
+
+        async function initializeAdministration() {
+
+            try {
+
+                const user =
+                    await checkAdministrator();
+
+
+                if (!user) {
+
+                    return;
+
+                }
+
+
+                loading.classList.add(
+                    "hidden"
+                );
+
+
+                adminPage.classList.remove(
+                    "hidden"
+                );
+
+
+                await loadPendingStaff();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Administration Error:",
+                    error
+                );
+
+
+                loading.innerHTML = `
+
+                    <div class="text-3xl">
+                        ⚠️
+                    </div>
+
+                    <p
+                        class="font-bold
+                              mt-3
+                              text-red-700"
+                    >
+                        Unable to load Staff Administration
+                    </p>
+
+                    <p
+                        class="text-sm
+                              text-slate-500
+                              mt-2"
+                    >
+                        ${
+                            escapeHTML(
+                                error.message ||
+                                "Please try again."
+                            )
+                        }
+                    </p>
+
+                    <button
+                        onclick="window.location.href='staff-dashboard.html'"
+                        class="
+                            mt-5
+                            bg-blue-900
+                            text-white
+                            px-5
+                            py-3
+                            rounded-xl
+                            font-bold
+                        "
+                    >
+                        Return to Dashboard
+                    </button>
+
+                `;
+
+            }
+
+        }
+
+
+        initializeAdministration();
+
+    </script>
+
+</body>
+</html>
