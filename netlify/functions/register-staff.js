@@ -2,12 +2,17 @@
 // COMMUNITY HOSPITAL AFARI
 // SECURE STAFF REGISTRATION FUNCTION
 // ============================================================
+
 const { createClient } = require("@supabase/supabase-js");
+
 exports.handler = async function (event) {
-    // --------------------------------------------------------
-    // Only allow POST requests
-    // --------------------------------------------------------
+
+    // ========================================================
+    // ONLY ALLOW POST REQUESTS
+    // ========================================================
+
     if (event.httpMethod !== "POST") {
+
         return {
             statusCode: 405,
             headers: {
@@ -17,29 +22,55 @@ exports.handler = async function (event) {
                 error: "Method not allowed."
             })
         };
+
     }
+
+
     try {
-        // ----------------------------------------------------
-        // Read request
-        // ----------------------------------------------------
-        const body = JSON.parse(event.body || "{}");
+
+        // ====================================================
+        // READ REQUEST
+        // ====================================================
+
+        const body =
+            JSON.parse(event.body || "{}");
+
+
         const fullName =
             String(body.fullName || "").trim();
+
+
         const staffId =
             String(body.staffId || "").trim();
+
+
         const email =
-            String(body.email || "").trim().toLowerCase();
+            String(body.email || "")
+                .trim()
+                .toLowerCase();
+
+
         const password =
             String(body.password || "");
+
+
         const phone =
             String(body.phone || "").trim();
+
+
         const role =
-            String(body.role || "").trim();
+            String(body.role || "").trim()
+                .toLowerCase();
+
+
         const departmentId =
             String(body.departmentId || "").trim();
-        // ----------------------------------------------------
-        // Validate required fields
-        // ----------------------------------------------------
+
+
+        // ====================================================
+        // VALIDATE REQUIRED FIELDS
+        // ====================================================
+
         if (
             !fullName ||
             !staffId ||
@@ -49,57 +80,86 @@ exports.handler = async function (event) {
             !role ||
             !departmentId
         ) {
+
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "All staff registration fields are required."
+                    error:
+                        "All staff registration fields are required."
                 })
             };
+
         }
-        // ----------------------------------------------------
-        // Password validation
-        // ----------------------------------------------------
+
+
+        // ====================================================
+        // VALIDATE PASSWORD
+        // ====================================================
+
         if (password.length < 8) {
+
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Password must contain at least 8 characters."
+                    error:
+                        "Password must contain at least 8 characters."
                 })
             };
+
         }
-        // ----------------------------------------------------
-        // Supabase environment variables
-        // ----------------------------------------------------
+
+
+        // ====================================================
+        // SUPABASE SERVER CONFIGURATION
+        // ====================================================
+
         const supabaseUrl =
             process.env.SUPABASE_URL;
+
+
         const serviceRoleKey =
             process.env.SUPABASE_SERVICE_ROLE_KEY;
-        if (!supabaseUrl || !serviceRoleKey) {
+
+
+        if (
+            !supabaseUrl ||
+            !serviceRoleKey
+        ) {
+
             console.error(
                 "Missing Supabase server environment variables."
             );
+
+
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Server authentication system is not configured."
+                    error:
+                        "Server authentication system is not configured."
                 })
             };
+
         }
-        // ----------------------------------------------------
-        // SERVER-SIDE SUPABASE CLIENT
+
+
+        // ====================================================
+        // CREATE SERVER-SIDE SUPABASE CLIENT
         //
-        // IMPORTANT:
-        // The service-role key is NEVER sent to the browser.
-        // ----------------------------------------------------
+        // SERVICE ROLE KEY NEVER GOES TO THE BROWSER.
+        // ====================================================
+
         const supabase =
             createClient(
                 supabaseUrl,
@@ -111,217 +171,457 @@ exports.handler = async function (event) {
                     }
                 }
             );
-        // ----------------------------------------------------
-        // Verify department exists and is active
-        // ----------------------------------------------------
+
+
+        // ====================================================
+        // VERIFY DEPARTMENT
+        // ====================================================
+
         const {
             data: department,
             error: departmentError
         } =
             await supabase
                 .from("departments")
-                .select("id, name")
-                .eq("id", departmentId)
-                .eq("is_active", true)
+                .select(
+                    "id, name, is_active"
+                )
+                .eq(
+                    "id",
+                    departmentId
+                )
+                .eq(
+                    "is_active",
+                    true
+                )
                 .maybeSingle();
+
+
         if (departmentError) {
+
             console.error(
                 "Department verification error:",
                 departmentError
             );
+
+
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Unable to verify the selected department."
+                    error:
+                        "Unable to verify the selected department."
                 })
             };
+
         }
+
+
         if (!department) {
+
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "The selected department is not available."
+                    error:
+                        "The selected department is not available."
                 })
             };
+
         }
-        // ----------------------------------------------------
-        // Check whether Staff ID already exists
-        // ----------------------------------------------------
+
+
+        // ====================================================
+        // CHECK STAFF ID
+        // ====================================================
+
         const {
             data: existingStaff,
             error: staffCheckError
         } =
             await supabase
                 .from("staff_profiles")
-                .select("id")
-                .eq("staff_id", staffId)
+                .select(
+                    "id, email, staff_id"
+                )
+                .eq(
+                    "staff_id",
+                    staffId
+                )
                 .maybeSingle();
+
+
         if (staffCheckError) {
+
             console.error(
                 "Staff ID check error:",
                 staffCheckError
             );
+
+
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Unable to verify the Staff ID."
+                    error:
+                        "Unable to verify the Staff ID."
                 })
             };
+
         }
+
+
         if (existingStaff) {
+
             return {
                 statusCode: 409,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "This Staff ID is already registered."
+                    error:
+                        "This Staff ID is already registered."
                 })
             };
+
         }
-        // ----------------------------------------------------
-        // Create Supabase Auth user
-        // ----------------------------------------------------
+
+
+        // ====================================================
+        // CHECK WHETHER EMAIL ALREADY EXISTS
+        // ====================================================
+
+        const {
+            data: existingUsers,
+            error: usersError
+        } =
+            await supabase.auth.admin.listUsers({
+                page: 1,
+                perPage: 1000
+            });
+
+
+        if (usersError) {
+
+            console.error(
+                "Auth user check error:",
+                usersError
+            );
+
+
+            return {
+                statusCode: 500,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "Unable to verify the email address."
+                })
+            };
+
+        }
+
+
+        const emailExists =
+            (existingUsers.users || [])
+                .some(function (user) {
+
+                    return (
+                        String(
+                            user.email || ""
+                        )
+                            .toLowerCase()
+                            === email
+                    );
+
+                });
+
+
+        if (emailExists) {
+
+            return {
+                statusCode: 409,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "This email address is already registered. Please use the Staff Login page."
+                })
+            };
+
+        }
+
+
+        // ====================================================
+        // CREATE AUTH USER
+        // ====================================================
+
         const {
             data: authData,
             error: authError
         } =
             await supabase.auth.admin.createUser({
+
                 email: email,
+
                 password: password,
+
                 email_confirm: false
+
             });
+
+
         if (authError) {
+
             console.error(
                 "Auth user creation error:",
                 authError
             );
-            let message =
-                authError.message ||
-                "Unable to create the staff account.";
-            if (
-                message
-                    .toLowerCase()
-                    .includes("already")
-            ) {
-                message =
-                    "This email address is already registered.";
-            }
+
+
             return {
                 statusCode: 400,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: message
+                    error:
+                        authError.message ||
+                        "Unable to create the staff account."
                 })
             };
+
         }
+
+
         const user =
             authData.user;
+
+
         if (!user) {
+
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Authentication account was not created."
+                    error:
+                        "Authentication account was not created."
                 })
             };
+
         }
-        // ----------------------------------------------------
-        // Create staff profile
+
+
+        // ====================================================
+        // CREATE STAFF PROFILE
         //
-        // is_active = false means:
-        // NEW STAFF CANNOT ACCESS THE STAFF PORTAL YET.
-        // ----------------------------------------------------
+        // NEW STAFF ARE INACTIVE UNTIL ADMIN APPROVES THEM.
+        // ====================================================
+
         const {
+            data: profile,
             error: profileError
         } =
             await supabase
                 .from("staff_profiles")
                 .insert({
-                    id: user.id,
-                    full_name: fullName,
-                    staff_id: staffId,
-                    role: role,
-                    department_id: departmentId,
-                    phone: phone,
-                    is_active: false
-                });
-        // ----------------------------------------------------
-        // If profile creation fails, remove Auth account
-        // so we don't leave an incomplete staff account.
-        // ----------------------------------------------------
+
+                    id:
+                        user.id,
+
+                    full_name:
+                        fullName,
+
+                    staff_id:
+                        staffId,
+
+                    role:
+                        role,
+
+                    department_id:
+                        departmentId,
+
+                    phone:
+                        phone,
+
+                    is_active:
+                        false
+
+                })
+                .select(
+                    "id, full_name, staff_id, role, department_id, phone, is_active"
+                )
+                .single();
+
+
+        // ====================================================
+        // PROFILE CREATION FAILED
+        // ====================================================
+
         if (profileError) {
-    console.error(
-        "Staff profile creation error:",
-        profileError
-    );
 
-    await supabase.auth.admin.deleteUser(
-        user.id
-    );
+            console.error(
+                "Staff profile creation error:",
+                profileError
+            );
 
-    return {
-        statusCode: 500,
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            error:
-                "Staff profile error: " +
-                (profileError.message ||
-                    "Unknown database error")
-        })
-    };
-}
-        // ----------------------------------------------------
+
+            // -----------------------------------------------
+            // Remove the newly-created Auth account.
+            // -----------------------------------------------
+
+            const {
+                error: deleteUserError
+            } =
+                await supabase.auth.admin
+                    .deleteUser(
+                        user.id
+                    );
+
+
+            if (deleteUserError) {
+
+                console.error(
+                    "Auth cleanup error:",
+                    deleteUserError
+                );
+
+            }
+
+
+            // -----------------------------------------------
+            // Handle duplicate UUID specifically.
+            // -----------------------------------------------
+
+            if (
+                profileError.code ===
+                "23505"
+            ) {
+
+                return {
+                    statusCode: 409,
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        error:
+                            "A staff profile with this authentication account already exists. Please use another email address or contact hospital administration."
+                    })
+                };
+
+            }
+
+
+            return {
+                statusCode: 500,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "Unable to create the staff profile. Registration was not completed."
+                })
+            };
+
+        }
+
+
+        // ====================================================
         // SUCCESS
-        // ----------------------------------------------------
+        // ====================================================
+
         return {
             statusCode: 201,
+
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type":
+                    "application/json"
             },
+
             body: JSON.stringify({
+
                 success: true,
+
                 message:
                     "Registration submitted successfully. Your account is pending hospital administration approval.",
+
                 staff: {
-                    id: user.id,
-                    full_name: fullName,
-                    staff_id: staffId,
-                    role: role,
-                    department: department.name,
-                    is_active: false
+
+                    id:
+                        profile.id,
+
+                    full_name:
+                        profile.full_name,
+
+                    staff_id:
+                        profile.staff_id,
+
+                    role:
+                        profile.role,
+
+                    department:
+                        department.name,
+
+                    phone:
+                        profile.phone,
+
+                    is_active:
+                        false
+
                 }
+
             })
+
         };
+
+
     } catch (error) {
+
+        // ====================================================
+        // UNEXPECTED ERROR
+        // ====================================================
+
         console.error(
             "CHA register-staff function error:",
             error
         );
+
+
         return {
             statusCode: 500,
+
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type":
+                    "application/json"
             },
+
             body: JSON.stringify({
                 error:
                     "An unexpected server error occurred. Please try again."
             })
+
         };
+
     }
+
 };
