@@ -330,20 +330,33 @@
         // Dashboard cards
         // ----------------------------------------------------
         document
-            .querySelectorAll(".dashboard-card")
-            .forEach(function(card) {
-                card.addEventListener(
-                    "click",
-                    function() {
-                        const section =
-                            this.dataset.section;
-                        alert(
-                            section +
-                            " module will be connected next."
-                        );
-                    }
+    .querySelectorAll(".dashboard-card")
+    .forEach(function(card) {
+
+        card.addEventListener(
+            "click",
+            function() {
+
+                const section =
+                    this.dataset.section;
+
+                if (section === "appointments") {
+
+                    window.location.href =
+                        "appointments.html";
+
+                    return;
+                }
+
+                alert(
+                    section +
+                    " module will be connected next."
                 );
-            });
+
+            }
+        );
+
+    });
         loadStaffDashboard();
     </script>
     <!-- =====================================================
