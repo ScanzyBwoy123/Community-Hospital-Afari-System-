@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Appointments | CHA Staff Portal</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+<header class="bg-blue-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+
+        <div class="flex items-center justify-between gap-4">
+
+            <div>
+                <div class="font-black text-xl">
+                    COMMUNITY HOSPITAL AFARI
+                </div>
+
+                <div class="text-blue-200 text-sm">
+                    Staff Appointment Management
+                </div>
+            </div>
+
+            <button
+                id="backButton"
+                class="bg-white text-blue-900
+                       px-4 py-2 rounded-xl font-bold"
+            >
+                ← Dashboard
+            </button>
+
+        </div>
+
+    </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- Loading -->
+    <div
+        id="loading"
+        class="bg-white rounded-2xl shadow p-8 text-center"
+    >
+
+        <div class="text-4xl">
+            🔐
+        </div>
+
+        <p class="font-bold mt-3">
+            Loading appointments...
+        </p>
+
+    </div>
+
+    <!-- Main appointment area -->
+    <div
+        id="appointmentArea"
+        class="hidden"
+    >
+
+        <div class="flex flex-col sm:flex-row
+                    sm:items-center sm:justify-between
+                    gap-4 mb-6">
+
+            <div>
+
+                <p class="text-sm text-slate-500">
+                    Staff Portal
+                </p>
+
+                <h1 class="text-3xl font-black">
+                    Appointment Requests
+                </h1>
+
+                <p class="text-slate-500 mt-1">
+                    Review and manage patient appointment requests.
+                </p>
+
+            </div>
+
+            <button
+                id="refreshButton"
+                class="bg-blue-900 text-white
+                       px-5 py-3 rounded-xl
+                       font-bold"
+            >
+                🔄 Refresh
+            </button>
+
+        </div>
+
+        <!-- Message -->
+        <div
+            id="message"
+            class="hidden mb-6 p-4 rounded-xl"
+        ></div>
+
+        <!-- Appointment list -->
+        <div
+            id="appointmentList"
+            class="space-y-5"
+        ></div>
+
+        <!-- Empty state -->
+        <div
+            id="emptyState"
+            class="hidden bg-white rounded-2xl
+                   shadow p-10 text-center"
+        >
+
+            <div class="text-5xl">
+                📅
+            </div>
+
+            <h2 class="font-black text-xl mt-4">
+                No Appointment Requests
+            </h2>
+
+            <p class="text-slate-500 mt-2">
+                There are currently no appointment requests.
+            </p>
+
+        </div>
+
+    </div>
+
+</main>
+
+<script src="js/supabase.js"></script>
+
+<script>
+
+const loading =
+    document.getElementById("loading");
+
+const appointmentArea =
+    document.getElementById("appointmentArea");
+
+const appointmentList =
+    document.getElementById("appointmentList");
+
+const emptyState =
+    document.getElementById("emptyState");
+
+const message =
+    document.getElementById("message");
+
+const refreshButton =
+    document.getElementById("refreshButton");
+
+function showMessage(text, success) {
+
+    message.className =
+        "mb-6 p-4 rounded-xl " +
+        (
+            success
+                ? "bg-green-50 text-green-800"
+                : "bg-red-50 text-red-800"
+        );
+
+    message.textContent = text;
+
+}
+
+function escapeHTML(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+function formatDate(dateValue) {
+
+    if (!dateValue) {
+        return "Not specified";
+    }
+
+    const date =
+        new Date(dateValue + "T00:00:00");
+
+    return date.toLocaleDateString(
+        undefined,
+        {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        }
+    );
+
+}
+
+function formatTime(timeValue) {
+
+    if (!timeValue) {
+        return "Not specified";
+    }
+
+    const parts =
+        timeValue.split(":");
+
+    const hours =
+        Number(parts[0]);
+
+    const minutes =
+        parts[1] || "00";
+
+    const suffix =
+        hours >= 12 ? "PM" : "AM";
+
+    const displayHour =
+        hours % 12 || 12;
+
+    return (
+        displayHour +
+        ":" +
+        minutes +
+        " " +
+        suffix
+    );
+
+}
+
+function statusBadge(status) {
+
+    if (status === "confirmed") {
+
+        return `
+            <span class="inline-block
+                         bg-green-100
+                         text-green-800
+                         px-3 py-1
+                         rounded-full
+                         text-sm font-black">
+                Confirmed
+            </span>
+        `;
+
+    }
+
+    if (status === "cancelled") {
+
+        return `
+            <span class="inline-block
+                         bg-red-100
+                         text-red-800
+                         px-3 py-1
+                         rounded-full
+                         text-sm font-black">
+                Cancelled
+            </span>
+        `;
+
+    }
+
+    return `
+        <span class="inline-block
+                     bg-amber-100
+                     text-amber-800
+                     px-3 py-1
+                     rounded-full
+                     text-sm font-black">
+            Pending
+        </span>
+    `;
+
+}
+
+async function checkStaffAccess() {
+
+    const {
+        data: authData,
+        error: authError
+    } =
+        await window.CHA_SUPABASE.auth.getUser();
+
+    if (
+        authError ||
+        !authData ||
+        !authData.user
+    ) {
+
+        window.location.href =
+            "staff-login.html";
+
+        return false;
+
+    }
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await window.CHA_SUPABASE
+            .from("staff_profiles")
+            .select(`
+                id,
+                full_name,
+                role,
+                is_active
+            `)
+            .eq("id", authData.user.id)
+            .single();
+
+    if (
+        profileError ||
+        !profile ||
+        !profile.is_active
+    ) {
+
+        await window.CHA_SUPABASE.auth.signOut();
+
+        window.location.href =
+            "staff-login.html";
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+async function loadAppointments() {
+
+    appointmentList.innerHTML = "";
+
+    emptyState.classList.add("hidden");
+
+    message.classList.add("hidden");
+
+    refreshButton.disabled = true;
+
+    refreshButton.textContent =
+        "Loading...";
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await window.CHA_SUPABASE
+                .from("appointments")
+                .select(`
+                    id,
+                    appointment_number,
+                    patient_name,
+                    patient_phone,
+                    department_id,
+                    preferred_date,
+                    preferred_time,
+                    reason,
+                    notes,
+                    status,
+                    created_at
+                `)
+                .order(
+                    "preferred_date",
+                    {
+                        ascending: true
+                    }
+                )
+                .order(
+                    "preferred_time",
+                    {
+                        ascending: true
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+
+            emptyState.classList.remove(
+                "hidden"
+            );
+
+            return;
+
+        }
+
+        appointmentList.innerHTML =
+            data.map(function(appointment) {
+
+                const status =
+                    appointment.status ||
+                    "pending";
+
+                return `
+                    <article
+                        class="bg-white rounded-2xl
+                               shadow border
+                               p-5 sm:p-6"
+                    >
+
+                        <div class="flex flex-col
+                                    lg:flex-row
+                                    lg:items-start
+                                    lg:justify-between
+                                    gap-5">
+
+                            <div class="flex-1">
+
+                                <div class="flex
+                                            flex-wrap
+                                            items-center
+                                            gap-3">
+
+                                    <h2
+                                        class="text-xl
+                                               font-black"
+                                    >
+                                        ${escapeHTML(
+                                            appointment.patient_name
+                                        )}
+                                    </h2>
+
+                                    ${statusBadge(status)}
+
+                                </div>
+
+                                <p
+                                    class="text-sm
+                                           text-slate-500
+                                           mt-2"
+                                >
+                                    Reference:
+                                    <strong>
+                                        ${escapeHTML(
+                                            appointment.appointment_number ||
+                                            "Pending reference"
+                                        )}
+                                    </strong>
+                                </p>
+
+                                <div
+                                    class="grid sm:grid-cols-2
+                                           lg:grid-cols-3
+                                           gap-4 mt-5"
+                                >
+
+                                    <div>
+                                        <p
+                                            class="text-xs
+                                                   text-slate-400
+                                                   uppercase
+                                                   font-bold"
+                                        >
+                                            Phone
+                                        </p>
+
+                                        <p
+                                            class="font-bold mt-1"
+                                        >
+                                            ${escapeHTML(
+                                                appointment.patient_phone
+                                            )}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            class="text-xs
+                                                   text-slate-400
+                                                   uppercase
+                                                   font-bold"
+                                        >
+                                            Date
+                                        </p>
+
+                                        <p
+                                            class="font-bold mt-1"
+                                        >
+                                            ${formatDate(
+                                                appointment.preferred_date
+                                            )}
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <p
+                                            class="text-xs
+                                                   text-slate-400
+                                                   uppercase
+                                                   font-bold"
+                                        >
+                                            Time
+                                        </p>
+
+                                        <p
+                                            class="font-bold mt-1"
+                                        >
+                                            ${formatTime(
+                                                appointment.preferred_time
+                                            )}
+                                        </p>
+                                    </div>
+
+                                </div>
+
+                                <div class="mt-5">
+
+                                    <p
+                                        class="text-xs
+                                               text-slate-400
+                                               uppercase
+                                               font-bold"
+                                    >
+                                        Reason for Visit
+                                    </p>
+
+                                    <p
+                                        class="mt-1
+                                               text-slate-700"
+                                    >
+                                        ${escapeHTML(
+                                            appointment.reason ||
+                                            "Not provided"
+                                        )}
+                                    </p>
+
+                                </div>
+
+                                ${
+                                    appointment.notes
+                                    ? `
+                                        <div class="mt-4">
+
+                                            <p
+                                                class="text-xs
+                                                       text-slate-400
+                                                       uppercase
+                                                       font-bold"
+                                            >
+                                                Additional Information
+                                            </p>
+
+                                            <p
+                                                class="mt-1
+                                                       text-slate-700"
+                                            >
+                                                ${escapeHTML(
+                                                    appointment.notes
+                                                )}
+                                            </p>
+
+                                        </div>
+                                    `
+                                    : ""
+                                }
+
+                            </div>
+
+                            <div
+                                class="lg:w-56
+                                       bg-slate-50
+                                       rounded-xl
+                                       p-4"
+                            >
+
+                                <label
+                                    class="text-xs
+                                           font-bold
+                                           text-slate-500
+                                           uppercase"
+                                >
+                                    Update Status
+                                </label>
+
+                                <select
+                                    class="status-select
+                                           w-full mt-2
+                                           border rounded-xl
+                                           px-3 py-3
+                                           bg-white"
+                                    data-id="${escapeHTML(
+                                        appointment.id
+                                    )}"
+                                >
+
+                                    <option
+                                        value="pending"
+                                        ${
+                                            status === "pending"
+                                                ? "selected"
+                                                : ""
+                                        }
+                                    >
+                                        Pending
+                                    </option>
+
+                                    <option
+                                        value="confirmed"
+                                        ${
+                                            status === "confirmed"
+                                                ? "selected"
+                                                : ""
+                                        }
+                                    >
+                                        Confirmed
+                                    </option>
+
+                                    <option
+                                        value="cancelled"
+                                        ${
+                                            status === "cancelled"
+                                                ? "selected"
+                                                : ""
+                                        }
+                                    >
+                                        Cancelled
+                                    </option>
+
+                                </select>
+
+                                <button
+                                    class="update-status-button
+                                           w-full mt-3
+                                           bg-blue-900
+                                           text-white
+                                           py-3
+                                           rounded-xl
+                                           font-bold"
+                                    data-id="${escapeHTML(
+                                        appointment.id
+                                    )}"
+                                    data-status="${escapeHTML(
+                                        status
+                                    )}"
+                                >
+                                    Save Status
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+                `;
+
+            }).join("");
+
+        attachStatusHandlers();
+
+    } catch (error) {
+
+        console.error(
+            "Appointment loading error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Unable to load appointments.",
+            false
+        );
+
+    } finally {
+
+        refreshButton.disabled = false;
+
+        refreshButton.textContent =
+            "🔄 Refresh";
+
+    }
+
+}
+
+function attachStatusHandlers() {
+
+    document
+        .querySelectorAll(
+            ".update-status-button"
+        )
+        .forEach(function(button) {
+
+            button.addEventListener(
+                "click",
+                async function() {
+
+                    const appointmentId =
+                        this.dataset.id;
+
+                    const select =
+                        document.querySelector(
+                            `.status-select[data-id="${appointmentId}"]`
+                        );
+
+                    const newStatus =
+                        select.value;
+
+                    const oldStatus =
+                        this.dataset.status;
+
+                    if (
+                        newStatus === oldStatus
+                    ) {
+
+                        showMessage(
+                            "No status change was made.",
+                            true
+                        );
+
+                        return;
+
+                    }
+
+                    this.disabled = true;
+
+                    this.textContent =
+                        "Saving...";
+
+                    try {
+
+                        const {
+                            error
+                        } =
+                            await window.CHA_SUPABASE
+                                .from("appointments")
+                                .update({
+                                    status:
+                                        newStatus
+                                })
+                                .eq(
+                                    "id",
+                                    appointmentId
+                                );
+
+                        if (error) {
+                            throw error;
+                        }
+
+                        showMessage(
+                            "Appointment status updated successfully.",
+                            true
+                        );
+
+                        await loadAppointments();
+
+                    } catch (error) {
+
+                        console.error(
+                            "Status update error:",
+                            error
+                        );
+
+                        showMessage(
+                            error.message ||
+                            "Unable to update appointment.",
+                            false
+                        );
+
+                        this.disabled = false;
+
+                        this.textContent =
+                            "Save Status";
+
+                    }
+
+                }
+            );
+
+        });
+
+}
+
+refreshButton.addEventListener(
+    "click",
+    loadAppointments
+);
+
+document
+    .getElementById("backButton")
+    .addEventListener(
+        "click",
+        function() {
+
+            window.location.href =
+                "staff-dashboard.html";
+
+        }
+    );
+
+async function initialize() {
+
+    try {
+
+        const allowed =
+            await checkStaffAccess();
+
+        if (!allowed) {
+            return;
+        }
+
+        loading.classList.add(
+            "hidden"
+        );
+
+        appointmentArea.classList.remove(
+            "hidden"
+        );
+
+        await loadAppointments();
+
+    } catch (error) {
+
+        console.error(
+            "Appointments initialization error:",
+            error
+        );
+
+        loading.innerHTML = `
+            <div class="text-3xl">
+                ⚠️
+            </div>
+
+            <p
+                class="font-bold
+                       mt-3
+                       text-red-700"
+            >
+                Unable to load Staff Appointments
+            </p>
+
+            <p
+                class="text-sm
+                       text-slate-500
+                       mt-2"
+            >
+                ${escapeHTML(
+                    error.message ||
+                    "Please try again."
+                )}
+            </p>
+
+            <button
+                onclick="window.location.href='staff-dashboard.html'"
+                class="mt-5
+                       bg-blue-900
+                       text-white
+                       px-5 py-3
+                       rounded-xl
+                       font-bold"
+            >
+                Return to Dashboard
+            </button>
+        `;
+
+    }
+
+}
+
+initialize();
+
+</script>
+
+</body>
+</html>
