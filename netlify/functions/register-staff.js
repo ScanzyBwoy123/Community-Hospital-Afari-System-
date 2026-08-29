@@ -248,8 +248,8 @@ exports.handler = async function (event) {
             await supabase
                 .from("staff_profiles")
                 .select(
-                    "id, email, staff_id"
-                )
+    "id, staff_id"
+)
                 .eq(
                     "staff_id",
                     staffId
