@@ -928,78 +928,92 @@ document
 
         async function approveStaff(staffId) {
 
-            const confirmed =
-                window.confirm(
-                    "Are you sure you want to approve this staff account?"
-                );
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to approve this staff account?"
+        );
 
+    if (!confirmed) {
+        return;
+    }
 
-            if (!confirmed) {
+    showStatus(
+        "Approving staff account...",
+        "info"
+    );
 
-                return;
+    try {
 
-            }
+        const response =
+            await fetch(
+                "/.netlify/functions/approve-staff",
+                {
+                    method: "POST",
 
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-            showStatus(
-                "Approving staff account...",
-                "info"
+                    body: JSON.stringify({
+                        staffProfileId: staffId
+                    })
+                }
             );
 
 
-            try {
+        let result;
 
-                const {
-                    error
-                } =
-                    await window.CHA_SUPABASE
-                        .from("staff_profiles")
-                        .update({
-                            is_active: true
-                        })
-                        .eq(
-                            "id",
-                            staffId
-                        );
+        try {
 
+            result =
+                await response.json();
 
-                if (error) {
+        } catch (jsonError) {
 
-                    throw error;
-
-                }
-
-
-                showStatus(
-                    "Staff account approved successfully.",
-                    "success"
-                );
-
-
-                await loadPendingStaff();
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "CHA Staff Approval Error:",
-                    error
-                );
-
-
-                showStatus(
-                    "Unable to approve staff account: " +
-                    (
-                        error.message ||
-                        "Unknown error"
-                    ),
-                    "error"
-                );
-
-            }
+            throw new Error(
+                "The approval server returned an invalid response."
+            );
 
         }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Unable to approve staff account."
+            );
+
+        }
+
+
+        showStatus(
+            result.message ||
+            "Staff account approved and email confirmed successfully.",
+            "success"
+        );
+
+
+        await loadPendingStaff();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Staff Approval Error:",
+            error
+        );
+
+        showStatus(
+            error.message ||
+            "Unable to approve staff account.",
+            "error"
+        );
+
+    }
+
+}
 
 // ====================================================
 // REJECT STAFF
