@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CHA Clinical Tools</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen bg-slate-100 text-slate-800">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="bg-blue-900 text-white shadow-lg">
+
+        <div class="max-w-6xl mx-auto px-4">
+
+            <div class="min-h-20 flex items-center justify-between gap-4">
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-12 h-12 rounded-full
+                               bg-white text-blue-900
+                               flex items-center justify-center
+                               font-black"
+                    >
+                        CHA
+                    </div>
+
+                    <div>
+
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+
+                        <div class="text-blue-200 text-sm">
+                            Clinical Tools
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="backButton"
+                    type="button"
+                    class="bg-white text-blue-900
+                           hover:bg-blue-50
+                           px-4 py-2
+                           rounded-xl
+                           font-bold"
+                >
+                    ← Dashboard
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <!-- PAGE INTRO -->
+
+        <section
+            class="bg-white rounded-3xl shadow-lg
+                   border border-slate-200
+                   p-6 md:p-8 mb-8"
+        >
+
+            <p class="text-sm font-bold text-blue-700">
+                COMMUNITY HOSPITAL AFARI
+            </p>
+
+            <h1
+                class="text-3xl md:text-4xl
+                       font-black text-slate-900 mt-2"
+            >
+                Clinical Tools
+            </h1>
+
+            <p class="text-slate-500 mt-3 max-w-3xl">
+                General clinical calculation and reference tools
+                designed to support healthcare professionals.
+            </p>
+
+            <div
+                class="mt-5 bg-yellow-50
+                       border border-yellow-200
+                       text-yellow-900
+                       rounded-2xl p-4 text-sm"
+            >
+
+                <strong>Clinical disclaimer:</strong>
+                These tools provide general calculations and reference
+                information only. They do not diagnose disease,
+                replace clinical judgment, or determine treatment.
+                Always interpret results using the patient's clinical
+                condition, history, age, medications and other
+                relevant information.
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             TOOL GRID
+        ====================================================== -->
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+
+            <!-- =================================================
+                 BMI CALCULATOR
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-3xl
+                       shadow-lg border
+                       border-slate-200
+                       p-6"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-12 h-12 rounded-2xl
+                               bg-green-100
+                               flex items-center
+                               justify-center
+                               text-2xl"
+                    >
+                        ⚖️
+                    </div>
+
+                    <div>
+
+                        <h2
+                            class="text-2xl
+                                   font-black
+                                   text-slate-900"
+                        >
+                            BMI Calculator
+                        </h2>
+
+                        <p
+                            class="text-sm
+                                  text-slate-500"
+                        >
+                            Body Mass Index
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Weight -->
+
+                <div class="mt-7">
+
+                    <label
+                        for="weight"
+                        class="block text-sm
+                               font-bold text-slate-700"
+                    >
+                        Weight (kg)
+                    </label>
+
+                    <input
+                        id="weight"
+                        type="number"
+                        min="1"
+                        step="0.1"
+                        placeholder="e.g. 70"
+                        class="w-full mt-2
+                               px-4 py-3
+                               border border-slate-300
+                               rounded-xl
+                               outline-none
+                               focus:ring-2
+                               focus:ring-green-500"
+                    >
+
+                </div>
+
+
+                <!-- Height -->
+
+                <div class="mt-5">
+
+                    <label
+                        for="height"
+                        class="block text-sm
+                               font-bold text-slate-700"
+                    >
+                        Height (cm)
+                    </label>
+
+                    <input
+                        id="height"
+                        type="number"
+                        min="1"
+                        step="0.1"
+                        placeholder="e.g. 170"
+                        class="w-full mt-2
+                               px-4 py-3
+                               border border-slate-300
+                               rounded-xl
+                               outline-none
+                               focus:ring-2
+                               focus:ring-green-500"
+                    >
+
+                </div>
+
+
+                <!-- Calculate -->
+
+                <button
+                    id="calculateBMI"
+                    type="button"
+                    class="w-full mt-6
+                           bg-green-600
+                           hover:bg-green-700
+                           text-white
+                           font-black
+                           py-4
+                           rounded-xl
+                           transition"
+                >
+                    Calculate BMI
+                </button>
+
+
+                <!-- BMI Result -->
+
+                <div
+                    id="bmiResult"
+                    class="hidden mt-6
+                           rounded-2xl
+                           border
+                           p-5"
+                >
+
+                    <p
+                        class="text-sm
+                              font-bold
+                              text-slate-500"
+                    >
+                        BMI Result
+                    </p>
+
+                    <div
+                        id="bmiValue"
+                        class="text-4xl
+                               font-black
+                               mt-1"
+                    >
+                    </div>
+
+                    <div
+                        id="bmiCategory"
+                        class="font-black
+                               text-lg mt-2"
+                    >
+                    </div>
+
+                    <p
+                        id="bmiExplanation"
+                        class="text-sm
+                              mt-3"
+                    >
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 BLOOD PRESSURE CALCULATOR
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-3xl
+                       shadow-lg border
+                       border-slate-200
+                       p-6"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-12 h-12 rounded-2xl
+                               bg-red-100
+                               flex items-center
+                               justify-center
+                               text-2xl"
+                    >
+                        🩺
+                    </div>
+
+                    <div>
+
+                        <h2
+                            class="text-2xl
+                                   font-black
+                                   text-slate-900"
+                        >
+                            Blood Pressure
+                        </h2>
+
+                        <p
+                            class="text-sm
+                                  text-slate-500"
+                        >
+                            General adult BP reference
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Systolic -->
+
+                <div class="mt-7">
+
+                    <label
+                        for="systolic"
+                        class="block text-sm
+                               font-bold text-slate-700"
+                    >
+                        Systolic BP (mmHg)
+                    </label>
+
+                    <input
+                        id="systolic"
+                        type="number"
+                        min="1"
+                        placeholder="e.g. 120"
+                        class="w-full mt-2
+                               px-4 py-3
+                               border border-slate-300
+                               rounded-xl
+                               outline-none
+                               focus:ring-2
+                               focus:ring-red-500"
+                    >
+
+                </div>
+
+
+                <!-- Diastolic -->
+
+                <div class="mt-5">
+
+                    <label
+                        for="diastolic"
+                        class="block text-sm
+                               font-bold text-slate-700"
+                    >
+                        Diastolic BP (mmHg)
+                    </label>
+
+                    <input
+                        id="diastolic"
+                        type="number"
+                        min="1"
+                        placeholder="e.g. 80"
+                        class="w-full mt-2
+                               px-4 py-3
+                               border border-slate-300
+                               rounded-xl
+                               outline-none
+                               focus:ring-2
+                               focus:ring-red-500"
+                    >
+
+                </div>
+
+
+                <!-- Calculate -->
+
+                <button
+                    id="calculateBP"
+                    type="button"
+                    class="w-full mt-6
+                           bg-red-600
+                           hover:bg-red-700
+                           text-white
+                           font-black
+                           py-4
+                           rounded-xl
+                           transition"
+                >
+                    Check Blood Pressure
+                </button>
+
+
+                <!-- BP Result -->
+
+                <div
+                    id="bpResult"
+                    class="hidden mt-6
+                           rounded-2xl
+                           border
+                           p-5"
+                >
+
+                    <p
+                        class="text-sm
+                              font-bold
+                              text-slate-500"
+                    >
+                        Blood Pressure
+                    </p>
+
+                    <div
+                        id="bpValue"
+                        class="text-4xl
+                               font-black
+                               mt-1"
+                    >
+                    </div>
+
+                    <div
+                        id="bpCategory"
+                        class="font-black
+                               text-lg mt-2"
+                    >
+                    </div>
+
+                    <p
+                        id="bpExplanation"
+                        class="text-sm
+                              mt-3"
+                    >
+                    </p>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             REFERENCE INFORMATION
+        ====================================================== -->
+
+        <section
+            class="bg-white rounded-3xl
+                   shadow-lg border
+                   border-slate-200
+                   p-6 mt-8"
+        >
+
+            <h2
+                class="text-2xl
+                       font-black
+                       text-slate-900"
+            >
+                Quick Reference
+            </h2>
+
+            <p
+                class="text-sm
+                      text-slate-500
+                      mt-2"
+            >
+                General adult reference information.
+            </p>
+
+
+            <div
+                class="grid grid-cols-1
+                       md:grid-cols-2
+                       gap-4 mt-6"
+            >
+
+                <div
+                    class="bg-slate-50
+                           rounded-2xl
+                           p-5"
+                >
+
+                    <h3
+                        class="font-black
+                               text-slate-900"
+                    >
+                        BMI Categories
+                    </h3>
+
+                    <ul
+                        class="text-sm
+                               text-slate-600
+                               mt-3 space-y-2"
+                    >
+
+                        <li>
+                            Under 18.5 — Underweight
+                        </li>
+
+                        <li>
+                            18.5–24.9 — Healthy range
+                        </li>
+
+                        <li>
+                            25.0–29.9 — Overweight
+                        </li>
+
+                        <li>
+                            30.0 or higher — Obesity
+                        </li>
+
+                    </ul>
+
+                </div>
+
+
+                <div
+                    class="bg-slate-50
+                           rounded-2xl
+                           p-5"
+                >
+
+                    <h3
+                        class="font-black
+                               text-slate-900"
+                    >
+                        Adult Blood Pressure
+                    </h3>
+
+                    <ul
+                        class="text-sm
+                               text-slate-600
+                               mt-3 space-y-2"
+                    >
+
+                        <li>
+                            Below 120/80 — Normal
+                        </li>
+
+                        <li>
+                            120–129 and below 80 — Elevated
+                        </li>
+
+                        <li>
+                            130–139 or 80–89 — High BP, stage 1
+                        </li>
+
+                        <li>
+                            140 or higher or 90 or higher — High BP, stage 2
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // ====================================================
+        // BMI CALCULATOR
+        // ====================================================
+
+        document
+            .getElementById("calculateBMI")
+            .addEventListener(
+                "click",
+                function () {
+
+                    const weight =
+                        Number(
+                            document
+                                .getElementById("weight")
+                                .value
+                        );
+
+                    const heightCm =
+                        Number(
+                            document
+                                .getElementById("height")
+                                .value
+                        );
+
+
+                    if (
+                        !weight ||
+                        !heightCm ||
+                        weight <= 0 ||
+                        heightCm <= 0
+                    ) {
+
+                        alert(
+                            "Please enter a valid weight and height."
+                        );
+
+                        return;
+
+                    }
+
+
+                    const heightM =
+                        heightCm / 100;
+
+
+                    const bmi =
+                        weight /
+                        (
+                            heightM *
+                            heightM
+                        );
+
+
+                    let category;
+                    let explanation;
+
+
+                    if (bmi < 18.5) {
+
+                        category =
+                            "Underweight";
+
+                        explanation =
+                            "This BMI is below the usual adult healthy range.";
+
+                    }
+
+                    else if (bmi < 25) {
+
+                        category =
+                            "Healthy range";
+
+                        explanation =
+                            "This BMI falls within the usual adult healthy range.";
+
+                    }
+
+                    else if (bmi < 30) {
+
+                        category =
+                            "Overweight";
+
+                        explanation =
+                            "This BMI is above the usual adult healthy range.";
+
+                    }
+
+                    else {
+
+                        category =
+                            "Obesity";
+
+                        explanation =
+                            "This BMI is within the obesity range for adults.";
+
+                    }
+
+
+                    document
+                        .getElementById("bmiValue")
+                        .textContent =
+                        bmi.toFixed(1);
+
+
+                    document
+                        .getElementById("bmiCategory")
+                        .textContent =
+                        category;
+
+
+                    document
+                        .getElementById("bmiExplanation")
+                        .textContent =
+                        explanation;
+
+
+                    document
+                        .getElementById("bmiResult")
+                        .classList
+                        .remove("hidden");
+
+                }
+            );
+
+
+
+        // ====================================================
+        // BLOOD PRESSURE
+        // ====================================================
+
+        document
+            .getElementById("calculateBP")
+            .addEventListener(
+                "click",
+                function () {
+
+                    const systolic =
+                        Number(
+                            document
+                                .getElementById("systolic")
+                                .value
+                        );
+
+                    const diastolic =
+                        Number(
+                            document
+                                .getElementById("diastolic")
+                                .value
+                        );
+
+
+                    if (
+                        !systolic ||
+                        !diastolic ||
+                        systolic <= 0 ||
+                        diastolic <= 0
+                    ) {
+
+                        alert(
+                            "Please enter valid systolic and diastolic values."
+                        );
+
+                        return;
+
+                    }
+
+
+                    let category;
+                    let explanation;
+
+
+                    if (
+                        systolic >= 180 ||
+                        diastolic >= 120
+                    ) {
+
+                        category =
+                            "Severely elevated";
+
+                        explanation =
+                            "This reading is severely elevated and requires prompt clinical assessment, especially if symptoms are present.";
+
+                    }
+
+                    else if (
+                        systolic >= 140 ||
+                        diastolic >= 90
+                    ) {
+
+                        category =
+                            "High BP — Stage 2";
+
+                        explanation =
+                            "This reading falls within the general adult Stage 2 high blood pressure range.";
+
+                    }
+
+                    else if (
+                        systolic >= 130 ||
+                        diastolic >= 80
+                    ) {
+
+                        category =
+                            "High BP — Stage 1";
+
+                        explanation =
+                            "This reading falls within the general adult Stage 1 high blood pressure range.";
+
+                    }
+
+                    else if (
+                        systolic >= 120 &&
+                        systolic <= 129 &&
+                        diastolic < 80
+                    ) {
+
+                        category =
+                            "Elevated";
+
+                        explanation =
+                            "The systolic pressure is elevated while the diastolic pressure is below 80 mmHg.";
+
+                    }
+
+                    else {
+
+                        category =
+                            "Normal";
+
+                        explanation =
+                            "This reading is within the general adult normal blood pressure range.";
+
+                    }
+
+
+                    document
+                        .getElementById("bpValue")
+                        .textContent =
+                        systolic +
+                        " / " +
+                        diastolic +
+                        " mmHg";
+
+
+                    document
+                        .getElementById("bpCategory")
+                        .textContent =
+                        category;
+
+
+                    document
+                        .getElementById("bpExplanation")
+                        .textContent =
+                        explanation;
+
+
+                    document
+                        .getElementById("bpResult")
+                        .classList
+                        .remove("hidden");
+
+                }
+            );
+
+
+
+        // ====================================================
+        // BACK TO DASHBOARD
+        // ====================================================
+
+        document
+            .getElementById("backButton")
+            .addEventListener(
+                "click",
+                function () {
+
+                    window.location.href =
+                        "staff-dashboard.html";
+
+                }
+            );
+
+    </script>
+
+</body>
+</html>
