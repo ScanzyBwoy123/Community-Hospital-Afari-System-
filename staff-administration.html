@@ -150,7 +150,17 @@
                 </div>
 
             </section>
-
+<button
+    id="deleteTestAccountsButton"
+    class="bg-red-600
+           hover:bg-red-700
+           text-white
+           px-5 py-3
+           rounded-xl
+           font-bold"
+>
+    🗑️ Delete Test Accounts
+</button>
 
 
             <!-- =================================================
@@ -1135,7 +1145,165 @@ async function rejectStaff(staffId) {
             }
         );
 
+// ====================================================
+// DELETE TEST ACCOUNTS
+// ====================================================
 
+const deleteTestAccountsButton =
+    document.getElementById(
+        "deleteTestAccountsButton"
+    );
+
+
+deleteTestAccountsButton.addEventListener(
+    "click",
+    async function () {
+
+        const confirmed =
+            window.confirm(
+                "WARNING\n\n" +
+                "This will permanently delete these TEST accounts:\n\n" +
+                "• cha.test.staff2026@gmail.com\n" +
+                "• herokujunior1@gmail.com\n" +
+                "• ddangote701@gmail.com\n\n" +
+                "Your admin account will NOT be deleted.\n\n" +
+                "Continue?"
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        deleteTestAccountsButton.disabled =
+            true;
+
+        deleteTestAccountsButton.textContent =
+            "Deleting...";
+
+
+        showStatus(
+            "Deleting test accounts...",
+            "info"
+        );
+
+
+        try {
+
+            const {
+                data: {
+                    session
+                }
+            } =
+                await window.CHA_SUPABASE.auth.getSession();
+
+
+            if (!session) {
+
+                throw new Error(
+                    "Your administrator session has expired. Please log in again."
+                );
+
+            }
+
+
+            const response =
+                await fetch(
+                    "/.netlify/functions/delete-test-staff",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                "Bearer " +
+                                session.access_token
+                        },
+
+                        body: JSON.stringify({})
+                    }
+                );
+
+
+            const result =
+                await response.json();
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    result.error ||
+                    "Unable to delete test accounts."
+                );
+
+            }
+
+
+            showStatus(
+                "Test account cleanup completed successfully.",
+                "success"
+            );
+
+
+            console.log(
+                "Deleted test accounts:",
+                result.deleted
+            );
+
+
+            if (
+                result.failed &&
+                result.failed.length > 0
+            ) {
+
+                console.warn(
+                    "Accounts that could not be deleted:",
+                    result.failed
+                );
+
+                showStatus(
+                    "Cleanup completed, but some test accounts could not be deleted. Check the browser console.",
+                    "error"
+                );
+
+            }
+
+
+            await loadPendingStaff();
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "CHA Test Account Cleanup Error:",
+                error
+            );
+
+
+            showStatus(
+                error.message ||
+                "Unable to delete test accounts.",
+                "error"
+            );
+
+        }
+
+        finally {
+
+            deleteTestAccountsButton.disabled =
+                false;
+
+            deleteTestAccountsButton.textContent =
+                "🗑️ Delete Test Accounts";
+
+        }
+
+    }
+);
 
         // ====================================================
         // BACK TO DASHBOARD
