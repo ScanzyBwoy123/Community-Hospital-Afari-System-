@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CHA AI Assistant</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        .message {
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+
+            30% {
+                opacity: 1;
+                transform: translateY(-3px);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-900">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
+
+        <div class="max-w-5xl mx-auto px-4 py-4">
+
+            <div class="flex items-center justify-between gap-4">
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-11 h-11 rounded-2xl
+                               bg-blue-600 text-white
+                               flex items-center justify-center
+                               text-xl shadow"
+                    >
+                        🤖
+                    </div>
+
+                    <div>
+
+                        <h1 class="font-black text-lg">
+                            CHA AI Assistant
+                        </h1>
+
+                        <p class="text-xs text-slate-500">
+                            Community Hospital Afari
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="clearChatButton"
+                    type="button"
+                    class="px-4 py-2 rounded-xl
+                           bg-slate-100 hover:bg-slate-200
+                           text-sm font-bold
+                           transition"
+                >
+                    Clear chat
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="max-w-5xl mx-auto px-4 py-6">
+
+        <!-- SAFETY NOTICE -->
+
+        <div
+            class="mb-5 rounded-2xl border
+                   border-amber-200 bg-amber-50
+                   p-4"
+        >
+
+            <div class="flex gap-3">
+
+                <div class="text-xl">
+                    ⚠️
+                </div>
+
+                <div>
+
+                    <h2 class="font-black text-sm">
+                        Clinical safety notice
+                    </h2>
+
+                    <p class="text-sm text-amber-900 mt-1">
+                        This AI provides general health information
+                        and support. It does not replace a qualified
+                        healthcare professional and should not be used
+                        as the sole basis for diagnosis or treatment.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CHAT CARD
+        ================================================== -->
+
+        <section
+            class="bg-white rounded-3xl shadow-sm
+                   border border-slate-200
+                   overflow-hidden"
+        >
+
+            <!-- CHAT AREA -->
+
+            <div
+                id="chatMessages"
+                class="h-[55vh] min-h-[420px]
+                       overflow-y-auto
+                       p-4 sm:p-6
+                       space-y-4"
+            >
+
+                <!-- WELCOME MESSAGE -->
+
+                <div class="flex justify-start">
+
+                    <div
+                        class="max-w-[85%] sm:max-w-[75%]
+                               rounded-2xl rounded-tl-md
+                               bg-slate-100
+                               px-4 py-3"
+                    >
+
+                        <div class="text-xs font-black text-blue-600 mb-1">
+                            CHA AI Assistant
+                        </div>
+
+                        <div class="message text-sm leading-6">
+Hello! I am the Community Hospital Afari AI Assistant.
+
+You can ask me general health-information questions, medical terminology questions, nursing-related questions, or questions about common healthcare concepts.
+
+How can I help you today?
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TYPING INDICATOR
+            ================================================== -->
+
+            <div
+                id="typingIndicator"
+                class="hidden px-5 pb-3"
+            >
+
+                <div
+                    class="inline-flex items-center gap-1
+                           rounded-2xl rounded-tl-md
+                           bg-slate-100 px-4 py-3"
+                >
+
+                    <span
+                        class="typing-dot
+                               w-2 h-2 rounded-full
+                               bg-slate-500"
+                    ></span>
+
+                    <span
+                        class="typing-dot
+                               w-2 h-2 rounded-full
+                               bg-slate-500"
+                    ></span>
+
+                    <span
+                        class="typing-dot
+                               w-2 h-2 rounded-full
+                               bg-slate-500"
+                    ></span>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 INPUT AREA
+            ================================================== -->
+
+            <div
+                class="border-t border-slate-200
+                       bg-slate-50 p-4"
+            >
+
+                <form
+                    id="chatForm"
+                    class="flex flex-col sm:flex-row gap-3"
+                >
+
+                    <textarea
+                        id="messageInput"
+                        rows="2"
+                        maxlength="4000"
+                        placeholder="Ask the AI Assistant a question..."
+                        class="flex-1 resize-none
+                               rounded-2xl
+                               border border-slate-300
+                               bg-white
+                               px-4 py-3
+                               text-sm
+                               outline-none
+                               focus:ring-2
+                               focus:ring-blue-500"
+                    ></textarea>
+
+
+                    <button
+                        id="sendButton"
+                        type="submit"
+                        class="sm:self-stretch
+                               px-6 py-3
+                               rounded-2xl
+                               bg-blue-600
+                               hover:bg-blue-700
+                               disabled:bg-slate-400
+                               text-white
+                               font-black
+                               transition"
+                    >
+                        Send
+                    </button>
+
+                </form>
+
+
+                <p
+                    class="text-[11px]
+                           text-slate-500
+                           mt-2"
+                >
+                    Do not enter unnecessary patient-identifying
+                    information into the AI chat.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // -----------------------------------------------------
+        // ELEMENTS
+        // -----------------------------------------------------
+
+        const chatMessages =
+            document.getElementById(
+                "chatMessages"
+            );
+
+        const chatForm =
+            document.getElementById(
+                "chatForm"
+            );
+
+        const messageInput =
+            document.getElementById(
+                "messageInput"
+            );
+
+        const sendButton =
+            document.getElementById(
+                "sendButton"
+            );
+
+        const typingIndicator =
+            document.getElementById(
+                "typingIndicator"
+            );
+
+        const clearChatButton =
+            document.getElementById(
+                "clearChatButton"
+            );
+
+
+        // -----------------------------------------------------
+        // ADD MESSAGE
+        // -----------------------------------------------------
+
+        function addMessage(
+            sender,
+            message,
+            isUser
+        ) {
+
+            const wrapper =
+                document.createElement(
+                    "div"
+                );
+
+            wrapper.className =
+                isUser
+                    ? "flex justify-end"
+                    : "flex justify-start";
+
+
+            const bubble =
+                document.createElement(
+                    "div"
+                );
+
+            bubble.className =
+                isUser
+                    ? "max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-tr-md bg-blue-600 text-white px-4 py-3"
+                    : "max-w-[85%] sm:max-w-[75%] rounded-2xl rounded-tl-md bg-slate-100 text-slate-900 px-4 py-3";
+
+
+            const senderElement =
+                document.createElement(
+                    "div"
+                );
+
+            senderElement.className =
+                isUser
+                    ? "text-xs font-black text-blue-100 mb-1"
+                    : "text-xs font-black text-blue-600 mb-1";
+
+
+            senderElement.textContent =
+                sender;
+
+
+            const messageElement =
+                document.createElement(
+                    "div"
+                );
+
+            messageElement.className =
+                "message text-sm leading-6";
+
+            messageElement.textContent =
+                message;
+
+
+            bubble.appendChild(
+                senderElement
+            );
+
+            bubble.appendChild(
+                messageElement
+            );
+
+            wrapper.appendChild(
+                bubble
+            );
+
+            chatMessages.appendChild(
+                wrapper
+            );
+
+
+            scrollToBottom();
+        }
+
+
+        // -----------------------------------------------------
+        // SCROLL
+        // -----------------------------------------------------
+
+        function scrollToBottom() {
+
+            chatMessages.scrollTop =
+                chatMessages.scrollHeight;
+
+        }
+
+
+        // -----------------------------------------------------
+        // TYPING
+        // -----------------------------------------------------
+
+        function setTyping(
+            visible
+        ) {
+
+            if (visible) {
+
+                typingIndicator.classList.remove(
+                    "hidden"
+                );
+
+            } else {
+
+                typingIndicator.classList.add(
+                    "hidden"
+                );
+
+            }
+
+            scrollToBottom();
+        }
+
+
+        // -----------------------------------------------------
+        // SEND TO GEMINI FUNCTION
+        // -----------------------------------------------------
+
+        async function askAI(
+            message
+        ) {
+
+            const response =
+                await fetch(
+                    "/.netlify/functions/ai-assistant",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            message
+                        })
+                    }
+                );
+
+
+            let data;
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (error) {
+
+                throw new Error(
+                    "The AI service returned an invalid response."
+                );
+
+            }
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "The AI service could not process your request."
+                );
+
+            }
+
+
+            return data.answer;
+
+        }
+
+
+        // -----------------------------------------------------
+        // FORM SUBMISSION
+        // -----------------------------------------------------
+
+        chatForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const message =
+                    messageInput.value.trim();
+
+
+                if (!message) {
+
+                    return;
+
+                }
+
+
+                if (
+                    message.length > 4000
+                ) {
+
+                    addMessage(
+                        "CHA AI Assistant",
+                        "Please keep your question below 4,000 characters.",
+                        false
+                    );
+
+                    return;
+
+                }
+
+
+                // Show user message
+
+                addMessage(
+                    "You",
+                    message,
+                    true
+                );
+
+
+                messageInput.value =
+                    "";
+
+
+                sendButton.disabled =
+                    true;
+
+                messageInput.disabled =
+                    true;
+
+
+                setTyping(
+                    true
+                );
+
+
+                try {
+
+                    const answer =
+                        await askAI(
+                            message
+                        );
+
+
+                    setTyping(
+                        false
+                    );
+
+
+                    addMessage(
+                        "CHA AI Assistant",
+                        answer,
+                        false
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "AI Assistant error:",
+                        error
+                    );
+
+
+                    setTyping(
+                        false
+                    );
+
+
+                    addMessage(
+                        "CHA AI Assistant",
+                        error.message ||
+                        "Sorry, I could not connect to the AI service. Please try again.",
+                        false
+                    );
+
+                }
+
+                finally {
+
+                    sendButton.disabled =
+                        false;
+
+                    messageInput.disabled =
+                        false;
+
+                    messageInput.focus();
+
+                }
+
+            }
+        );
+
+
+        // -----------------------------------------------------
+        // ENTER TO SEND
+        // -----------------------------------------------------
+
+        messageInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ) {
+
+                    event.preventDefault();
+
+                    chatForm.requestSubmit();
+
+                }
+
+            }
+        );
+
+
+        // -----------------------------------------------------
+        // CLEAR CHAT
+        // -----------------------------------------------------
+
+        clearChatButton.addEventListener(
+            "click",
+            function () {
+
+                const confirmed =
+                    window.confirm(
+                        "Clear the conversation?"
+                    );
+
+
+                if (!confirmed) {
+
+                    return;
+
+                }
+
+
+                chatMessages.innerHTML = `
+
+                    <div class="flex justify-start">
+
+                        <div
+                            class="max-w-[85%] sm:max-w-[75%]
+                                   rounded-2xl rounded-tl-md
+                                   bg-slate-100
+                                   px-4 py-3"
+                        >
+
+                            <div
+                                class="text-xs font-black
+                                       text-blue-600 mb-1"
+                            >
+                                CHA AI Assistant
+                            </div>
+
+                            <div
+                                class="message
+                                       text-sm leading-6"
+                            >
+Hello! How can I help you today?
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+                messageInput.focus();
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
