@@ -1,6 +1,7 @@
+
 // ============================================================
 // COMMUNITY HOSPITAL AFARI
-// DELETE TEST STAFF ACCOUNTS
+// SECURE TEST STAFF CLEANUP
 // ============================================================
 
 const { createClient } = require("@supabase/supabase-js");
@@ -8,7 +9,7 @@ const { createClient } = require("@supabase/supabase-js");
 exports.handler = async function (event) {
 
     // --------------------------------------------------------
-    // ONLY ALLOW POST
+    // ONLY POST REQUESTS
     // --------------------------------------------------------
 
     if (event.httpMethod !== "POST") {
@@ -36,10 +37,14 @@ exports.handler = async function (event) {
     const serviceRoleKey =
         process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+    const anonKey =
+        process.env.SUPABASE_ANON_KEY;
+
 
     if (
         !supabaseUrl ||
-        !serviceRoleKey
+        !serviceRoleKey ||
+        !anonKey
     ) {
 
         return {
@@ -57,7 +62,86 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // ADMIN SUPABASE CLIENT
+    // GET AUTHORIZATION HEADER
+    // --------------------------------------------------------
+
+    const authorization =
+        event.headers?.authorization ||
+        event.headers?.Authorization;
+
+
+    if (!authorization) {
+
+        return {
+            statusCode: 401,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                error:
+                    "Authentication required."
+            })
+        };
+
+    }
+
+
+    // --------------------------------------------------------
+    // CREATE USER CLIENT
+    // --------------------------------------------------------
+
+    const supabaseUser =
+        createClient(
+            supabaseUrl,
+            anonKey,
+            {
+                global: {
+                    headers: {
+                        Authorization:
+                            authorization
+                    }
+                }
+            }
+        );
+
+
+    // --------------------------------------------------------
+    // VERIFY LOGGED-IN USER
+    // --------------------------------------------------------
+
+    const {
+        data: authData,
+        error: authError
+    } =
+        await supabaseUser.auth.getUser();
+
+
+    if (
+        authError ||
+        !authData ||
+        !authData.user
+    ) {
+
+        return {
+            statusCode: 401,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                error:
+                    "Invalid or expired authentication session."
+            })
+        };
+
+    }
+
+
+    const currentUser =
+        authData.user;
+
+
+    // --------------------------------------------------------
+    // CREATE ADMIN CLIENT
     // --------------------------------------------------------
 
     const supabaseAdmin =
@@ -71,6 +155,70 @@ exports.handler = async function (event) {
                 }
             }
         );
+
+
+    // --------------------------------------------------------
+    // VERIFY ADMIN PROFILE
+    // --------------------------------------------------------
+
+    const {
+        data: adminProfile,
+        error: adminProfileError
+    } =
+        await supabaseAdmin
+            .from("staff_profiles")
+            .select(`
+                id,
+                role,
+                is_active
+            `)
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .single();
+
+
+    if (
+        adminProfileError ||
+        !adminProfile
+    ) {
+
+        return {
+            statusCode: 403,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                error:
+                    "Administrator profile not found."
+            })
+        };
+
+    }
+
+
+    // --------------------------------------------------------
+    // CHECK ADMIN + ACTIVE
+    // --------------------------------------------------------
+
+    if (
+        adminProfile.role !== "admin" ||
+        adminProfile.is_active !== true
+    ) {
+
+        return {
+            statusCode: 403,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                error:
+                    "Administrator permission required."
+            })
+        };
+
+    }
 
 
     // --------------------------------------------------------
@@ -89,10 +237,11 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // FIND AND DELETE TEST AUTH USERS
+    // FIND AUTH USERS
     // --------------------------------------------------------
 
     let page = 1;
+
 
     while (true) {
 
@@ -110,7 +259,7 @@ exports.handler = async function (event) {
         if (error) {
 
             console.error(
-                "Unable to list Auth users:",
+                "CHA cleanup listUsers error:",
                 error
             );
 
@@ -133,8 +282,12 @@ exports.handler = async function (event) {
             data?.users || [];
 
 
-        if (users.length === 0) {
+        if (
+            users.length === 0
+        ) {
+
             break;
+
         }
 
 
@@ -147,6 +300,10 @@ exports.handler = async function (event) {
                     user.email || ""
                 ).toLowerCase();
 
+
+            // ------------------------------------------------
+            // ONLY DELETE OUR THREE TEST EMAILS
+            // ------------------------------------------------
 
             if (
                 testEmails.includes(email)
@@ -165,7 +322,7 @@ exports.handler = async function (event) {
                 if (deleteError) {
 
                     console.error(
-                        "Failed to delete test user:",
+                        "CHA cleanup delete error:",
                         email,
                         deleteError
                     );
@@ -195,7 +352,9 @@ exports.handler = async function (event) {
         if (
             users.length < 100
         ) {
+
             break;
+
         }
 
 
@@ -205,26 +364,7 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // CLEAN UP ANY REMAINING STAFF PROFILES
-    // --------------------------------------------------------
-
-    for (
-        const email of testEmails
-    ) {
-
-        /*
-         * Auth deletion normally removes the linked profile
-         * automatically if the database has the appropriate
-         * foreign-key cascade.
-         *
-         * We intentionally do not delete arbitrary profiles here.
-         */
-
-    }
-
-
-    // --------------------------------------------------------
-    // SUCCESS
+    // RESPONSE
     // --------------------------------------------------------
 
     return {
@@ -234,6 +374,8 @@ exports.handler = async function (event) {
         },
         body: JSON.stringify({
             success: true,
+            message:
+                "Test staff cleanup completed.",
             deleted,
             failed
         })
