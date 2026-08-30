@@ -412,7 +412,82 @@
 
             </section>
 
+            <!-- =================================================
+                 SENT MESSAGES
+            ================================================== -->
 
+            <section
+                class="bg-white rounded-2xl shadow overflow-hidden mt-8"
+            >
+
+                <div
+                    class="p-6 border-b border-slate-200"
+                >
+
+                    <div
+                        class="flex flex-col
+                               sm:flex-row
+                               sm:items-center
+                               sm:justify-between
+                               gap-3"
+                    >
+
+                        <div>
+
+                            <h2 class="text-xl font-black">
+                                📤 Sent Messages
+                            </h2>
+
+                            <p class="text-sm text-slate-500 mt-1">
+                                Messages you have sent to other departments.
+                            </p>
+
+                        </div>
+
+                        <span
+                            id="sentMessageCount"
+                            class="inline-flex
+                                   items-center
+                                   justify-center
+                                   bg-green-100
+                                   text-green-800
+                                   px-3 py-1
+                                   rounded-full
+                                   text-sm
+                                   font-black"
+                        >
+                            0 Sent
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="sentEmptyState"
+                    class="hidden p-10 text-center"
+                >
+
+                    <div class="text-5xl">
+                        📭
+                    </div>
+
+                    <h3 class="font-black text-xl mt-4">
+                        No Sent Messages
+                    </h3>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        You have not sent any messages yet.
+                    </p>
+
+                </div>
+
+                <div
+                    id="sentMessagesContainer"
+                    class="hidden p-6 space-y-4"
+                ></div>
+
+            </section>
 
             <!-- =================================================
                  SECURITY NOTICE
@@ -511,7 +586,14 @@
 
         const messagesContainer =
             document.getElementById("messagesContainer");
+const sentMessageCount =
+    document.getElementById("sentMessageCount");
 
+const sentEmptyState =
+    document.getElementById("sentEmptyState");
+
+const sentMessagesContainer =
+    document.getElementById("sentMessagesContainer");
         const refreshButton =
             document.getElementById("refreshButton");
 
@@ -1199,8 +1281,303 @@
             }
 
         }
+// ====================================================
+// LOAD SENT MESSAGES
+// ====================================================
 
+async function loadSentMessages() {
 
+    sentMessagesContainer.innerHTML = "";
+
+    sentMessagesContainer.classList.add(
+        "hidden"
+    );
+
+    sentEmptyState.classList.add(
+        "hidden"
+    );
+
+    try {
+
+        if (!currentUser) {
+            return;
+        }
+
+        const {
+            data,
+            error
+        } =
+            await window.CHA_SUPABASE
+                .from("department_messages")
+                .select(`
+                    id,
+                    sender_id,
+                    recipient_department_id,
+                    subject,
+                    message,
+                    created_at,
+                    sender_deleted,
+                    recipient_department:departments!department_messages_recipient_department_id_fkey (
+                        name
+                    )
+                `)
+                .eq(
+                    "sender_id",
+                    currentUser.id
+                )
+                .eq(
+                    "sender_deleted",
+                    false
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        const messages =
+            data || [];
+
+        sentMessageCount.textContent =
+            messages.length +
+            (
+                messages.length === 1
+                    ? " Sent"
+                    : " Sent"
+            );
+
+        if (
+            messages.length === 0
+        ) {
+
+            sentEmptyState.classList.remove(
+                "hidden"
+            );
+
+            return;
+
+        }
+
+        messages.forEach(
+            function(item) {
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
+
+                card.className =
+                    "message-card border border-green-200 bg-white rounded-2xl p-5";
+
+                const recipientDepartment =
+                    item.recipient_department?.name ||
+                    "Unknown department";
+
+                card.innerHTML = `
+
+                    <div class="flex flex-col
+                                sm:flex-row
+                                sm:items-start
+                                sm:justify-between
+                                gap-3">
+
+                        <div>
+
+                            <h3
+                                class="font-black
+                                       text-lg
+                                       text-slate-900"
+                            >
+                                ${escapeHTML(
+                                    item.subject
+                                )}
+                            </h3>
+
+                            <p
+                                class="text-sm
+                                      text-slate-500
+                                      mt-1"
+                            >
+                                To:
+                                ${escapeHTML(
+                                    recipientDepartment
+                                )}
+                            </p>
+
+                        </div>
+
+                        <span
+                            class="text-xs
+                                   text-slate-400"
+                        >
+                            ${escapeHTML(
+                                formatDate(
+                                    item.created_at
+                                )
+                            )}
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="mt-4
+                               bg-slate-50
+                               rounded-xl
+                               p-4
+                               text-sm
+                               whitespace-pre-wrap"
+                    >
+                        ${escapeHTML(
+                            item.message
+                        )}
+                    </div>
+
+                    <div class="mt-4">
+
+                        <button
+                            class="delete-sent-button
+                                   bg-red-600
+                                   hover:bg-red-700
+                                   text-white
+                                   px-4 py-2
+                                   rounded-lg
+                                   font-bold
+                                   text-sm"
+                            data-id="${escapeHTML(
+                                item.id
+                            )}"
+                        >
+                            🗑️ Delete from Sent
+                        </button>
+
+                    </div>
+
+                `;
+
+                sentMessagesContainer.appendChild(
+                    card
+                );
+
+            }
+        );
+
+        sentMessagesContainer.classList.remove(
+            "hidden"
+        );
+
+        document
+            .querySelectorAll(
+                ".delete-sent-button"
+            )
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            deleteSentMessage(
+                                this.dataset.id
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Sent Messages Error:",
+            error
+        );
+
+        showInboxStatus(
+            "Unable to load sent messages: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }
+
+}
+// ====================================================
+// DELETE SENT MESSAGE
+// ====================================================
+
+async function deleteSentMessage(messageId) {
+
+    const confirmed =
+        window.confirm(
+            "Delete this message from your Sent Messages?\n\nThe recipient will still be able to see their copy."
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } =
+            await window.CHA_SUPABASE
+                .from("department_messages")
+                .update({
+                    sender_deleted: true
+                })
+                .eq(
+                    "id",
+                    messageId
+                )
+                .eq(
+                    "sender_id",
+                    currentUser.id
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        showInboxStatus(
+            "Message removed from your Sent Messages.",
+            "success"
+        );
+
+        await loadSentMessages();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Delete Sent Message Error:",
+            error
+        );
+
+        showInboxStatus(
+            "Unable to delete sent message: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }
+
+}
 
         // ====================================================
         // MARK MESSAGE READ
@@ -1236,6 +1613,7 @@
 
 
                 await loadInbox();
+await loadSentMessages();
 
             }
 
@@ -1459,6 +1837,7 @@
                 try {
 
                     await loadInbox();
+await loadSentMessages();
 
                 }
 
