@@ -325,7 +325,236 @@
 
             </section>
 
+<!-- =================================================
+     STAFF ACCESS MANAGEMENT
+================================================== -->
 
+<section
+    class="mt-8 bg-white rounded-2xl shadow overflow-hidden"
+>
+
+    <div class="p-6 border-b border-slate-200">
+
+        <div class="flex flex-col sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                    gap-3">
+
+            <div>
+
+                <h2 class="text-xl font-black">
+                    Staff Access Management
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Activate or deactivate access for approved
+                    hospital staff.
+                </p>
+
+            </div>
+
+            <span
+                id="activeStaffCount"
+                class="inline-flex items-center justify-center
+                       bg-green-100 text-green-800
+                       px-3 py-1 rounded-full
+                       text-sm font-black"
+            >
+                0 Active
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="staffAccessStatus"
+        class="hidden m-6 p-4 rounded-xl text-sm"
+    ></div>
+
+
+    <div
+        id="staffAccessEmpty"
+        class="hidden p-10 text-center"
+    >
+
+        <div class="text-5xl">
+            👥
+        </div>
+
+        <h3 class="font-black text-xl mt-4">
+            No Approved Staff
+        </h3>
+
+        <p class="text-slate-500 text-sm mt-2">
+            There are currently no approved staff accounts.
+        </p>
+
+    </div>
+
+
+    <div
+        id="staffAccessTableContainer"
+        class="hidden overflow-x-auto"
+    >
+
+        <table class="w-full text-sm">
+
+            <thead class="bg-slate-50 border-b">
+
+                <tr>
+
+                    <th class="text-left px-6 py-4 font-black">
+                        Staff
+                    </th>
+
+                    <th class="text-left px-6 py-4 font-black">
+                        Staff ID
+                    </th>
+
+                    <th class="text-left px-6 py-4 font-black">
+                        Position
+                    </th>
+
+                    <th class="text-left px-6 py-4 font-black">
+                        Status
+                    </th>
+
+                    <th class="text-left px-6 py-4 font-black">
+                        Action
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody
+                id="staffAccessTableBody"
+                class="divide-y"
+            ></tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+<!-- =================================================
+     CHANGE ADMIN PASSWORD
+================================================== -->
+
+<section
+    class="mt-8 bg-white rounded-2xl shadow p-6"
+>
+
+    <h2 class="text-xl font-black">
+        🔑 Change Administrator Password
+    </h2>
+
+    <p class="text-sm text-slate-500 mt-1">
+        Change the password used to access the administrator account.
+    </p>
+
+    <form
+        id="changeAdminPasswordForm"
+        class="mt-6 max-w-xl space-y-5"
+    >
+
+        <div>
+
+            <label
+                for="currentAdminPassword"
+                class="block text-sm font-bold"
+            >
+                Current Password
+            </label>
+
+            <input
+                id="currentAdminPassword"
+                type="password"
+                required
+                autocomplete="current-password"
+                class="w-full mt-2 px-4 py-3
+                       border border-slate-300
+                       rounded-xl outline-none
+                       focus:ring-2 focus:ring-blue-600"
+                placeholder="Enter current password"
+            >
+
+        </div>
+
+
+        <div>
+
+            <label
+                for="newAdminPassword"
+                class="block text-sm font-bold"
+            >
+                New Password
+            </label>
+
+            <input
+                id="newAdminPassword"
+                type="password"
+                required
+                minlength="8"
+                autocomplete="new-password"
+                class="w-full mt-2 px-4 py-3
+                       border border-slate-300
+                       rounded-xl outline-none
+                       focus:ring-2 focus:ring-blue-600"
+                placeholder="Minimum 8 characters"
+            >
+
+        </div>
+
+
+        <div>
+
+            <label
+                for="confirmAdminPassword"
+                class="block text-sm font-bold"
+            >
+                Confirm New Password
+            </label>
+
+            <input
+                id="confirmAdminPassword"
+                type="password"
+                required
+                minlength="8"
+                autocomplete="new-password"
+                class="w-full mt-2 px-4 py-3
+                       border border-slate-300
+                       rounded-xl outline-none
+                       focus:ring-2 focus:ring-blue-600"
+                placeholder="Enter the new password again"
+            >
+
+        </div>
+
+
+        <button
+            id="changeAdminPasswordButton"
+            type="submit"
+            class="bg-blue-900 hover:bg-blue-800
+                   text-white px-6 py-3
+                   rounded-xl font-black"
+        >
+            Change Password
+        </button>
+
+    </form>
+
+
+    <div
+        id="passwordChangeStatus"
+        class="hidden mt-5 p-4 rounded-xl text-sm"
+    ></div>
+
+</section>
 
             <!-- =================================================
                  SECURITY NOTICE
@@ -1147,7 +1376,745 @@ async function rejectStaff(staffId) {
 
             }
         );
+// ====================================================
+// STAFF ACCESS MANAGEMENT
+// ====================================================
 
+const activeStaffCount =
+    document.getElementById("activeStaffCount");
+
+const staffAccessTableBody =
+    document.getElementById("staffAccessTableBody");
+
+const staffAccessTableContainer =
+    document.getElementById("staffAccessTableContainer");
+
+const staffAccessEmpty =
+    document.getElementById("staffAccessEmpty");
+
+const staffAccessStatus =
+    document.getElementById("staffAccessStatus");
+
+
+function showStaffAccessStatus(message, type) {
+
+    staffAccessStatus.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+
+    if (type === "error") {
+
+        staffAccessStatus.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+
+    } else if (type === "success") {
+
+        staffAccessStatus.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+
+    } else {
+
+        staffAccessStatus.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+
+    }
+
+    staffAccessStatus.textContent = message;
+
+}
+
+
+// ====================================================
+// LOAD APPROVED STAFF
+// ====================================================
+
+async function loadStaffAccess() {
+
+    staffAccessTableContainer.classList.add(
+        "hidden"
+    );
+
+    staffAccessEmpty.classList.add(
+        "hidden"
+    );
+
+    staffAccessTableBody.innerHTML = "";
+
+
+    try {
+
+        const {
+            data: currentUserData,
+            error: currentUserError
+        } =
+            await window.CHA_SUPABASE.auth.getUser();
+
+
+        if (
+            currentUserError ||
+            !currentUserData ||
+            !currentUserData.user
+        ) {
+
+            throw new Error(
+                "Administrator session could not be verified."
+            );
+
+        }
+
+
+        const currentAdminId =
+            currentUserData.user.id;
+
+
+        const {
+            data,
+            error
+        } =
+            await window.CHA_SUPABASE
+                .from("staff_profiles")
+                .select(`
+                    id,
+                    full_name,
+                    staff_id,
+                    role,
+                    is_active
+                `)
+                .neq(
+                    "role",
+                    "admin"
+                )
+                .order(
+                    "full_name",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        const staffList =
+            data || [];
+
+
+        const activeCount =
+            staffList.filter(
+                function(staff) {
+                    return staff.is_active === true;
+                }
+            ).length;
+
+
+        activeStaffCount.textContent =
+            activeCount +
+            (
+                activeCount === 1
+                    ? " Active"
+                    : " Active"
+            );
+
+
+        if (staffList.length === 0) {
+
+            staffAccessEmpty.classList.remove(
+                "hidden"
+            );
+
+            return;
+
+        }
+
+
+        staffAccessTableContainer.classList.remove(
+            "hidden"
+        );
+
+
+        staffList.forEach(
+            function(staff) {
+
+                const row =
+                    document.createElement("tr");
+
+                row.className =
+                    "hover:bg-slate-50";
+
+
+                const statusHTML =
+                    staff.is_active
+                        ? `
+                            <span
+                                class="inline-flex
+                                       bg-green-100
+                                       text-green-800
+                                       px-3 py-1
+                                       rounded-full
+                                       text-xs
+                                       font-black"
+                            >
+                                ● Active
+                            </span>
+                          `
+                        : `
+                            <span
+                                class="inline-flex
+                                       bg-red-100
+                                       text-red-800
+                                       px-3 py-1
+                                       rounded-full
+                                       text-xs
+                                       font-black"
+                            >
+                                ● Inactive
+                            </span>
+                          `;
+
+
+                const actionHTML =
+                    staff.is_active
+                        ? `
+                            <button
+                                class="deactivate-staff-button
+                                       bg-red-600
+                                       hover:bg-red-700
+                                       text-white
+                                       px-4 py-2
+                                       rounded-lg
+                                       font-bold"
+                                data-id="${escapeHTML(staff.id)}"
+                            >
+                                🔒 Deactivate
+                            </button>
+                          `
+                        : `
+                            <button
+                                class="activate-staff-button
+                                       bg-green-600
+                                       hover:bg-green-700
+                                       text-white
+                                       px-4 py-2
+                                       rounded-lg
+                                       font-bold"
+                                data-id="${escapeHTML(staff.id)}"
+                            >
+                                🔓 Activate
+                            </button>
+                          `;
+
+
+                row.innerHTML = `
+
+                    <td class="px-6 py-5">
+                        <div class="font-black text-slate-900">
+                            ${escapeHTML(staff.full_name)}
+                        </div>
+                    </td>
+
+                    <td class="px-6 py-5">
+                        <span
+                            class="font-mono text-xs
+                                   bg-slate-100
+                                   px-2 py-1 rounded"
+                        >
+                            ${escapeHTML(staff.staff_id)}
+                        </span>
+                    </td>
+
+                    <td class="px-6 py-5">
+                        ${escapeHTML(
+                            formatRole(staff.role)
+                        )}
+                    </td>
+
+                    <td class="px-6 py-5">
+                        ${statusHTML}
+                    </td>
+
+                    <td class="px-6 py-5">
+                        ${actionHTML}
+                    </td>
+
+                `;
+
+
+                staffAccessTableBody.appendChild(row);
+
+            }
+        );
+
+
+        document
+            .querySelectorAll(
+                ".deactivate-staff-button"
+            )
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            changeStaffStatus(
+                                this.dataset.id,
+                                "deactivate"
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        document
+            .querySelectorAll(
+                ".activate-staff-button"
+            )
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            changeStaffStatus(
+                                this.dataset.id,
+                                "activate"
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Staff Access Error:",
+            error
+        );
+
+        showStaffAccessStatus(
+            error.message ||
+            "Unable to load staff accounts.",
+            "error"
+        );
+
+    }
+
+}
+
+
+// ====================================================
+// ACTIVATE / DEACTIVATE STAFF
+// ====================================================
+
+async function changeStaffStatus(
+    staffId,
+    action
+) {
+
+    const actionText =
+        action === "deactivate"
+            ? "deactivate"
+            : "activate";
+
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to " +
+            actionText +
+            " this staff account?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    showStaffAccessStatus(
+        action === "deactivate"
+            ? "Deactivating staff account..."
+            : "Activating staff account...",
+        "info"
+    );
+
+
+    try {
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await window.CHA_SUPABASE.auth.getSession();
+
+
+        if (
+            sessionError ||
+            !sessionData ||
+            !sessionData.session
+        ) {
+
+            throw new Error(
+                "Administrator session has expired. Please log in again."
+            );
+
+        }
+
+
+        const response =
+            await fetch(
+                "/.netlify/functions/manage-staff-status",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            sessionData.session.access_token
+                    },
+
+                    body: JSON.stringify({
+                        staffProfileId:
+                            staffId,
+
+                        action:
+                            action
+                    })
+                }
+            );
+
+
+        let result;
+
+        try {
+
+            result =
+                await response.json();
+
+        }
+
+        catch (jsonError) {
+
+            throw new Error(
+                "The staff status server returned an invalid response."
+            );
+
+        }
+
+
+        if (!response.ok || !result.success) {
+
+            throw new Error(
+                result.error ||
+                "Unable to change staff account status."
+            );
+
+        }
+
+
+        showStaffAccessStatus(
+            result.message ||
+            "Staff account status changed successfully.",
+            "success"
+        );
+
+
+        await loadStaffAccess();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Staff Status Error:",
+            error
+        );
+
+        showStaffAccessStatus(
+            error.message ||
+            "Unable to change staff account status.",
+            "error"
+        );
+
+    }
+
+}
+
+
+// ====================================================
+// CHANGE ADMIN PASSWORD
+// ====================================================
+
+const changeAdminPasswordForm =
+    document.getElementById(
+        "changeAdminPasswordForm"
+    );
+
+const changeAdminPasswordButton =
+    document.getElementById(
+        "changeAdminPasswordButton"
+    );
+
+const passwordChangeStatus =
+    document.getElementById(
+        "passwordChangeStatus"
+    );
+
+
+function showPasswordStatus(
+    message,
+    type
+) {
+
+    passwordChangeStatus.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+
+
+    if (type === "error") {
+
+        passwordChangeStatus.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+
+    }
+
+    else if (type === "success") {
+
+        passwordChangeStatus.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+
+    }
+
+    else {
+
+        passwordChangeStatus.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+
+    }
+
+
+    passwordChangeStatus.textContent =
+        message;
+
+}
+
+
+changeAdminPasswordForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+
+        const currentPassword =
+            document
+                .getElementById(
+                    "currentAdminPassword"
+                )
+                .value;
+
+
+        const newPassword =
+            document
+                .getElementById(
+                    "newAdminPassword"
+                )
+                .value;
+
+
+        const confirmPassword =
+            document
+                .getElementById(
+                    "confirmAdminPassword"
+                )
+                .value;
+
+
+        if (newPassword.length < 8) {
+
+            showPasswordStatus(
+                "The new password must contain at least 8 characters.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (newPassword !== confirmPassword) {
+
+            showPasswordStatus(
+                "The new passwords do not match.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        changeAdminPasswordButton.disabled =
+            true;
+
+        changeAdminPasswordButton.textContent =
+            "Changing Password...";
+
+
+        showPasswordStatus(
+            "Verifying your current password...",
+            "info"
+        );
+
+
+        try {
+
+            const {
+                data: userData,
+                error: userError
+            } =
+                await window.CHA_SUPABASE.auth.getUser();
+
+
+            if (
+                userError ||
+                !userData ||
+                !userData.user ||
+                !userData.user.email
+            ) {
+
+                throw new Error(
+                    "Administrator account could not be verified."
+                );
+
+            }
+
+
+            const email =
+                userData.user.email;
+
+
+            // Re-authenticate administrator
+
+            const {
+                error: loginError
+            } =
+                await window.CHA_SUPABASE.auth
+                    .signInWithPassword({
+                        email: email,
+                        password: currentPassword
+                    });
+
+
+            if (loginError) {
+
+                throw new Error(
+                    "The current administrator password is incorrect."
+                );
+
+            }
+
+
+            showPasswordStatus(
+                "Updating administrator password...",
+                "info"
+            );
+
+
+            const {
+                error: updatePasswordError
+            } =
+                await window.CHA_SUPABASE.auth
+                    .updateUser({
+                        password: newPassword
+                    });
+
+
+            if (updatePasswordError) {
+
+                throw updatePasswordError;
+
+            }
+
+
+            changeAdminPasswordForm.reset();
+
+
+            showPasswordStatus(
+                "Administrator password changed successfully.",
+                "success"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "CHA Password Change Error:",
+                error
+            );
+
+
+            showPasswordStatus(
+                error.message ||
+                "Unable to change administrator password.",
+                "error"
+            );
+
+        }
+
+        finally {
+
+            changeAdminPasswordButton.disabled =
+                false;
+
+            changeAdminPasswordButton.textContent =
+                "Change Password";
+
+        }
+
+    }
+);
 
 
         // ====================================================
