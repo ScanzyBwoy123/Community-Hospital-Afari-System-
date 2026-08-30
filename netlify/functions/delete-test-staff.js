@@ -1,4 +1,3 @@
-
 // ============================================================
 // COMMUNITY HOSPITAL AFARI
 // SECURE TEST STAFF CLEANUP
@@ -37,15 +36,15 @@ exports.handler = async function (event) {
     const serviceRoleKey =
         process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    const anonKey =
-        process.env.SUPABASE_ANON_KEY;
-
 
     if (
         !supabaseUrl ||
-        !serviceRoleKey ||
-        !anonKey
+        !serviceRoleKey
     ) {
+
+        console.error(
+            "CHA cleanup: Supabase server configuration is missing."
+        );
 
         return {
             statusCode: 500,
@@ -87,14 +86,18 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // CREATE USER CLIENT
+    // CREATE SUPABASE ADMIN CLIENT
     // --------------------------------------------------------
 
-    const supabaseUser =
+    const supabaseAdmin =
         createClient(
             supabaseUrl,
-            anonKey,
+            serviceRoleKey,
             {
+                auth: {
+                    autoRefreshToken: false,
+                    persistSession: false
+                },
                 global: {
                     headers: {
                         Authorization:
@@ -106,14 +109,14 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // VERIFY LOGGED-IN USER
+    // VERIFY CURRENT USER
     // --------------------------------------------------------
 
     const {
         data: authData,
         error: authError
     } =
-        await supabaseUser.auth.getUser();
+        await supabaseAdmin.auth.getUser();
 
 
     if (
@@ -122,6 +125,11 @@ exports.handler = async function (event) {
         !authData.user
     ) {
 
+        console.error(
+            "CHA cleanup authentication error:",
+            authError
+        );
+
         return {
             statusCode: 401,
             headers: {
@@ -129,7 +137,7 @@ exports.handler = async function (event) {
             },
             body: JSON.stringify({
                 error:
-                    "Invalid or expired authentication session."
+                    "Invalid or expired administrator session."
             })
         };
 
@@ -141,29 +149,12 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // CREATE ADMIN CLIENT
-    // --------------------------------------------------------
-
-    const supabaseAdmin =
-        createClient(
-            supabaseUrl,
-            serviceRoleKey,
-            {
-                auth: {
-                    autoRefreshToken: false,
-                    persistSession: false
-                }
-            }
-        );
-
-
-    // --------------------------------------------------------
     // VERIFY ADMIN PROFILE
     // --------------------------------------------------------
 
     const {
         data: adminProfile,
-        error: adminProfileError
+        error: adminError
     } =
         await supabaseAdmin
             .from("staff_profiles")
@@ -180,9 +171,14 @@ exports.handler = async function (event) {
 
 
     if (
-        adminProfileError ||
+        adminError ||
         !adminProfile
     ) {
+
+        console.error(
+            "CHA cleanup administrator profile error:",
+            adminError
+        );
 
         return {
             statusCode: 403,
@@ -199,7 +195,7 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // CHECK ADMIN + ACTIVE
+    // ADMIN CHECK
     // --------------------------------------------------------
 
     if (
@@ -222,7 +218,7 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // TEST EMAILS
+    // EXACT TEST EMAILS
     // --------------------------------------------------------
 
     const testEmails = [
@@ -233,6 +229,7 @@ exports.handler = async function (event) {
 
 
     const deleted = [];
+    const notFound = [];
     const failed = [];
 
 
@@ -259,7 +256,7 @@ exports.handler = async function (event) {
         if (error) {
 
             console.error(
-                "CHA cleanup listUsers error:",
+                "CHA cleanup list users error:",
                 error
             );
 
@@ -302,12 +299,36 @@ exports.handler = async function (event) {
 
 
             // ------------------------------------------------
-            // ONLY DELETE OUR THREE TEST EMAILS
+            // ONLY MATCH THE THREE TEST EMAILS
             // ------------------------------------------------
 
             if (
                 testEmails.includes(email)
             ) {
+
+                // --------------------------------------------
+                // EXTRA SAFETY:
+                // NEVER DELETE THE CURRENT ADMIN
+                // --------------------------------------------
+
+                if (
+                    user.id === currentUser.id
+                ) {
+
+                    failed.push({
+                        email,
+                        error:
+                            "Safety protection prevented deletion of the current administrator."
+                    });
+
+                    continue;
+
+                }
+
+
+                // --------------------------------------------
+                // DELETE AUTH USER
+                // --------------------------------------------
 
                 const {
                     error:
@@ -364,7 +385,33 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // RESPONSE
+    // CHECK WHICH TEST EMAILS WERE NOT FOUND
+    // --------------------------------------------------------
+
+    for (
+        const email of testEmails
+    ) {
+
+        if (
+            !deleted.includes(email) &&
+            !failed.some(
+                function(item) {
+                    return item.email === email;
+                }
+            )
+        ) {
+
+            notFound.push(
+                email
+            );
+
+        }
+
+    }
+
+
+    // --------------------------------------------------------
+    // SUCCESS RESPONSE
     // --------------------------------------------------------
 
     return {
@@ -374,9 +421,14 @@ exports.handler = async function (event) {
         },
         body: JSON.stringify({
             success: true,
+
             message:
-                "Test staff cleanup completed.",
+                "Test account cleanup completed.",
+
             deleted,
+
+            notFound,
+
             failed
         })
     };
