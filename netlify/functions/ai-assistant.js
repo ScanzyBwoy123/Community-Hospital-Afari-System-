@@ -42,7 +42,7 @@ exports.handler = async (event) => {
     }
 
     // --------------------------------------------------------
-    // GEMINI API KEY
+    // API KEY
     // --------------------------------------------------------
 
     const apiKey = process.env.GEMINI_API_KEY;
@@ -106,7 +106,7 @@ exports.handler = async (event) => {
     }
 
     // --------------------------------------------------------
-    // HOSPITAL AI INSTRUCTIONS
+    // SYSTEM INSTRUCTION
     // --------------------------------------------------------
 
     const systemInstruction = `
@@ -114,17 +114,17 @@ You are CHA AI Assistant for Community Hospital Afari.
 
 You provide clear, helpful and safe general health information.
 
-Important rules:
+IMPORTANT RULES:
 
 - You are an AI assistant, not a doctor.
-- Do not claim that you examined a patient.
+- Do not claim to have examined a patient.
 - Do not make definitive diagnoses.
 - Do not prescribe medication.
 - Do not provide individualized medication dosing.
 - Explain medical terms in simple language.
 - Encourage professional medical assessment when appropriate.
-- If someone describes a possible emergency, advise them to seek
-  urgent medical attention.
+- If someone describes a possible emergency, advise them to
+  seek urgent medical attention.
 - Never invent patient records, laboratory results,
   appointments or hospital information.
 - Protect patient privacy.
@@ -136,26 +136,35 @@ Community Hospital Afari.
 `;
 
     // --------------------------------------------------------
-    // GEMINI API
+    // DELAY HELPER
     // --------------------------------------------------------
 
-    const model = "gemini-3.7-flash";
+    function sleep(ms) {
+        return new Promise(resolve =>
+            setTimeout(resolve, ms)
+        );
+    }
 
-    const url =
-        "https://generativelanguage.googleapis.com/v1beta/models/" +
-        model +
-        ":generateContent?key=" +
-        encodeURIComponent(apiKey);
+    // --------------------------------------------------------
+    // GEMINI REQUEST
+    // --------------------------------------------------------
 
-    try {
+    async function callGemini(model) {
 
-        const response = await fetch(
+        const url =
+            "https://generativelanguage.googleapis.com/v1beta/models/" +
+            model +
+            ":generateContent?key=" +
+            encodeURIComponent(apiKey);
+
+        return fetch(
             url,
             {
                 method: "POST",
 
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
 
                 body: JSON.stringify({
@@ -175,7 +184,8 @@ Community Hospital Afari.
 
                             parts: [
                                 {
-                                    text: message
+                                    text:
+                                        message
                                 }
                             ]
                         }
@@ -189,94 +199,303 @@ Community Hospital Afari.
                 })
             }
         );
+    }
 
-        const data =
-            await response.json();
+    // --------------------------------------------------------
+    // TRY MODEL WITH RETRIES
+    // --------------------------------------------------------
 
-        // ----------------------------------------------------
-        // GEMINI ERROR
-        // ----------------------------------------------------
+    async function tryModel(
+        model,
+        attempts = 3
+    ) {
 
-        if (!response.ok) {
+        for (
+            let attempt = 1;
+            attempt <= attempts;
+            attempt++
+        ) {
 
-            console.error(
-                "Gemini API error:",
-                JSON.stringify(data)
-            );
+            try {
 
-            const apiError =
-                data?.error?.message ||
-                "Gemini rejected the request.";
+                console.log(
+                    `Gemini ${model} attempt ${attempt}/${attempts}`
+                );
 
-            return {
-                statusCode: 502,
-                headers,
-                body: JSON.stringify({
-                    success: false,
-                    error:
-                        "Gemini error: " +
-                        apiError
-                })
-            };
+                const response =
+                    await callGemini(
+                        model
+                    );
+
+                const data =
+                    await response.json();
+
+                // Successful response
+
+                if (response.ok) {
+
+                    return {
+                        ok: true,
+                        data
+                    };
+
+                }
+
+                // ------------------------------------------------
+                // RETRY TEMPORARY SERVER ERRORS
+                // ------------------------------------------------
+
+                if (
+                    response.status === 503 ||
+                    response.status === 429 ||
+                    response.status === 500
+                ) {
+
+                    console.warn(
+                        `Gemini temporary error ${response.status}`
+                    );
+
+                    if (
+                        attempt < attempts
+                    ) {
+
+                        const delay =
+                            2000 *
+                            Math.pow(
+                                2,
+                                attempt - 1
+                            );
+
+                        console.log(
+                            `Retrying in ${delay}ms`
+                        );
+
+                        await sleep(
+                            delay
+                        );
+
+                        continue;
+
+                    }
+
+                }
+
+                // Permanent error
+
+                return {
+                    ok: false,
+                    status:
+                        response.status,
+                    data
+                };
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Gemini request error:",
+                    error
+                );
+
+                if (
+                    attempt < attempts
+                ) {
+
+                    const delay =
+                        2000 *
+                        Math.pow(
+                            2,
+                            attempt - 1
+                        );
+
+                    await sleep(
+                        delay
+                    );
+
+                    continue;
+
+                }
+
+                return {
+                    ok: false,
+                    status: 500,
+                    data: {
+                        error: {
+                            message:
+                                error.message
+                        }
+                    }
+                };
+
+            }
+
         }
 
-        // ----------------------------------------------------
-        // RESPONSE
-        // ----------------------------------------------------
+        return {
+            ok: false,
+            status: 503,
+            data: {
+                error: {
+                    message:
+                        "Gemini service is temporarily unavailable."
+                }
+            }
+        };
+
+    }
+
+    // --------------------------------------------------------
+    // MAIN GEMINI LOGIC
+    // --------------------------------------------------------
+
+    try {
+
+        /*
+         * First try the main model.
+         *
+         * Google currently documents gemini-3.7-flash
+         * for GenerateContent.
+         */
+
+        let result =
+            await tryModel(
+                "gemini-3.7-flash",
+                3
+            );
+
+
+        // -----------------------------------------------------
+        // FALLBACK MODEL
+        // -----------------------------------------------------
+
+        /*
+         * If the main model is temporarily unavailable,
+         * try a lighter fallback model.
+         *
+         * This prevents a temporary capacity spike from
+         * immediately breaking the hospital assistant.
+         */
+
+        if (!result.ok) {
+
+            console.warn(
+                "Primary Gemini model unavailable. Trying fallback."
+            );
+
+            result =
+                await tryModel(
+                    "gemini-3.1-flash-lite",
+                    2
+                );
+
+        }
+
+
+        // -----------------------------------------------------
+        // STILL FAILED
+        // -----------------------------------------------------
+
+        if (!result.ok) {
+
+            const geminiMessage =
+                result?.data?.error?.message ||
+                "Gemini is temporarily unavailable.";
+
+            console.error(
+                "Gemini final error:",
+                geminiMessage
+            );
+
+            return {
+                statusCode:
+                    result.status || 502,
+
+                headers,
+
+                body:
+                    JSON.stringify({
+                        success: false,
+                        error:
+                            "The AI service is temporarily busy. Please try again in a moment."
+                    })
+            };
+
+        }
+
+
+        // -----------------------------------------------------
+        // EXTRACT ANSWER
+        // -----------------------------------------------------
 
         const answer =
-            data?.candidates?.[0]
+            result?.data?.candidates?.[0]
                 ?.content?.parts
-                ?.map(part => part.text || "")
+                ?.map(
+                    part =>
+                        part.text || ""
+                )
                 .join("")
                 .trim();
+
 
         if (!answer) {
 
             console.error(
                 "Gemini returned no answer:",
-                JSON.stringify(data)
+                JSON.stringify(
+                    result.data
+                )
             );
 
             return {
                 statusCode: 502,
                 headers,
-                body: JSON.stringify({
-                    success: false,
-                    error:
-                        "Gemini returned an empty response."
-                })
+                body:
+                    JSON.stringify({
+                        success: false,
+                        error:
+                            "The AI returned an empty response."
+                    })
             };
+
         }
 
-        // ----------------------------------------------------
+
+        // -----------------------------------------------------
         // SUCCESS
-        // ----------------------------------------------------
+        // -----------------------------------------------------
 
         return {
             statusCode: 200,
             headers,
-            body: JSON.stringify({
-                success: true,
-                answer: answer
-            })
+            body:
+                JSON.stringify({
+                    success: true,
+                    answer
+                })
         };
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
-            "CHA AI connection error:",
+            "CHA AI fatal error:",
             error
         );
 
         return {
             statusCode: 500,
             headers,
-            body: JSON.stringify({
-                success: false,
-                error:
-                    "Unable to connect to Gemini."
-            })
+            body:
+                JSON.stringify({
+                    success: false,
+                    error:
+                        "Unable to connect to the AI service."
+                })
         };
+
     }
+
 };
