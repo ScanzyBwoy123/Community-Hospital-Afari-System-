@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CHA Laboratory Results</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .result-card {
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="bg-blue-900 text-white shadow-lg">
+
+        <div class="max-w-7xl mx-auto px-4">
+
+            <div
+                class="min-h-20 flex items-center
+                       justify-between gap-4"
+            >
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-12 h-12 rounded-full
+                               bg-white text-blue-900
+                               flex items-center
+                               justify-center
+                               font-black"
+                    >
+                        CHA
+                    </div>
+
+                    <div>
+
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+
+                        <div class="text-blue-200 text-sm">
+                            Laboratory
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="backButton"
+                    type="button"
+                    class="bg-white
+                           text-blue-900
+                           hover:bg-blue-50
+                           px-4 py-2
+                           rounded-lg
+                           font-bold"
+                >
+                    ← Dashboard
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        <div
+            id="loading"
+            class="bg-white
+                   rounded-2xl
+                   shadow
+                   p-8
+                   text-center"
+        >
+
+            <div class="text-3xl">
+                🔐
+            </div>
+
+            <p class="font-bold mt-3">
+                Checking staff authentication...
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             LABORATORY PAGE
+        ================================================== -->
+
+        <div
+            id="laboratoryPage"
+            class="hidden"
+        >
+
+            <!-- =================================================
+                 WELCOME
+            ================================================== -->
+
+            <section
+                class="bg-white
+                       rounded-2xl
+                       shadow
+                       p-6
+                       mb-8"
+            >
+
+                <p class="text-sm text-slate-500">
+                    Hospital Laboratory
+                </p>
+
+                <h1
+                    id="staffName"
+                    class="text-3xl
+                           font-black
+                           text-slate-900
+                           mt-1"
+                >
+                    Laboratory
+                </h1>
+
+                <p
+                    id="staffInfo"
+                    class="text-sm
+                          text-slate-500
+                          mt-2"
+                >
+                    Authorized laboratory results management.
+                </p>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 PATIENT SEARCH
+            ================================================== -->
+
+            <section
+                class="bg-white
+                       rounded-2xl
+                       shadow
+                       p-6
+                       mb-8"
+            >
+
+                <div
+                    class="flex flex-col
+                           sm:flex-row
+                           sm:items-center
+                           sm:justify-between
+                           gap-4"
+                >
+
+                    <div>
+
+                        <h2
+                            class="text-xl
+                                   font-black"
+                        >
+                            🧑‍⚕️ Select Patient
+                        </h2>
+
+                        <p
+                            class="text-sm
+                                  text-slate-500
+                                  mt-1"
+                        >
+                            Search for a patient to view or enter
+                            laboratory results.
+                        </p>
+
+                    </div>
+
+                    <button
+                        id="refreshPatientsButton"
+                        type="button"
+                        class="bg-blue-900
+                               hover:bg-blue-800
+                               text-white
+                               px-4 py-2
+                               rounded-lg
+                               font-bold"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+
+                <div class="mt-6">
+
+                    <label
+                        for="patientSearch"
+                        class="block
+                               text-sm
+                               font-bold
+                               mb-2"
+                    >
+                        Search Patient
+                    </label>
+
+                    <input
+                        id="patientSearch"
+                        type="search"
+                        placeholder="Search by patient number, name or phone..."
+                        autocomplete="off"
+                        class="w-full
+                               border
+                               border-slate-300
+                               rounded-xl
+                               px-4
+                               py-3
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-blue-500"
+                    >
+
+                </div>
+
+
+                <div
+                    id="patientStatus"
+                    class="hidden
+                           mt-4
+                           p-4
+                           rounded-xl
+                           text-sm"
+                ></div>
+
+
+                <div
+                    id="patientsContainer"
+                    class="mt-5
+                           space-y-3"
+                ></div>
+
+
+                <div
+                    id="patientEmptyState"
+                    class="hidden
+                           py-8
+                           text-center"
+                >
+
+                    <div class="text-4xl">
+                        🔎
+                    </div>
+
+                    <p
+                        class="font-bold
+                              mt-3"
+                    >
+                        No patients found
+                    </p>
+
+                    <p
+                        class="text-sm
+                              text-slate-500
+                              mt-1"
+                    >
+                        Try another patient name or number.
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SELECTED PATIENT
+            ================================================== -->
+
+            <section
+                id="selectedPatientSection"
+                class="hidden
+                       bg-blue-50
+                       border
+                       border-blue-200
+                       rounded-2xl
+                       p-6
+                       mb-8"
+            >
+
+                <div
+                    class="flex flex-col
+                           sm:flex-row
+                           sm:items-start
+                           sm:justify-between
+                           gap-4"
+                >
+
+                    <div>
+
+                        <p
+                            class="text-sm
+                                  text-blue-700
+                                  font-bold"
+                        >
+                            Selected Patient
+                        </p>
+
+                        <h2
+                            id="selectedPatientName"
+                            class="text-2xl
+                                   font-black
+                                   text-blue-950
+                                   mt-1"
+                        >
+                            Patient
+                        </h2>
+
+                        <div
+                            class="flex
+                                   flex-wrap
+                                   gap-2
+                                   mt-3"
+                        >
+
+                            <span
+                                id="selectedPatientNumber"
+                                class="bg-white
+                                       text-blue-900
+                                       px-3 py-1
+                                       rounded-full
+                                       text-sm
+                                       font-bold"
+                            ></span>
+
+                            <span
+                                id="selectedPatientSex"
+                                class="bg-white
+                                       text-blue-900
+                                       px-3 py-1
+                                       rounded-full
+                                       text-sm
+                                       font-bold"
+                            ></span>
+
+                            <span
+                                id="selectedPatientDOB"
+                                class="bg-white
+                                       text-blue-900
+                                       px-3 py-1
+                                       rounded-full
+                                       text-sm
+                                       font-bold"
+                            ></span>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        id="clearPatientButton"
+                        type="button"
+                        class="bg-white
+                               text-blue-900
+                               hover:bg-blue-100
+                               border
+                               border-blue-200
+                               px-4 py-2
+                               rounded-lg
+                               font-bold"
+                    >
+                        Change Patient
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 ADD LABORATORY RESULT
+            ================================================== -->
+
+            <section
+                id="resultFormSection"
+                class="hidden
+                       bg-white
+                       rounded-2xl
+                       shadow
+                       p-6
+                       mb-8"
+            >
+
+                <h2
+                    class="text-xl
+                           font-black"
+                >
+                    🧪 Enter Laboratory Result
+                </h2>
+
+                <p
+                    class="text-sm
+                          text-slate-500
+                          mt-1"
+                >
+                    Add a new laboratory result for the selected patient.
+                </p>
+
+
+                <form
+                    id="resultForm"
+                    class="mt-6
+                           space-y-5"
+                >
+
+                    <!-- TEST NAME -->
+
+                    <div>
+
+                        <label
+                            for="testName"
+                            class="block
+                                   text-sm
+                                   font-bold
+                                   mb-2"
+                        >
+                            Test Name
+                        </label>
+
+                        <input
+                            id="testName"
+                            type="text"
+                            maxlength="150"
+                            required
+                            placeholder="e.g. Full Blood Count"
+                            class="w-full
+                                   border
+                                   border-slate-300
+                                   rounded-xl
+                                   px-4
+                                   py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+
+                    </div>
+
+
+                    <!-- RESULT -->
+
+                    <div>
+
+                        <label
+                            for="testResult"
+                            class="block
+                                   text-sm
+                                   font-bold
+                                   mb-2"
+                        >
+                            Result
+                        </label>
+
+                        <textarea
+                            id="testResult"
+                            rows="3"
+                            maxlength="2000"
+                            required
+                            placeholder="Enter the laboratory result..."
+                            class="w-full
+                                   border
+                                   border-slate-300
+                                   rounded-xl
+                                   px-4
+                                   py-3
+                                   resize-y
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- REFERENCE RANGE -->
+
+                    <div>
+
+                        <label
+                            for="referenceRange"
+                            class="block
+                                   text-sm
+                                   font-bold
+                                   mb-2"
+                        >
+                            Reference Range
+                        </label>
+
+                        <input
+                            id="referenceRange"
+                            type="text"
+                            maxlength="200"
+                            placeholder="e.g. 4.0–11.0 ×10⁹/L"
+                            class="w-full
+                                   border
+                                   border-slate-300
+                                   rounded-xl
+                                   px-4
+                                   py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+
+                    </div>
+
+
+                    <!-- REMARKS -->
+
+                    <div>
+
+                        <label
+                            for="remarks"
+                            class="block
+                                   text-sm
+                                   font-bold
+                                   mb-2"
+                        >
+                            Remarks
+                        </label>
+
+                        <textarea
+                            id="remarks"
+                            rows="3"
+                            maxlength="2000"
+                            placeholder="Additional laboratory remarks..."
+                            class="w-full
+                                   border
+                                   border-slate-300
+                                   rounded-xl
+                                   px-4
+                                   py-3
+                                   resize-y
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- FORM STATUS -->
+
+                    <div
+                        id="formStatus"
+                        class="hidden
+                               p-4
+                               rounded-xl
+                               text-sm"
+                    ></div>
+
+
+                    <!-- BUTTON -->
+
+                    <button
+                        id="saveResultButton"
+                        type="submit"
+                        class="bg-green-600
+                               hover:bg-green-700
+                               disabled:opacity-50
+                               disabled:cursor-not-allowed
+                               text-white
+                               px-6
+                               py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        Save Laboratory Result
+                    </button>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 EXISTING RESULTS
+            ================================================== -->
+
+            <section
+                id="resultsSection"
+                class="hidden
+                       bg-white
+                       rounded-2xl
+                       shadow
+                       overflow-hidden"
+            >
+
+                <div
+                    class="p-6
+                           border-b
+                           border-slate-200"
+                >
+
+                    <div
+                        class="flex flex-col
+                               sm:flex-row
+                               sm:items-center
+                               sm:justify-between
+                               gap-3"
+                    >
+
+                        <div>
+
+                            <h2
+                                class="text-xl
+                                       font-black"
+                            >
+                                🧪 Laboratory Results
+                            </h2>
+
+                            <p
+                                id="resultsDescription"
+                                class="text-sm
+                                      text-slate-500
+                                      mt-1"
+                            >
+                                Previous laboratory results.
+                            </p>
+
+                        </div>
+
+                        <span
+                            id="resultCount"
+                            class="inline-flex
+                                   items-center
+                                   justify-center
+                                   bg-blue-100
+                                   text-blue-800
+                                   px-3 py-1
+                                   rounded-full
+                                   text-sm
+                                   font-black"
+                        >
+                            0 Results
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="resultsStatus"
+                    class="hidden
+                           m-6
+                           p-4
+                           rounded-xl
+                           text-sm"
+                ></div>
+
+
+                <div
+                    id="resultsEmptyState"
+                    class="hidden
+                           p-10
+                           text-center"
+                >
+
+                    <div class="text-5xl">
+                        🧪
+                    </div>
+
+                    <h3
+                        class="font-black
+                               text-xl
+                               mt-4"
+                    >
+                        No Laboratory Results
+                    </h3>
+
+                    <p
+                        class="text-slate-500
+                              text-sm
+                              mt-2"
+                    >
+                        No laboratory results have been entered
+                        for this patient yet.
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="resultsContainer"
+                    class="hidden
+                           p-6
+                           space-y-4"
+                ></div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECURITY NOTICE
+            ================================================== -->
+
+            <section
+                class="mt-8
+                       bg-blue-50
+                       border
+                       border-blue-100
+                       rounded-2xl
+                       p-6"
+            >
+
+                <h2
+                    class="font-black
+                           text-lg"
+                >
+                    🔐 Laboratory Security
+                </h2>
+
+                <p
+                    class="text-sm
+                          text-blue-900
+                          mt-2"
+                >
+                    Laboratory information is confidential.
+                    Only authorized hospital staff should access,
+                    enter or discuss patient laboratory results.
+                </p>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         SUPABASE CONFIGURATION
+    ====================================================== -->
+
+    <script src="js/supabase.js"></script>
+
+
+
+    <!-- =====================================================
+         APPLICATION LOGIC
+    ====================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
+
+        const loading =
+            document.getElementById("loading");
+
+        const laboratoryPage =
+            document.getElementById("laboratoryPage");
+
+        const staffName =
+            document.getElementById("staffName");
+
+        const staffInfo =
+            document.getElementById("staffInfo");
+
+        const patientSearch =
+            document.getElementById("patientSearch");
+
+        const patientsContainer =
+            document.getElementById("patientsContainer");
+
+        const patientEmptyState =
+            document.getElementById("patientEmptyState");
+
+        const patientStatus =
+            document.getElementById("patientStatus");
+
+        const refreshPatientsButton =
+            document.getElementById(
+                "refreshPatientsButton"
+            );
+
+        const selectedPatientSection =
+            document.getElementById(
+                "selectedPatientSection"
+            );
+
+        const selectedPatientName =
+            document.getElementById(
+                "selectedPatientName"
+            );
+
+        const selectedPatientNumber =
+            document.getElementById(
+                "selectedPatientNumber"
+            );
+
+        const selectedPatientSex =
+            document.getElementById(
+                "selectedPatientSex"
+            );
+
+        const selectedPatientDOB =
+            document.getElementById(
+                "selectedPatientDOB"
+            );
+
+        const clearPatientButton =
+            document.getElementById(
+                "clearPatientButton"
+            );
+
+        const resultFormSection =
+            document.getElementById(
+                "resultFormSection"
+            );
+
+        const resultForm =
+            document.getElementById(
+                "resultForm"
+            );
+
+        const testName =
+            document.getElementById(
+                "testName"
+            );
+
+        const testResult =
+            document.getElementById(
+                "testResult"
+            );
+
+        const referenceRange =
+            document.getElementById(
+                "referenceRange"
+            );
+
+        const remarks =
+            document.getElementById(
+                "remarks"
+            );
+
+        const formStatus =
+            document.getElementById(
+                "formStatus"
+            );
+
+        const saveResultButton =
+            document.getElementById(
+                "saveResultButton"
+            );
+
+        const resultsSection =
+            document.getElementById(
+                "resultsSection"
+            );
+
+        const resultsDescription =
+            document.getElementById(
+                "resultsDescription"
+            );
+
+        const resultCount =
+            document.getElementById(
+                "resultCount"
+            );
+
+        const resultsStatus =
+            document.getElementById(
+                "resultsStatus"
+            );
+
+        const resultsEmptyState =
+            document.getElementById(
+                "resultsEmptyState"
+            );
+
+        const resultsContainer =
+            document.getElementById(
+                "resultsContainer"
+            );
+
+        const backButton =
+            document.getElementById(
+                "backButton"
+            );
+
+
+        // ====================================================
+        // STATE
+        // ====================================================
+
+        let currentUser = null;
+
+        let currentProfile = null;
+
+        let selectedPatient = null;
+
+        let allPatients = [];
+
+
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+
+        function escapeHTML(value) {
+
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        // ====================================================
+        // STATUS HELPERS
+        // ====================================================
+
+        function setStatus(
+            element,
+            message,
+            type
+        ) {
+
+            element.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700"
+            );
+
+
+            if (type === "error") {
+
+                element.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+
+            }
+
+            else if (type === "success") {
+
+                element.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+
+            }
+
+            else {
+
+                element.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+
+            }
+
+
+            element.textContent =
+                message;
+
+        }
+
+
+        function hideStatus(element) {
+
+            element.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        // ====================================================
+        // DATE FORMAT
+        // ====================================================
+
+        function formatDate(value) {
+
+            if (!value) {
+
+                return "Unknown date";
+
+            }
+
+
+            const date =
+                new Date(value);
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return "Unknown date";
+
+            }
+
+
+            return date.toLocaleString(
+                "en-GH",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+        }
+
+
+        // ====================================================
+        // DATE ONLY
+        // ====================================================
+
+        function formatDateOnly(value) {
+
+            if (!value) {
+
+                return "Date of birth not available";
+
+            }
+
+
+            const date =
+                new Date(
+                    value +
+                    (
+                        String(value).includes("T")
+                            ? ""
+                            : "T00:00:00"
+                    )
+                );
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return "Date of birth not available";
+
+            }
+
+
+            return date.toLocaleDateString(
+                "en-GH",
+                {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric"
+                }
+            );
+
+        }
+
+
+        // ====================================================
+        // LOAD CURRENT STAFF
+        // ====================================================
+
+        async function loadCurrentStaff() {
+
+            if (!window.CHA_SUPABASE) {
+
+                throw new Error(
+                    "Supabase is not configured."
+                );
+
+            }
+
+
+            const {
+                data: authData,
+                error: authError
+            } =
+                await window.CHA_SUPABASE
+                    .auth
+                    .getUser();
+
+
+            if (
+                authError ||
+                !authData ||
+                !authData.user
+            ) {
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+
+            currentUser =
+                authData.user;
+
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await window.CHA_SUPABASE
+                    .from("staff_profiles")
+                    .select(`
+                        id,
+                        full_name,
+                        staff_id,
+                        role,
+                        department_id,
+                        is_active,
+                        departments (
+                            id,
+                            name
+                        )
+                    `)
+                    .eq(
+                        "id",
+                        currentUser.id
+                    )
+                    .single();
+
+
+            if (profileError) {
+
+                throw profileError;
+
+            }
+
+
+            if (
+                !profile ||
+                profile.is_active !== true
+            ) {
+
+                await window.CHA_SUPABASE
+                    .auth
+                    .signOut();
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+
+            currentProfile =
+                profile;
+
+
+            staffName.textContent =
+                profile.full_name ||
+                "Laboratory Staff";
+
+
+            staffInfo.textContent =
+                (
+                    profile.role ||
+                    "Staff"
+                ) +
+                " • " +
+                (
+                    profile.departments?.name ||
+                    "Department not assigned"
+                ) +
+                " • Authorized laboratory access";
+
+
+            return profile;
+
+        }
+
+
+        // ====================================================
+        // LOAD PATIENTS
+        // ====================================================
+
+        async function loadPatients() {
+
+            hideStatus(
+                patientStatus
+            );
+
+
+            patientsContainer.innerHTML =
+                "";
+
+
+            patientEmptyState.classList.add(
+                "hidden"
+            );
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("patients")
+                        .select(`
+                            id,
+                            patient_number,
+                            full_name,
+                            date_of_birth,
+                            sex,
+                            phone,
+                            address
+                        `)
+                        .order(
+                            "full_name",
+                            {
+                                ascending: true
+                            }
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                allPatients =
+                    data || [];
+
+
+                renderPatients(
+                    patientSearch.value
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Laboratory Patients Error:",
+                    error
+                );
+
+
+                setStatus(
+                    patientStatus,
+                    "Unable to load patients: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        // ====================================================
+        // RENDER PATIENTS
+        // ====================================================
+
+        function renderPatients(
+            searchValue
+        ) {
+
+            patientsContainer.innerHTML =
+                "";
+
+
+            const query =
+                String(
+                    searchValue || ""
+                )
+                    .trim()
+                    .toLowerCase();
+
+
+            const filtered =
+                allPatients.filter(
+                    function(patient) {
+
+                        if (!query) {
+
+                            return true;
+
+                        }
+
+
+                        return (
+                            String(
+                                patient.full_name ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .includes(query)
+                        ) ||
+
+                        String(
+                            patient.patient_number ||
+                            ""
+                        )
+                            .toLowerCase()
+                            .includes(query) ||
+
+                        String(
+                            patient.phone ||
+                            ""
+                        )
+                            .toLowerCase()
+                            .includes(query);
+
+                    }
+                );
+
+
+            if (
+                filtered.length === 0
+            ) {
+
+                patientEmptyState.classList.remove(
+                    "hidden"
+                );
+
+                return;
+
+            }
+
+
+            patientEmptyState.classList.add(
+                "hidden"
+            );
+
+
+            const visiblePatients =
+                filtered.slice(
+                    0,
+                    50
+                );
+
+
+            visiblePatients.forEach(
+                function(patient) {
+
+                    const card =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    card.type =
+                        "button";
+
+
+                    card.className =
+                        "w-full text-left " +
+                        "border border-slate-200 " +
+                        "rounded-xl p-4 " +
+                        "hover:bg-blue-50 " +
+                        "hover:border-blue-300 " +
+                        "transition";
+
+
+                    card.innerHTML = `
+
+                        <div
+                            class="flex flex-col
+                                   sm:flex-row
+                                   sm:items-center
+                                   sm:justify-between
+                                   gap-3"
+                        >
+
+                            <div>
+
+                                <div
+                                    class="font-black
+                                           text-slate-900"
+                                >
+                                    ${escapeHTML(
+                                        patient.full_name
+                                    )}
+                                </div>
+
+                                <div
+                                    class="text-sm
+                                           text-slate-500
+                                           mt-1"
+                                >
+                                    Patient No:
+                                    ${escapeHTML(
+                                        patient.patient_number
+                                    )}
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="flex
+                                       flex-wrap
+                                       gap-2"
+                            >
+
+                                <span
+                                    class="bg-slate-100
+                                           text-slate-700
+                                           px-2 py-1
+                                           rounded-full
+                                           text-xs
+                                           font-bold"
+                                >
+                                    ${escapeHTML(
+                                        patient.sex ||
+                                        "Sex not recorded"
+                                    )}
+                                </span>
+
+                                <span
+                                    class="bg-blue-100
+                                           text-blue-800
+                                           px-2 py-1
+                                           rounded-full
+                                           text-xs
+                                           font-bold"
+                                >
+                                    Select
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+
+                    card.addEventListener(
+                        "click",
+                        function() {
+
+                            selectPatient(
+                                patient
+                            );
+
+                        }
+                    );
+
+
+                    patientsContainer.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ====================================================
+        // SELECT PATIENT
+        // ====================================================
+
+        async function selectPatient(
+            patient
+        ) {
+
+            selectedPatient =
+                patient;
+
+
+            selectedPatientName.textContent =
+                patient.full_name ||
+                "Unknown patient";
+
+
+            selectedPatientNumber.textContent =
+                "Patient No: " +
+                (
+                    patient.patient_number ||
+                    "Not available"
+                );
+
+
+            selectedPatientSex.textContent =
+                "Sex: " +
+                (
+                    patient.sex ||
+                    "Not recorded"
+                );
+
+
+            selectedPatientDOB.textContent =
+                "DOB: " +
+                formatDateOnly(
+                    patient.date_of_birth
+                );
+
+
+            selectedPatientSection.classList.remove(
+                "hidden"
+            );
+
+
+            resultFormSection.classList.remove(
+                "hidden"
+            );
+
+
+            resultsSection.classList.remove(
+                "hidden"
+            );
+
+
+            patientSearch.value =
+                "";
+
+
+            patientsContainer.innerHTML =
+                "";
+
+
+            patientEmptyState.classList.add(
+                "hidden"
+            );
+
+
+            hideStatus(
+                patientStatus
+            );
+
+
+            resultsDescription.textContent =
+                "Laboratory results for " +
+                (
+                    patient.full_name ||
+                    "this patient"
+                ) +
+                ".";
+
+
+            await loadPatientResults();
+
+        }
+
+
+        // ====================================================
+        // CLEAR PATIENT
+        // ====================================================
+
+        function clearSelectedPatient() {
+
+            selectedPatient =
+                null;
+
+
+            selectedPatientSection.classList.add(
+                "hidden"
+            );
+
+
+            resultFormSection.classList.add(
+                "hidden"
+            );
+
+
+            resultsSection.classList.add(
+                "hidden"
+            );
+
+
+            resultForm.reset();
+
+
+            hideStatus(
+                formStatus
+            );
+
+
+            renderPatients(
+                patientSearch.value
+            );
+
+        }
+
+
+        // ====================================================
+        // LOAD PATIENT RESULTS
+        // ====================================================
+
+        async function loadPatientResults() {
+
+            resultsContainer.innerHTML =
+                "";
+
+
+            resultsContainer.classList.add(
+                "hidden"
+            );
+
+
+            resultsEmptyState.classList.add(
+                "hidden"
+            );
+
+
+            hideStatus(
+                resultsStatus
+            );
+
+
+            if (!selectedPatient) {
+
+                return;
+
+            }
+
+
+            try {
+
+                setStatus(
+                    resultsStatus,
+                    "Loading laboratory results...",
+                    "info"
+                );
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("laboratory_results")
+                        .select(`
+                            id,
+                            patient_id,
+                            entered_by,
+                            test_name,
+                            result,
+                            reference_range,
+                            remarks
+                        `)
+                        .eq(
+                            "patient_id",
+                            selectedPatient.id
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                const results =
+                    data || [];
+
+
+                hideStatus(
+                    resultsStatus
+                );
+
+
+                resultCount.textContent =
+                    results.length +
+                    (
+                        results.length === 1
+                            ? " Result"
+                            : " Results"
+                    );
+
+
+                if (
+                    results.length === 0
+                ) {
+
+                    resultsEmptyState.classList.remove(
+                        "hidden"
+                    );
+
+                    return;
+
+                }
+
+
+                results.forEach(
+                    function(item) {
+
+                        const card =
+                            document.createElement(
+                                "article"
+                            );
+
+
+                        card.className =
+                            "result-card " +
+                            "border " +
+                            "border-slate-200 " +
+                            "rounded-2xl " +
+                            "p-5";
+
+
+                        card.innerHTML = `
+
+                            <div
+                                class="flex flex-col
+                                       sm:flex-row
+                                       sm:items-start
+                                       sm:justify-between
+                                       gap-3"
+                            >
+
+                                <div>
+
+                                    <h3
+                                        class="font-black
+                                               text-lg
+                                               text-slate-900"
+                                    >
+                                        ${escapeHTML(
+                                            item.test_name
+                                        )}
+                                    </h3>
+
+                                </div>
+
+                                <span
+                                    class="bg-blue-100
+                                           text-blue-800
+                                           px-3 py-1
+                                           rounded-full
+                                           text-xs
+                                           font-bold"
+                                >
+                                    Laboratory Result
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                class="mt-4
+                                       grid
+                                       md:grid-cols-2
+                                       gap-4"
+                            >
+
+                                <div
+                                    class="bg-slate-50
+                                           rounded-xl
+                                           p-4"
+                                >
+
+                                    <p
+                                        class="text-xs
+                                              text-slate-500
+                                              font-bold
+                                              uppercase"
+                                    >
+                                        Result
+                                    </p>
+
+                                    <p
+                                        class="text-sm
+                                              font-bold
+                                              mt-1
+                                              whitespace-pre-wrap"
+                                    >
+                                        ${escapeHTML(
+                                            item.result
+                                        )}
+                                    </p>
+
+                                </div>
+
+
+                                <div
+                                    class="bg-slate-50
+                                           rounded-xl
+                                           p-4"
+                                >
+
+                                    <p
+                                        class="text-xs
+                                              text-slate-500
+                                              font-bold
+                                              uppercase"
+                                    >
+                                        Reference Range
+                                    </p>
+
+                                    <p
+                                        class="text-sm
+                                              font-bold
+                                              mt-1
+                                              whitespace-pre-wrap"
+                                    >
+                                        ${escapeHTML(
+                                            item.reference_range ||
+                                            "Not provided"
+                                        )}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <div
+                                class="mt-4
+                                       bg-slate-50
+                                       rounded-xl
+                                       p-4"
+                            >
+
+                                <p
+                                    class="text-xs
+                                          text-slate-500
+                                          font-bold
+                                          uppercase"
+                                >
+                                    Remarks
+                                </p>
+
+                                <p
+                                    class="text-sm
+                                          mt-1
+                                          whitespace-pre-wrap"
+                                >
+                                    ${escapeHTML(
+                                        item.remarks ||
+                                        "No remarks"
+                                    )}
+                                </p>
+
+                            </div>
+
+                        `;
+
+
+                        resultsContainer.appendChild(
+                            card
+                        );
+
+                    }
+                );
+
+
+                resultsContainer.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Laboratory Results Error:",
+                    error
+                );
+
+
+                resultCount.textContent =
+                    "0 Results";
+
+
+                setStatus(
+                    resultsStatus,
+                    "Unable to load laboratory results: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        // ====================================================
+        // SAVE RESULT
+        // ====================================================
+
+        resultForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                if (!selectedPatient) {
+
+                    setStatus(
+                        formStatus,
+                        "Please select a patient first.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (!currentUser) {
+
+                    setStatus(
+                        formStatus,
+                        "Your staff session has expired. Please log in again.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                const testNameValue =
+                    testName.value.trim();
+
+
+                const resultValue =
+                    testResult.value.trim();
+
+
+                const referenceRangeValue =
+                    referenceRange.value.trim();
+
+
+                const remarksValue =
+                    remarks.value.trim();
+
+
+                if (!testNameValue) {
+
+                    setStatus(
+                        formStatus,
+                        "Please enter the test name.",
+                        "error"
+                    );
+
+                    testName.focus();
+
+                    return;
+
+                }
+
+
+                if (!resultValue) {
+
+                    setStatus(
+                        formStatus,
+                        "Please enter the laboratory result.",
+                        "error"
+                    );
+
+                    testResult.focus();
+
+                    return;
+
+                }
+
+
+                saveResultButton.disabled =
+                    true;
+
+
+                saveResultButton.textContent =
+                    "Saving...";
+
+
+                setStatus(
+                    formStatus,
+                    "Saving laboratory result...",
+                    "info"
+                );
+
+
+                try {
+
+                    const {
+                        error
+                    } =
+                        await window.CHA_SUPABASE
+                            .from("laboratory_results")
+                            .insert({
+                                patient_id:
+                                    selectedPatient.id,
+
+                                entered_by:
+                                    currentUser.id,
+
+                                test_name:
+                                    testNameValue,
+
+                                result:
+                                    resultValue,
+
+                                reference_range:
+                                    referenceRangeValue ||
+                                    null,
+
+                                remarks:
+                                    remarksValue ||
+                                    null
+                            });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    resultForm.reset();
+
+
+                    setStatus(
+                        formStatus,
+                        "Laboratory result saved successfully.",
+                        "success"
+                    );
+
+
+                    await loadPatientResults();
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "CHA Save Laboratory Result Error:",
+                        error
+                    );
+
+
+                    setStatus(
+                        formStatus,
+                        "Unable to save laboratory result: " +
+                        (
+                            error.message ||
+                            "Unknown error"
+                        ),
+                        "error"
+                    );
+
+                }
+
+                finally {
+
+                    saveResultButton.disabled =
+                        false;
+
+
+                    saveResultButton.textContent =
+                        "Save Laboratory Result";
+
+                }
+
+            }
+        );
+
+
+        // ====================================================
+        // SEARCH PATIENTS
+        // ====================================================
+
+        patientSearch.addEventListener(
+            "input",
+            function() {
+
+                renderPatients(
+                    this.value
+                );
+
+            }
+        );
+
+
+        // ====================================================
+        // REFRESH PATIENTS
+        // ====================================================
+
+        refreshPatientsButton.addEventListener(
+            "click",
+            async function() {
+
+                refreshPatientsButton.disabled =
+                    true;
+
+                refreshPatientsButton.textContent =
+                    "Refreshing...";
+
+
+                try {
+
+                    await loadPatients();
+
+
+                    if (selectedPatient) {
+
+                        await loadPatientResults();
+
+                    }
+
+                }
+
+                finally {
+
+                    refreshPatientsButton.disabled =
+                        false;
+
+                    refreshPatientsButton.textContent =
+                        "↻ Refresh";
+
+                }
+
+            }
+        );
+
+
+        // ====================================================
+        // CHANGE PATIENT
+        // ====================================================
+
+        clearPatientButton.addEventListener(
+            "click",
+            function() {
+
+                clearSelectedPatient();
+
+            }
+        );
+
+
+        // ====================================================
+        // BACK TO DASHBOARD
+        // ====================================================
+
+        backButton.addEventListener(
+            "click",
+            function() {
+
+                window.location.href =
+                    "staff-dashboard.html";
+
+            }
+        );
+
+
+        // ====================================================
+        // INITIALIZE
+        // ====================================================
+
+        async function initializeLaboratory() {
+
+            try {
+
+                const profile =
+                    await loadCurrentStaff();
+
+
+                if (!profile) {
+
+                    return;
+
+                }
+
+
+                await loadPatients();
+
+
+                loading.classList.add(
+                    "hidden"
+                );
+
+
+                laboratoryPage.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Laboratory Initialization Error:",
+                    error
+                );
+
+
+                loading.innerHTML = `
+
+                    <div class="text-3xl">
+                        ⚠️
+                    </div>
+
+                    <p
+                        class="font-bold
+                              mt-3
+                              text-red-700"
+                    >
+                        Unable to load Laboratory
+                    </p>
+
+                    <p
+                        class="text-sm
+                              text-slate-500
+                              mt-2"
+                    >
+                        ${escapeHTML(
+                            error.message ||
+                            "Please try again."
+                        )}
+                    </p>
+
+                    <button
+                        type="button"
+                        id="returnLoginButton"
+                        class="
+                            mt-5
+                            bg-blue-900
+                            hover:bg-blue-800
+                            text-white
+                            px-5
+                            py-3
+                            rounded-xl
+                            font-bold
+                        "
+                    >
+                        Return to Login
+                    </button>
+
+                `;
+
+
+                const returnLoginButton =
+                    document.getElementById(
+                        "returnLoginButton"
+                    );
+
+
+                if (returnLoginButton) {
+
+                    returnLoginButton.addEventListener(
+                        "click",
+                        function() {
+
+                            window.location.href =
+                                "staff-login.html";
+
+                        }
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        initializeLaboratory();
+
+    </script>
+
+</body>
+</html>
