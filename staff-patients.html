@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>CHA Patients</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .patient-card {
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+        .patient-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+    <header class="bg-blue-900 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="min-h-20 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-12 h-12 rounded-full bg-white
+                               text-blue-900 flex items-center
+                               justify-center font-black"
+                    >
+                        CHA
+                    </div>
+                    <div>
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+                        <div class="text-blue-200 text-sm">
+                            Patients
+                        </div>
+                    </div>
+                </div>
+                <button
+                    id="backButton"
+                    type="button"
+                    class="bg-white text-blue-900
+                           hover:bg-blue-50
+                           px-4 py-2
+                           rounded-lg
+                           font-bold"
+                >
+                    ← Dashboard
+                </button>
+            </div>
+        </div>
+    </header>
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+        <div
+            id="loading"
+            class="bg-white rounded-2xl shadow p-8 text-center"
+        >
+            <div class="text-3xl">
+                🔐
+            </div>
+            <p class="font-bold mt-3">
+                Loading Patients...
+            </p>
+        </div>
+        <!-- =================================================
+             PATIENT PAGE
+        ================================================== -->
+        <div
+            id="patientsPage"
+            class="hidden"
+        >
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+                <div
+                    class="flex flex-col
+                           sm:flex-row
+                           sm:items-center
+                           sm:justify-between
+                           gap-4"
+                >
+                    <div>
+                        <p class="text-sm text-slate-500">
+                            Hospital Patient Management
+                        </p>
+                        <h1
+                            class="text-3xl font-black text-slate-900 mt-1"
+                        >
+                            Patients
+                        </h1>
+                        <p
+                            id="staffWelcome"
+                            class="text-sm text-slate-500 mt-2"
+                        >
+                            Authorized patient information.
+                        </p>
+                    </div>
+                    <button
+                        id="refreshButton"
+                        type="button"
+                        class="bg-blue-900
+                               hover:bg-blue-800
+                               text-white
+                               px-5 py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        ↻ Refresh
+                    </button>
+                </div>
+            </section>
+            <!-- =================================================
+                 REGISTER PATIENT
+            ================================================== -->
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+                <div
+                    class="flex flex-col
+                           sm:flex-row
+                           sm:items-center
+                           sm:justify-between
+                           gap-3"
+                >
+                    <div>
+                        <h2 class="text-xl font-black">
+                            ➕ Register Patient
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">
+                            Add a new patient to the hospital system.
+                        </p>
+                    </div>
+                    <button
+                        id="toggleRegisterButton"
+                        type="button"
+                        class="bg-green-600
+                               hover:bg-green-700
+                               text-white
+                               px-5 py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        Register Patient
+                    </button>
+                </div>
+                <form
+                    id="patientForm"
+                    class="hidden mt-6 space-y-5"
+                >
+                    <!-- Patient number -->
+                    <div>
+                        <label
+                            for="patientNumber"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Patient Number
+                        </label>
+                        <input
+                            id="patientNumber"
+                            type="text"
+                            maxlength="50"
+                            required
+                            placeholder="e.g. CHA-0001"
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+                    </div>
+                    <!-- Full name -->
+                    <div>
+                        <label
+                            for="fullName"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Full Name
+                        </label>
+                        <input
+                            id="fullName"
+                            type="text"
+                            maxlength="150"
+                            required
+                            placeholder="Patient full name"
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+                    </div>
+                    <!-- DOB / Sex -->
+                    <div
+                        class="grid sm:grid-cols-2 gap-5"
+                    >
+                        <div>
+                            <label
+                                for="dateOfBirth"
+                                class="block text-sm font-bold mb-2"
+                            >
+                                Date of Birth
+                            </label>
+                            <input
+                                id="dateOfBirth"
+                                type="date"
+                                required
+                                class="w-full
+                                       border border-slate-300
+                                       rounded-xl
+                                       px-4 py-3
+                                       focus:outline-none
+                                       focus:ring-2
+                                       focus:ring-blue-500"
+                            >
+                        </div>
+                        <div>
+                            <label
+                                for="sex"
+                                class="block text-sm font-bold mb-2"
+                            >
+                                Sex
+                            </label>
+                            <select
+                                id="sex"
+                                required
+                                class="w-full
+                                       border border-slate-300
+                                       rounded-xl
+                                       px-4 py-3
+                                       bg-white
+                                       focus:outline-none
+                                       focus:ring-2
+                                       focus:ring-blue-500"
+                            >
+                                <option value="">
+                                    Select sex
+                                </option>
+                                <option value="Male">
+                                    Male
+                                </option>
+                                <option value="Female">
+                                    Female
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Phone -->
+                    <div>
+                        <label
+                            for="phone"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Phone
+                        </label>
+                        <input
+                            id="phone"
+                            type="tel"
+                            maxlength="30"
+                            placeholder="Patient phone number"
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+                    </div>
+                    <!-- Address -->
+                    <div>
+                        <label
+                            for="address"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Address
+                        </label>
+                        <textarea
+                            id="address"
+                            rows="3"
+                            maxlength="500"
+                            placeholder="Patient residential address"
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   resize-y
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        ></textarea>
+                    </div>
+                    <!-- Form status -->
+                    <div
+                        id="formStatus"
+                        class="hidden p-4 rounded-xl text-sm"
+                    ></div>
+                    <!-- Buttons -->
+                    <div class="flex flex-wrap gap-3">
+                        <button
+                            id="savePatientButton"
+                            type="submit"
+                            class="bg-green-600
+                                   hover:bg-green-700
+                                   text-white
+                                   px-6 py-3
+                                   rounded-xl
+                                   font-bold"
+                        >
+                            Save Patient
+                        </button>
+                        <button
+                            id="cancelRegisterButton"
+                            type="button"
+                            class="bg-slate-200
+                                   hover:bg-slate-300
+                                   text-slate-800
+                                   px-6 py-3
+                                   rounded-xl
+                                   font-bold"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </section>
+            <!-- =================================================
+                 SEARCH
+            ================================================== -->
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+                <h2 class="text-xl font-black">
+                    🔎 Search Patients
+                </h2>
+                <p class="text-sm text-slate-500 mt-1">
+                    Search by patient number, name, phone, or address.
+                </p>
+                <div class="mt-5">
+                    <input
+                        id="searchInput"
+                        type="search"
+                        placeholder="Search patients..."
+                        autocomplete="off"
+                        class="w-full
+                               border border-slate-300
+                               rounded-xl
+                               px-4 py-3
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-blue-500"
+                    >
+                </div>
+            </section>
+            <!-- =================================================
+                 PATIENT COUNT / STATUS
+            ================================================== -->
+            <section
+                class="bg-white rounded-2xl shadow overflow-hidden"
+            >
+                <div
+                    class="p-6 border-b border-slate-200"
+                >
+                    <div
+                        class="flex flex-col
+                               sm:flex-row
+                               sm:items-center
+                               sm:justify-between
+                               gap-3"
+                    >
+                        <div>
+                            <h2 class="text-xl font-black">
+                                🧑‍⚕️ Patient List
+                            </h2>
+                            <p class="text-sm text-slate-500 mt-1">
+                                Patients available to authorized staff.
+                            </p>
+                        </div>
+                        <span
+                            id="patientCount"
+                            class="inline-flex
+                                   items-center
+                                   justify-center
+                                   bg-blue-100
+                                   text-blue-800
+                                   px-3 py-1
+                                   rounded-full
+                                   text-sm
+                                   font-black"
+                        >
+                            0 Patients
+                        </span>
+                    </div>
+                </div>
+                <div
+                    id="pageStatus"
+                    class="hidden m-6 p-4 rounded-xl text-sm"
+                ></div>
+                <!-- Empty -->
+                <div
+                    id="emptyState"
+                    class="hidden p-10 text-center"
+                >
+                    <div class="text-5xl">
+                        📭
+                    </div>
+                    <h3 class="font-black text-xl mt-4">
+                        No Patients Found
+                    </h3>
+                    <p
+                        class="text-slate-500 text-sm mt-2"
+                    >
+                        There are currently no patients matching your search.
+                    </p>
+                </div>
+                <!-- Patients -->
+                <div
+                    id="patientsContainer"
+                    class="hidden p-6 grid md:grid-cols-2 gap-5"
+                ></div>
+            </section>
+            <!-- =================================================
+                 SECURITY
+            ================================================== -->
+            <section
+                class="mt-8
+                       bg-blue-50
+                       border border-blue-100
+                       rounded-2xl
+                       p-6"
+            >
+                <h2 class="font-black text-lg">
+                    🔐 Patient Information Security
+                </h2>
+                <p
+                    class="text-sm
+                          text-blue-900
+                          mt-2"
+                >
+                    Patient information is confidential. Access and use
+                    patient information only when required for legitimate
+                    hospital duties.
+                </p>
+            </section>
+        </div>
+    </main>
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+    <script src="js/supabase.js"></script>
+    <!-- =====================================================
+         APPLICATION LOGIC
+    ====================================================== -->
+    <script>
+        "use strict";
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
+        const loading =
+            document.getElementById("loading");
+        const patientsPage =
+            document.getElementById("patientsPage");
+        const staffWelcome =
+            document.getElementById("staffWelcome");
+        const toggleRegisterButton =
+            document.getElementById(
+                "toggleRegisterButton"
+            );
+        const cancelRegisterButton =
+            document.getElementById(
+                "cancelRegisterButton"
+            );
+        const patientForm =
+            document.getElementById("patientForm");
+        const patientNumber =
+            document.getElementById(
+                "patientNumber"
+            );
+        const fullName =
+            document.getElementById("fullName");
+        const dateOfBirth =
+            document.getElementById(
+                "dateOfBirth"
+            );
+        const sex =
+            document.getElementById("sex");
+        const phone =
+            document.getElementById("phone");
+        const address =
+            document.getElementById("address");
+        const savePatientButton =
+            document.getElementById(
+                "savePatientButton"
+            );
+        const formStatus =
+            document.getElementById("formStatus");
+        const searchInput =
+            document.getElementById("searchInput");
+        const refreshButton =
+            document.getElementById(
+                "refreshButton"
+            );
+        const pageStatus =
+            document.getElementById(
+                "pageStatus"
+            );
+        const patientCount =
+            document.getElementById(
+                "patientCount"
+            );
+        const emptyState =
+            document.getElementById(
+                "emptyState"
+            );
+        const patientsContainer =
+            document.getElementById(
+                "patientsContainer"
+            );
+        const backButton =
+            document.getElementById(
+                "backButton"
+            );
+        // ====================================================
+        // CURRENT STAFF
+        // ====================================================
+        let currentUser = null;
+        let currentProfile = null;
+        let allPatients = [];
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+        function escapeHTML(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        // ====================================================
+        // STATUS HELPERS
+        // ====================================================
+        function showFormStatus(
+            message,
+            type
+        ) {
+            formStatus.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700"
+            );
+            if (type === "error") {
+                formStatus.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+            }
+            else if (type === "success") {
+                formStatus.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+            }
+            else {
+                formStatus.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+            }
+            formStatus.textContent =
+                message;
+        }
+        function showPageStatus(
+            message,
+            type
+        ) {
+            pageStatus.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700"
+            );
+            if (type === "error") {
+                pageStatus.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+            }
+            else if (type === "success") {
+                pageStatus.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+            }
+            else {
+                pageStatus.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+            }
+            pageStatus.textContent =
+                message;
+        }
+        function hidePageStatus() {
+            pageStatus.classList.add(
+                "hidden"
+            );
+        }
+        // ====================================================
+        // LOAD CURRENT STAFF
+        // ====================================================
+        async function loadCurrentStaff() {
+            if (!window.CHA_SUPABASE) {
+                throw new Error(
+                    "Supabase is not configured."
+                );
+            }
+            const {
+                data: authData,
+                error: authError
+            } =
+                await window.CHA_SUPABASE
+                    .auth
+                    .getUser();
+            if (
+                authError ||
+                !authData ||
+                !authData.user
+            ) {
+                window.location.href =
+                    "staff-login.html";
+                return null;
+            }
+            currentUser =
+                authData.user;
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await window.CHA_SUPABASE
+                    .from("staff_profiles")
+                    .select(`
+                        id,
+                        full_name,
+                        staff_id,
+                        role,
+                        department_id,
+                        is_active,
+                        departments (
+                            id,
+                            name
+                        )
+                    `)
+                    .eq(
+                        "id",
+                        currentUser.id
+                    )
+                    .single();
+            if (profileError) {
+                throw profileError;
+            }
+            if (
+                !profile ||
+                profile.is_active !== true
+            ) {
+                await window.CHA_SUPABASE
+                    .auth
+                    .signOut();
+                window.location.href =
+                    "staff-login.html";
+                return null;
+            }
+            currentProfile =
+                profile;
+            const departmentName =
+                profile.departments?.name ||
+                "Not assigned";
+            staffWelcome.textContent =
+                "Welcome " +
+                (
+                    profile.full_name ||
+                    "Staff Member"
+                ) +
+                ". You are viewing authorized patient information for " +
+                departmentName +
+                ".";
+            return profile;
+        }
+        // ====================================================
+        // LOAD PATIENTS
+        // ====================================================
+        async function loadPatients() {
+            patientsContainer.innerHTML = "";
+            patientsContainer.classList.add(
+                "hidden"
+            );
+            emptyState.classList.add(
+                "hidden"
+            );
+            hidePageStatus();
+            try {
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("patients")
+                        .select(`
+                            id,
+                            patient_number,
+                            full_name,
+                            date_of_birth,
+                            sex,
+                            phone,
+                            address
+                        `)
+                        .order(
+                            "full_name",
+                            {
+                                ascending: true
+                            }
+                        );
+                if (error) {
+                    throw error;
+                }
+                allPatients =
+                    data || [];
+                renderPatients(
+                    allPatients
+                );
+            }
+            catch (error) {
+                console.error(
+                    "CHA Patients Error:",
+                    error
+                );
+                allPatients = [];
+                patientCount.textContent =
+                    "0 Patients";
+                emptyState.classList.remove(
+                    "hidden"
+                );
+                showPageStatus(
+                    "Unable to load patients: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+            }
+        }
+        // ====================================================
+        // RENDER PATIENTS
+        // ====================================================
+        function renderPatients(
+            patients
+        ) {
+            patientsContainer.innerHTML = "";
+            patientsContainer.classList.add(
+                "hidden"
+            );
+            emptyState.classList.add(
+                "hidden"
+            );
+            patientCount.textContent =
+                patients.length +
+                (
+                    patients.length === 1
+                        ? " Patient"
+                        : " Patients"
+                );
+            if (
+                patients.length === 0
+            ) {
+                emptyState.classList.remove(
+                    "hidden"
+                );
+                return;
+            }
+            patients.forEach(
+                function(patient) {
+                    const card =
+                        document.createElement(
+                            "article"
+                        );
+                    card.className =
+                        "patient-card border " +
+                        "border-slate-200 " +
+                        "bg-white " +
+                        "rounded-2xl p-5";
+                    card.innerHTML = `
+                        <div class="flex items-start
+                                    justify-between
+                                    gap-3">
+                            <div>
+                                <h3
+                                    class="font-black
+                                           text-lg
+                                           text-slate-900"
+                                >
+                                    ${escapeHTML(
+                                        patient.full_name
+                                    )}
+                                </h3>
+                                <p
+                                    class="text-sm
+                                          text-blue-700
+                                          font-bold
+                                          mt-1"
+                                >
+                                    Patient No:
+                                    ${escapeHTML(
+                                        patient.patient_number
+                                    )}
+                                </p>
+                            </div>
+                            <span
+                                class="bg-slate-100
+                                       text-slate-700
+                                       px-2 py-1
+                                       rounded-full
+                                       text-xs
+                                       font-bold"
+                            >
+                                ${escapeHTML(
+                                    patient.sex
+                                )}
+                            </span>
+                        </div>
+                        <div
+                            class="mt-4
+                                   space-y-2
+                                   text-sm"
+                        >
+                            <p>
+                                <span class="font-bold">
+                                    Date of Birth:
+                                </span>
+                                ${escapeHTML(
+                                    patient.date_of_birth ||
+                                    "Not provided"
+                                )}
+                            </p>
+                            <p>
+                                <span class="font-bold">
+                                    Phone:
+                                </span>
+                                ${escapeHTML(
+                                    patient.phone ||
+                                    "Not provided"
+                                )}
+                            </p>
+                            <p>
+                                <span class="font-bold">
+                                    Address:
+                                </span>
+                                ${escapeHTML(
+                                    patient.address ||
+                                    "Not provided"
+                                )}
+                            </p>
+                        </div>
+                        <div class="mt-5">
+                            <button
+                                type="button"
+                                class="view-patient-button
+                                       bg-blue-900
+                                       hover:bg-blue-800
+                                       text-white
+                                       px-4 py-2
+                                       rounded-lg
+                                       font-bold
+                                       text-sm"
+                                data-id="${escapeHTML(
+                                    patient.id
+                                )}"
+                            >
+                                View Patient
+                            </button>
+                        </div>
+                    `;
+                    patientsContainer.appendChild(
+                        card
+                    );
+                }
+            );
+            patientsContainer.classList.remove(
+                "hidden"
+            );
+            document
+                .querySelectorAll(
+                    ".view-patient-button"
+                )
+                .forEach(
+                    function(button) {
+                        button.addEventListener(
+                            "click",
+                            function() {
+                                openPatient(
+                                    this.dataset.id
+                                );
+                            }
+                        );
+                    }
+                );
+        }
+        // ====================================================
+        // SEARCH
+        // ====================================================
+        function searchPatients() {
+            const query =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+            if (!query) {
+                renderPatients(
+                    allPatients
+                );
+                return;
+            }
+            const filtered =
+                allPatients.filter(
+                    function(patient) {
+                        return (
+                            String(
+                                patient.patient_number ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .includes(query)
+                            ||
+                            String(
+                                patient.full_name ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .includes(query)
+                            ||
+                            String(
+                                patient.phone ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .includes(query)
+                            ||
+                            String(
+                                patient.address ||
+                                ""
+                            )
+                                .toLowerCase()
+                                .includes(query)
+                        );
+                    }
+                );
+            renderPatients(
+                filtered
+            );
+        }
+        // ====================================================
+        // OPEN PATIENT
+        // ====================================================
+        function openPatient(
+            patientId
+        ) {
+            /*
+             * We will build the detailed patient
+             * and patient-record page next.
+             *
+             * For now, store the patient ID so
+             * the next module can use it.
+             */
+            window.location.href =
+                "staff-patient-record.html?id=" +
+                encodeURIComponent(
+                    patientId
+                );
+        }
+        // ====================================================
+        // REGISTER PATIENT FORM
+        // ====================================================
+        toggleRegisterButton.addEventListener(
+            "click",
+            function() {
+                patientForm.classList.toggle(
+                    "hidden"
+                );
+                if (
+                    patientForm.classList.contains(
+                        "hidden"
+                    )
+                ) {
+                    toggleRegisterButton.textContent =
+                        "Register Patient";
+                }
+                else {
+                    toggleRegisterButton.textContent =
+                        "Close Form";
+                    patientNumber.focus();
+                }
+            }
+        );
+        cancelRegisterButton.addEventListener(
+            "click",
+            function() {
+                patientForm.reset();
+                formStatus.classList.add(
+                    "hidden"
+                );
+                patientForm.classList.add(
+                    "hidden"
+                );
+                toggleRegisterButton.textContent =
+                    "Register Patient";
+            }
+        );
+        // ====================================================
+        // SAVE PATIENT
+        // ====================================================
+        patientForm.addEventListener(
+            "submit",
+            async function(event) {
+                event.preventDefault();
+                const number =
+                    patientNumber.value.trim();
+                const name =
+                    fullName.value.trim();
+                const dob =
+                    dateOfBirth.value;
+                const patientSex =
+                    sex.value;
+                const patientPhone =
+                    phone.value.trim();
+                const patientAddress =
+                    address.value.trim();
+                if (!number) {
+                    showFormStatus(
+                        "Please enter the patient number.",
+                        "error"
+                    );
+                    return;
+                }
+                if (!name) {
+                    showFormStatus(
+                        "Please enter the patient's full name.",
+                        "error"
+                    );
+                    return;
+                }
+                if (!dob) {
+                    showFormStatus(
+                        "Please enter the patient's date of birth.",
+                        "error"
+                    );
+                    return;
+                }
+                if (!patientSex) {
+                    showFormStatus(
+                        "Please select the patient's sex.",
+                        "error"
+                    );
+                    return;
+                }
+                savePatientButton.disabled =
+                    true;
+                savePatientButton.textContent =
+                    "Saving...";
+                showFormStatus(
+                    "Saving patient...",
+                    "info"
+                );
+                try {
+                    /*
+                     * Check whether the patient number
+                     * already exists.
+                     */
+                    const {
+                        data: existingPatient,
+                        error: existingError
+                    } =
+                        await window.CHA_SUPABASE
+                            .from("patients")
+                            .select("id")
+                            .eq(
+                                "patient_number",
+                                number
+                            )
+                            .maybeSingle();
+                    if (existingError) {
+                        throw existingError;
+                    }
+                    if (existingPatient) {
+                        throw new Error(
+                            "A patient with this patient number already exists."
+                        );
+                    }
+                    const {
+                        data,
+                        error
+                    } =
+                        await window.CHA_SUPABASE
+                            .from("patients")
+                            .insert({
+                                patient_number:
+                                    number,
+                                full_name:
+                                    name,
+                                date_of_birth:
+                                    dob,
+                                sex:
+                                    patientSex,
+                                phone:
+                                    patientPhone ||
+                                    null,
+                                address:
+                                    patientAddress ||
+                                    null
+                            })
+                            .select(`
+                                id,
+                                patient_number,
+                                full_name,
+                                date_of_birth,
+                                sex,
+                                phone,
+                                address
+                            `)
+                            .single();
+                    if (error) {
+                        throw error;
+                    }
+                    patientForm.reset();
+                    patientForm.classList.add(
+                        "hidden"
+                    );
+                    toggleRegisterButton.textContent =
+                        "Register Patient";
+                    showFormStatus(
+                        "Patient registered successfully.",
+                        "success"
+                    );
+                    showPageStatus(
+                        "Patient " +
+                        (
+                            data?.patient_number ||
+                            number
+                        ) +
+                        " was registered successfully.",
+                        "success"
+                    );
+                    await loadPatients();
+                }
+                catch (error) {
+                    console.error(
+                        "CHA Register Patient Error:",
+                        error
+                    );
+                    showFormStatus(
+                        "Unable to register patient: " +
+                        (
+                            error.message ||
+                            "Unknown error"
+                        ),
+                        "error"
+                    );
+                }
+                finally {
+                    savePatientButton.disabled =
+                        false;
+                    savePatientButton.textContent =
+                        "Save Patient";
+                }
+            }
+        );
+        // ====================================================
+        // SEARCH EVENT
+        // ====================================================
+        searchInput.addEventListener(
+            "input",
+            searchPatients
+        );
+        // ====================================================
+        // REFRESH
+        // ====================================================
+        refreshButton.addEventListener(
+            "click",
+            async function() {
+                refreshButton.disabled =
+                    true;
+                refreshButton.textContent =
+                    "Refreshing...";
+                try {
+                    await loadPatients();
+                }
+                finally {
+                    refreshButton.disabled =
+                        false;
+                    refreshButton.textContent =
+                        "↻ Refresh";
+                }
+            }
+        );
+        // ====================================================
+        // BACK
+        // ====================================================
+        backButton.addEventListener(
+            "click",
+            function() {
+                window.location.href =
+                    "staff-dashboard.html";
+            }
+        );
+        // ====================================================
+        // INITIALIZE
+        // ====================================================
+        async function initializePatients() {
+            try {
+                const profile =
+                    await loadCurrentStaff();
+                if (!profile) {
+                    return;
+                }
+                await loadPatients();
+                loading.classList.add(
+                    "hidden"
+                );
+                patientsPage.classList.remove(
+                    "hidden"
+                );
+            }
+            catch (error) {
+                console.error(
+                    "CHA Patients Initialization Error:",
+                    error
+                );
+                loading.innerHTML = `
+                    <div class="text-3xl">
+                        ⚠️
+                    </div>
+                    <p
+                        class="font-bold
+                              mt-3
+                              text-red-700"
+                    >
+                        Unable to load Patients
+                    </p>
+                    <p
+                        class="text-sm
+                              text-slate-500
+                              mt-2"
+                    >
+                        ${escapeHTML(
+                            error.message ||
+                            "Please try again."
+                        )}
+                    </p>
+                    <button
+                        type="button"
+                        id="returnDashboardButton"
+                        class="
+                            mt-5
+                            bg-blue-900
+                            hover:bg-blue-800
+                            text-white
+                            px-5
+                            py-3
+                            rounded-xl
+                            font-bold
+                        "
+                    >
+                        Return to Dashboard
+                    </button>
+                `;
+                const returnDashboardButton =
+                    document.getElementById(
+                        "returnDashboardButton"
+                    );
+                if (
+                    returnDashboardButton
+                ) {
+                    returnDashboardButton.addEventListener(
+                        "click",
+                        function() {
+                            window.location.href =
+                                "staff-dashboard.html";
+                        }
+                    );
+                }
+            }
+        }
+        initializePatients();
+    </script>
+</body>
+</html>
