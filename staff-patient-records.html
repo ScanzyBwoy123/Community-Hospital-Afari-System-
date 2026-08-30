@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CHA Patient Records</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .patient-card,
+        .record-card {
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .patient-card:hover,
+        .record-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="bg-blue-900 text-white shadow-lg">
+
+        <div class="max-w-7xl mx-auto px-4">
+
+            <div class="min-h-20 flex items-center justify-between gap-4">
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-12 h-12 rounded-full bg-white
+                               text-blue-900 flex items-center
+                               justify-center font-black"
+                    >
+                        CHA
+                    </div>
+
+                    <div>
+
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+
+                        <div class="text-blue-200 text-sm">
+                            Patient Records
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="backButton"
+                    type="button"
+                    class="bg-white text-blue-900
+                           hover:bg-blue-50
+                           px-4 py-2
+                           rounded-lg
+                           font-bold"
+                >
+                    ← Dashboard
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        <div
+            id="loading"
+            class="bg-white rounded-2xl shadow p-8 text-center"
+        >
+
+            <div class="text-3xl">
+                🔐
+            </div>
+
+            <p class="font-bold mt-3">
+                Checking staff authorization...
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             PAGE
+        ================================================== -->
+
+        <div
+            id="recordsPage"
+            class="hidden"
+        >
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+
+                <p class="text-sm text-slate-500">
+                    Authorized Clinical Records
+                </p>
+
+                <h1
+                    id="pageTitle"
+                    class="text-3xl font-black text-slate-900 mt-1"
+                >
+                    Patient Records
+                </h1>
+
+                <p
+                    id="staffWelcome"
+                    class="text-sm text-slate-500 mt-2"
+                >
+                    Search for an authorized patient and view
+                    their clinical records.
+                </p>
+
+            </section>
+
+
+            <!-- =================================================
+                 PATIENT SEARCH
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+
+                <div
+                    class="flex flex-col
+                           sm:flex-row
+                           sm:items-end
+                           gap-4"
+                >
+
+                    <div class="flex-1">
+
+                        <label
+                            for="patientSearch"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Search Patient
+                        </label>
+
+                        <input
+                            id="patientSearch"
+                            type="search"
+                            autocomplete="off"
+                            placeholder="Search by patient number, name or phone..."
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+
+                    </div>
+
+                    <button
+                        id="searchButton"
+                        type="button"
+                        class="bg-blue-900
+                               hover:bg-blue-800
+                               text-white
+                               px-6 py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        🔎 Search
+                    </button>
+
+                    <button
+                        id="clearSearchButton"
+                        type="button"
+                        class="bg-slate-200
+                               hover:bg-slate-300
+                               text-slate-800
+                               px-6 py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        Clear
+                    </button>
+
+                </div>
+
+                <div
+                    id="searchStatus"
+                    class="hidden mt-4 p-4 rounded-xl text-sm"
+                ></div>
+
+            </section>
+
+
+            <!-- =================================================
+                 PATIENT LIST
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-2xl shadow overflow-hidden mb-8"
+            >
+
+                <div
+                    class="p-6 border-b border-slate-200"
+                >
+
+                    <div
+                        class="flex flex-col
+                               sm:flex-row
+                               sm:items-center
+                               sm:justify-between
+                               gap-3"
+                    >
+
+                        <div>
+
+                            <h2 class="text-xl font-black">
+                                🧑‍⚕️ Patients
+                            </h2>
+
+                            <p class="text-sm text-slate-500 mt-1">
+                                Select a patient to view or add records.
+                            </p>
+
+                        </div>
+
+                        <span
+                            id="patientCount"
+                            class="inline-flex
+                                   items-center
+                                   justify-center
+                                   bg-blue-100
+                                   text-blue-800
+                                   px-3 py-1
+                                   rounded-full
+                                   text-sm
+                                   font-black"
+                        >
+                            0 Patients
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="patientsEmpty"
+                    class="hidden p-10 text-center"
+                >
+
+                    <div class="text-5xl">
+                        🔎
+                    </div>
+
+                    <h3 class="font-black text-xl mt-4">
+                        No Patients Found
+                    </h3>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        Try searching with another patient name,
+                        patient number or phone number.
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="patientsContainer"
+                    class="hidden p-6 grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+                ></div>
+
+            </section>
+
+
+            <!-- =================================================
+                 SELECTED PATIENT
+            ================================================== -->
+
+            <section
+                id="selectedPatientSection"
+                class="hidden"
+            >
+
+                <div
+                    class="bg-white rounded-2xl shadow p-6 mb-8"
+                >
+
+                    <div
+                        class="flex flex-col
+                               lg:flex-row
+                               lg:items-start
+                               lg:justify-between
+                               gap-5"
+                    >
+
+                        <div>
+
+                            <p class="text-sm text-slate-500">
+                                Selected Patient
+                            </p>
+
+                            <h2
+                                id="selectedPatientName"
+                                class="text-3xl font-black text-slate-900 mt-1"
+                            >
+                                Patient
+                            </h2>
+
+                            <div
+                                class="flex flex-wrap gap-2 mt-4"
+                            >
+
+                                <span
+                                    id="selectedPatientNumber"
+                                    class="bg-blue-100 text-blue-800
+                                           px-3 py-1 rounded-full
+                                           text-sm font-bold"
+                                ></span>
+
+                                <span
+                                    id="selectedPatientSex"
+                                    class="bg-purple-100 text-purple-800
+                                           px-3 py-1 rounded-full
+                                           text-sm font-bold"
+                                ></span>
+
+                                <span
+                                    id="selectedPatientDOB"
+                                    class="bg-slate-100 text-slate-700
+                                           px-3 py-1 rounded-full
+                                           text-sm font-bold"
+                                ></span>
+
+                            </div>
+
+                        </div>
+
+                        <button
+                            id="closePatientButton"
+                            type="button"
+                            class="bg-slate-200
+                                   hover:bg-slate-300
+                                   text-slate-800
+                                   px-5 py-3
+                                   rounded-xl
+                                   font-bold"
+                        >
+                            Close Patient
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"
+                    >
+
+                        <div class="bg-slate-50 rounded-xl p-4">
+
+                            <p class="text-xs text-slate-500">
+                                Phone
+                            </p>
+
+                            <p
+                                id="selectedPatientPhone"
+                                class="font-bold mt-1"
+                            >
+                                —
+                            </p>
+
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-4">
+
+                            <p class="text-xs text-slate-500">
+                                Address
+                            </p>
+
+                            <p
+                                id="selectedPatientAddress"
+                                class="font-bold mt-1"
+                            >
+                                —
+                            </p>
+
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-4">
+
+                            <p class="text-xs text-slate-500">
+                                Date of Birth
+                            </p>
+
+                            <p
+                                id="selectedPatientDOBFull"
+                                class="font-bold mt-1"
+                            >
+                                —
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     ADD RECORD
+                ================================================== -->
+
+                <section
+                    class="bg-white rounded-2xl shadow p-6 mb-8"
+                >
+
+                    <h2 class="text-xl font-black">
+                        ➕ Add Patient Record
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Add an authorized clinical record for this patient.
+                    </p>
+
+
+                    <form
+                        id="recordForm"
+                        class="mt-6 space-y-5"
+                    >
+
+                        <!-- Record Type -->
+
+                        <div>
+
+                            <label
+                                for="recordType"
+                                class="block text-sm font-bold mb-2"
+                            >
+                                Record Type
+                            </label>
+
+                            <select
+                                id="recordType"
+                                required
+                                class="w-full
+                                       border border-slate-300
+                                       rounded-xl
+                                       px-4 py-3
+                                       bg-white
+                                       focus:outline-none
+                                       focus:ring-2
+                                       focus:ring-blue-500"
+                            >
+
+                                <option value="">
+                                    Select record type
+                                </option>
+
+                                <option value="consultation">
+                                    Consultation
+                                </option>
+
+                                <option value="nursing_note">
+                                    Nursing Note
+                                </option>
+
+                                <option value="diagnosis">
+                                    Diagnosis
+                                </option>
+
+                                <option value="treatment">
+                                    Treatment
+                                </option>
+
+                                <option value="medication">
+                                    Medication
+                                </option>
+
+                                <option value="laboratory">
+                                    Laboratory
+                                </option>
+
+                                <option value="observation">
+                                    Observation
+                                </option>
+
+                                <option value="follow_up">
+                                    Follow-up
+                                </option>
+
+                                <option value="other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Title -->
+
+                        <div>
+
+                            <label
+                                for="recordTitle"
+                                class="block text-sm font-bold mb-2"
+                            >
+                                Record Title
+                            </label>
+
+                            <input
+                                id="recordTitle"
+                                type="text"
+                                maxlength="200"
+                                required
+                                placeholder="Example: Initial consultation"
+                                class="w-full
+                                       border border-slate-300
+                                       rounded-xl
+                                       px-4 py-3
+                                       focus:outline-none
+                                       focus:ring-2
+                                       focus:ring-blue-500"
+                            >
+
+                        </div>
+
+
+                        <!-- Clinical Note -->
+
+                        <div>
+
+                            <label
+                                for="clinicalNote"
+                                class="block text-sm font-bold mb-2"
+                            >
+                                Clinical Note
+                            </label>
+
+                            <textarea
+                                id="clinicalNote"
+                                rows="7"
+                                maxlength="10000"
+                                required
+                                placeholder="Enter the authorized clinical information..."
+                                class="w-full
+                                       border border-slate-300
+                                       rounded-xl
+                                       px-4 py-3
+                                       resize-y
+                                       focus:outline-none
+                                       focus:ring-2
+                                       focus:ring-blue-500"
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- Status -->
+
+                        <div
+                            id="recordFormStatus"
+                            class="hidden p-4 rounded-xl text-sm"
+                        ></div>
+
+
+                        <!-- Submit -->
+
+                        <button
+                            id="saveRecordButton"
+                            type="submit"
+                            class="bg-green-600
+                                   hover:bg-green-700
+                                   text-white
+                                   px-6 py-3
+                                   rounded-xl
+                                   font-bold"
+                        >
+                            💾 Save Patient Record
+                        </button>
+
+                    </form>
+
+                </section>
+
+
+                <!-- =================================================
+                     RECORD HISTORY
+                ================================================== -->
+
+                <section
+                    class="bg-white rounded-2xl shadow overflow-hidden"
+                >
+
+                    <div
+                        class="p-6 border-b border-slate-200"
+                    >
+
+                        <div
+                            class="flex flex-col
+                                   sm:flex-row
+                                   sm:items-center
+                                   sm:justify-between
+                                   gap-3"
+                        >
+
+                            <div>
+
+                                <h2 class="text-xl font-black">
+                                    📋 Patient Record History
+                                </h2>
+
+                                <p class="text-sm text-slate-500 mt-1">
+                                    Authorized clinical records for this patient.
+                                </p>
+
+                            </div>
+
+                            <span
+                                id="recordCount"
+                                class="inline-flex
+                                       items-center
+                                       justify-center
+                                       bg-green-100
+                                       text-green-800
+                                       px-3 py-1
+                                       rounded-full
+                                       text-sm
+                                       font-black"
+                            >
+                                0 Records
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="recordsStatus"
+                        class="hidden m-6 p-4 rounded-xl text-sm"
+                    ></div>
+
+
+                    <div
+                        id="recordsEmpty"
+                        class="hidden p-10 text-center"
+                    >
+
+                        <div class="text-5xl">
+                            📭
+                        </div>
+
+                        <h3 class="font-black text-xl mt-4">
+                            No Records Yet
+                        </h3>
+
+                        <p class="text-slate-500 text-sm mt-2">
+                            No clinical records have been added for this patient.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        id="recordsContainer"
+                        class="hidden p-6 space-y-5"
+                    ></div>
+
+                </section>
+
+            </section>
+
+
+            <!-- =================================================
+                 SECURITY NOTICE
+            ================================================== -->
+
+            <section
+                class="mt-8
+                       bg-blue-50
+                       border border-blue-100
+                       rounded-2xl
+                       p-6"
+            >
+
+                <h2 class="font-black text-lg">
+                    🔐 Clinical Information Security
+                </h2>
+
+                <p class="text-sm text-blue-900 mt-2">
+                    Patient records contain confidential clinical
+                    information. Access and update records only when
+                    required for legitimate hospital duties.
+                </p>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+
+    <script src="js/supabase.js"></script>
+
+
+    <!-- =====================================================
+         APPLICATION LOGIC
+    ====================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
+
+        const loading =
+            document.getElementById("loading");
+
+        const recordsPage =
+            document.getElementById("recordsPage");
+
+        const pageTitle =
+            document.getElementById("pageTitle");
+
+        const staffWelcome =
+            document.getElementById("staffWelcome");
+
+        const patientSearch =
+            document.getElementById("patientSearch");
+
+        const searchButton =
+            document.getElementById("searchButton");
+
+        const clearSearchButton =
+            document.getElementById("clearSearchButton");
+
+        const searchStatus =
+            document.getElementById("searchStatus");
+
+        const patientCount =
+            document.getElementById("patientCount");
+
+        const patientsEmpty =
+            document.getElementById("patientsEmpty");
+
+        const patientsContainer =
+            document.getElementById("patientsContainer");
+
+        const selectedPatientSection =
+            document.getElementById(
+                "selectedPatientSection"
+            );
+
+        const selectedPatientName =
+            document.getElementById(
+                "selectedPatientName"
+            );
+
+        const selectedPatientNumber =
+            document.getElementById(
+                "selectedPatientNumber"
+            );
+
+        const selectedPatientSex =
+            document.getElementById(
+                "selectedPatientSex"
+            );
+
+        const selectedPatientDOB =
+            document.getElementById(
+                "selectedPatientDOB"
+            );
+
+        const selectedPatientPhone =
+            document.getElementById(
+                "selectedPatientPhone"
+            );
+
+        const selectedPatientAddress =
+            document.getElementById(
+                "selectedPatientAddress"
+            );
+
+        const selectedPatientDOBFull =
+            document.getElementById(
+                "selectedPatientDOBFull"
+            );
+
+        const closePatientButton =
+            document.getElementById(
+                "closePatientButton"
+            );
+
+        const recordForm =
+            document.getElementById(
+                "recordForm"
+            );
+
+        const recordType =
+            document.getElementById(
+                "recordType"
+            );
+
+        const recordTitle =
+            document.getElementById(
+                "recordTitle"
+            );
+
+        const clinicalNote =
+            document.getElementById(
+                "clinicalNote"
+            );
+
+        const saveRecordButton =
+            document.getElementById(
+                "saveRecordButton"
+            );
+
+        const recordFormStatus =
+            document.getElementById(
+                "recordFormStatus"
+            );
+
+        const recordCount =
+            document.getElementById(
+                "recordCount"
+            );
+
+        const recordsStatus =
+            document.getElementById(
+                "recordsStatus"
+            );
+
+        const recordsEmpty =
+            document.getElementById(
+                "recordsEmpty"
+            );
+
+        const recordsContainer =
+            document.getElementById(
+                "recordsContainer"
+            );
+
+        const backButton =
+            document.getElementById(
+                "backButton"
+            );
+
+
+        // ====================================================
+        // CURRENT STAFF
+        // ====================================================
+
+        let currentUser = null;
+
+        let currentProfile = null;
+
+        let selectedPatient = null;
+
+
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        // ====================================================
+        // FORMAT DATE
+        // ====================================================
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "Unknown date";
+            }
+
+            const date =
+                new Date(value);
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return "Unknown date";
+            }
+
+            return date.toLocaleString(
+                "en-GH",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+        }
+
+
+        // ====================================================
+        // FORMAT DOB
+        // ====================================================
+
+        function formatDOB(value) {
+
+            if (!value) {
+                return "Not provided";
+            }
+
+            const date =
+                new Date(
+                    value + "T00:00:00"
+                );
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return "Not provided";
+            }
+
+            return date.toLocaleDateString(
+                "en-GH",
+                {
+                    dateStyle: "medium"
+                }
+            );
+
+        }
+
+
+        // ====================================================
+        // STATUS HELPERS
+        // ====================================================
+
+        function showStatus(
+            element,
+            message,
+            type
+        ) {
+
+            element.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700",
+                "bg-yellow-50",
+                "text-yellow-700"
+            );
+
+            if (type === "error") {
+
+                element.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+
+            }
+            else if (type === "success") {
+
+                element.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+
+            }
+            else if (type === "warning") {
+
+                element.classList.add(
+                    "bg-yellow-50",
+                    "text-yellow-700"
+                );
+
+            }
+            else {
+
+                element.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+
+            }
+
+            element.textContent =
+                message;
+
+        }
+
+
+        function hideStatus(element) {
+
+            element.classList.add(
+                "hidden"
+            );
+
+        }
+
+
+        // ====================================================
+        // LOAD CURRENT STAFF
+        // ====================================================
+
+        async function loadCurrentStaff() {
+
+            if (!window.CHA_SUPABASE) {
+
+                throw new Error(
+                    "Supabase is not configured."
+                );
+
+            }
+
+            const {
+                data: authData,
+                error: authError
+            } =
+                await window.CHA_SUPABASE
+                    .auth
+                    .getUser();
+
+            if (
+                authError ||
+                !authData ||
+                !authData.user
+            ) {
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+            currentUser =
+                authData.user;
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await window.CHA_SUPABASE
+                    .from("staff_profiles")
+                    .select(`
+                        id,
+                        full_name,
+                        staff_id,
+                        role,
+                        department_id,
+                        is_active,
+                        departments (
+                            id,
+                            name
+                        )
+                    `)
+                    .eq(
+                        "id",
+                        currentUser.id
+                    )
+                    .single();
+
+            if (profileError) {
+
+                throw profileError;
+
+            }
+
+            if (
+                !profile ||
+                profile.is_active !== true
+            ) {
+
+                await window.CHA_SUPABASE
+                    .auth
+                    .signOut();
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+            currentProfile =
+                profile;
+
+            const departmentName =
+                profile.departments?.name ||
+                "Department";
+
+            pageTitle.textContent =
+                "Patient Records";
+
+            staffWelcome.textContent =
+                "Welcome " +
+                (
+                    profile.full_name ||
+                    "Staff Member"
+                ) +
+                ". Authorized patient records for " +
+                departmentName +
+                " are available below.";
+
+            return profile;
+
+        }
+
+
+        // ====================================================
+        // SEARCH PATIENTS
+        // ====================================================
+
+        async function searchPatients() {
+
+            const searchTerm =
+                patientSearch.value.trim();
+
+            patientsContainer.innerHTML = "";
+
+            patientsContainer.classList.add(
+                "hidden"
+            );
+
+            patientsEmpty.classList.add(
+                "hidden"
+            );
+
+            hideStatus(
+                searchStatus
+            );
+
+            if (!searchTerm) {
+
+                showStatus(
+                    searchStatus,
+                    "Enter a patient name, patient number or phone number.",
+                    "warning"
+                );
+
+                patientCount.textContent =
+                    "0 Patients";
+
+                return;
+
+            }
+
+            searchButton.disabled =
+                true;
+
+            searchButton.textContent =
+                "Searching...";
+
+            try {
+
+                const escaped =
+                    searchTerm
+                        .replace(/%/g, "\\%")
+                        .replace(/_/g, "\\_");
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("patients")
+                        .select(`
+                            id,
+                            patient_number,
+                            full_name,
+                            date_of_birth,
+                            sex,
+                            phone,
+                            address
+                        `)
+                        .or(
+                            "full_name.ilike.%" +
+                            escaped +
+                            "%," +
+                            "patient_number.ilike.%" +
+                            escaped +
+                            "%," +
+                            "phone.ilike.%" +
+                            escaped +
+                            "%"
+                        )
+                        .order(
+                            "full_name",
+                            {
+                                ascending: true
+                            }
+                        )
+                        .limit(50);
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+                const patients =
+                    data || [];
+
+                patientCount.textContent =
+                    patients.length +
+                    (
+                        patients.length === 1
+                            ? " Patient"
+                            : " Patients"
+                    );
+
+                if (
+                    patients.length === 0
+                ) {
+
+                    patientsEmpty.classList.remove(
+                        "hidden"
+                    );
+
+                    return;
+
+                }
+
+                patients.forEach(
+                    function(patient) {
+
+                        renderPatientCard(
+                            patient
+                        );
+
+                    }
+                );
+
+                patientsContainer.classList.remove(
+                    "hidden"
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "CHA Patient Search Error:",
+                    error
+                );
+
+                showStatus(
+                    searchStatus,
+                    "Unable to search patients: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+            finally {
+
+                searchButton.disabled =
+                    false;
+
+                searchButton.textContent =
+                    "🔎 Search";
+
+            }
+
+        }
+
+
+        // ====================================================
+        // RENDER PATIENT CARD
+        // ====================================================
+
+        function renderPatientCard(
+            patient
+        ) {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+            card.className =
+                "patient-card border border-slate-200 rounded-2xl p-5 bg-white";
+
+            card.innerHTML = `
+
+                <div class="flex items-start justify-between gap-3">
+
+                    <div>
+
+                        <h3
+                            class="font-black
+                                   text-lg
+                                   text-slate-900"
+                        >
+                            ${escapeHTML(
+                                patient.full_name
+                            )}
+                        </h3>
+
+                        <p
+                            class="text-sm
+                                  text-blue-700
+                                  font-bold
+                                  mt-1"
+                        >
+                            ${escapeHTML(
+                                patient.patient_number
+                            )}
+                        </p>
+
+                    </div>
+
+                    <span
+                        class="bg-slate-100
+                               text-slate-700
+                               px-2 py-1
+                               rounded-full
+                               text-xs
+                               font-bold"
+                    >
+                        ${escapeHTML(
+                            patient.sex
+                        )}
+                    </span>
+
+                </div>
+
+                <div class="mt-4 space-y-2 text-sm">
+
+                    <p>
+                        <span class="font-bold">
+                            DOB:
+                        </span>
+                        ${escapeHTML(
+                            formatDOB(
+                                patient.date_of_birth
+                            )
+                        )}
+                    </p>
+
+                    <p>
+                        <span class="font-bold">
+                            Phone:
+                        </span>
+                        ${escapeHTML(
+                            patient.phone ||
+                            "Not provided"
+                        )}
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="view-records-button
+                           mt-5
+                           w-full
+                           bg-blue-900
+                           hover:bg-blue-800
+                           text-white
+                           px-4 py-3
+                           rounded-xl
+                           font-bold"
+                >
+                    📋 View Patient Records
+                </button>
+
+            `;
+
+            const button =
+                card.querySelector(
+                    ".view-records-button"
+                );
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    selectPatient(
+                        patient
+                    );
+
+                }
+            );
+
+            patientsContainer.appendChild(
+                card
+            );
+
+        }
+
+
+        // ====================================================
+        // SELECT PATIENT
+        // ====================================================
+
+        async function selectPatient(
+            patient
+        ) {
+
+            selectedPatient =
+                patient;
+
+            selectedPatientName.textContent =
+                patient.full_name ||
+                "Unknown Patient";
+
+            selectedPatientNumber.textContent =
+                "Patient No: " +
+                (
+                    patient.patient_number ||
+                    "—"
+                );
+
+            selectedPatientSex.textContent =
+                "Sex: " +
+                (
+                    patient.sex ||
+                    "—"
+                );
+
+            selectedPatientDOB.textContent =
+                "DOB: " +
+                formatDOB(
+                    patient.date_of_birth
+                );
+
+            selectedPatientPhone.textContent =
+                patient.phone ||
+                "Not provided";
+
+            selectedPatientAddress.textContent =
+                patient.address ||
+                "Not provided";
+
+            selectedPatientDOBFull.textContent =
+                formatDOB(
+                    patient.date_of_birth
+                );
+
+            selectedPatientSection.classList.remove(
+                "hidden"
+            );
+
+            recordsContainer.innerHTML = "";
+
+            recordsContainer.classList.add(
+                "hidden"
+            );
+
+            recordsEmpty.classList.add(
+                "hidden"
+            );
+
+            recordCount.textContent =
+                "0 Records";
+
+            window.scrollTo({
+                top:
+                    selectedPatientSection
+                        .offsetTop - 20,
+                behavior: "smooth"
+            });
+
+            await loadPatientRecords();
+
+        }
+
+
+        // ====================================================
+        // LOAD PATIENT RECORDS
+        // ====================================================
+
+        async function loadPatientRecords() {
+
+            if (
+                !selectedPatient ||
+                !selectedPatient.id
+            ) {
+                return;
+            }
+
+            recordsContainer.innerHTML =
+                "";
+
+            recordsContainer.classList.add(
+                "hidden"
+            );
+
+            recordsEmpty.classList.add(
+                "hidden"
+            );
+
+            hideStatus(
+                recordsStatus
+            );
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("patient_records")
+                        .select(`
+                            id,
+                            patient_id,
+                            created_by,
+                            department_id,
+                            record_type,
+                            title,
+                            clinical_note,
+                            created_at,
+                            staff_profiles (
+                                full_name,
+                                staff_id,
+                                role
+                            ),
+                            departments (
+                                name
+                            )
+                        `)
+                        .eq(
+                            "patient_id",
+                            selectedPatient.id
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+                const records =
+                    data || [];
+
+                recordCount.textContent =
+                    records.length +
+                    (
+                        records.length === 1
+                            ? " Record"
+                            : " Records"
+                    );
+
+                if (
+                    records.length === 0
+                ) {
+
+                    recordsEmpty.classList.remove(
+                        "hidden"
+                    );
+
+                    return;
+
+                }
+
+                records.forEach(
+                    function(record) {
+
+                        renderRecordCard(
+                            record
+                        );
+
+                    }
+                );
+
+                recordsContainer.classList.remove(
+                    "hidden"
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "CHA Patient Records Error:",
+                    error
+                );
+
+                showStatus(
+                    recordsStatus,
+                    "Unable to load patient records: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        // ====================================================
+        // RENDER RECORD
+        // ====================================================
+
+        function renderRecordCard(
+            record
+        ) {
+
+            const card =
+                document.createElement(
+                    "article"
+                );
+
+            card.className =
+                "record-card border border-slate-200 rounded-2xl p-5";
+
+            const creatorName =
+                record.staff_profiles?.full_name ||
+                "Unknown staff";
+
+            const creatorRole =
+                record.staff_profiles?.role ||
+                "Staff";
+
+            const departmentName =
+                record.departments?.name ||
+                "Unknown department";
+
+            card.innerHTML = `
+
+                <div
+                    class="flex flex-col
+                           lg:flex-row
+                           lg:items-start
+                           lg:justify-between
+                           gap-4"
+                >
+
+                    <div>
+
+                        <div
+                            class="flex flex-wrap
+                                   items-center
+                                   gap-2"
+                        >
+
+                            <span
+                                class="bg-blue-100
+                                       text-blue-800
+                                       px-3 py-1
+                                       rounded-full
+                                       text-xs
+                                       font-black"
+                            >
+                                ${escapeHTML(
+                                    record.record_type
+                                )}
+                            </span>
+
+                            <span
+                                class="text-xs
+                                       text-slate-400"
+                            >
+                                ${escapeHTML(
+                                    formatDate(
+                                        record.created_at
+                                    )
+                                )}
+                            </span>
+
+                        </div>
+
+                        <h3
+                            class="font-black
+                                   text-xl
+                                   text-slate-900
+                                   mt-3"
+                        >
+                            ${escapeHTML(
+                                record.title
+                            )}
+                        </h3>
+
+                        <p
+                            class="text-sm
+                                  text-slate-500
+                                  mt-2"
+                        >
+                            Created by:
+                            ${escapeHTML(
+                                creatorName
+                            )}
+                            —
+                            ${escapeHTML(
+                                creatorRole
+                            )}
+                            —
+                            ${escapeHTML(
+                                departmentName
+                            )}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div
+                    class="mt-5
+                           bg-slate-50
+                           border border-slate-100
+                           rounded-xl
+                           p-5
+                           text-sm
+                           whitespace-pre-wrap"
+                >
+                    ${escapeHTML(
+                        record.clinical_note
+                    )}
+                </div>
+
+            `;
+
+            recordsContainer.appendChild(
+                card
+            );
+
+        }
+
+
+        // ====================================================
+        // SAVE PATIENT RECORD
+        // ====================================================
+
+        recordForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+                hideStatus(
+                    recordFormStatus
+                );
+
+                if (
+                    !selectedPatient ||
+                    !selectedPatient.id
+                ) {
+
+                    showStatus(
+                        recordFormStatus,
+                        "Please select a patient first.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                if (
+                    !currentUser ||
+                    !currentUser.id
+                ) {
+
+                    showStatus(
+                        recordFormStatus,
+                        "Your staff session has expired. Please log in again.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                if (
+                    !currentProfile ||
+                    !currentProfile.department_id
+                ) {
+
+                    showStatus(
+                        recordFormStatus,
+                        "Your staff profile is not assigned to a department.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                const type =
+                    recordType.value;
+
+                const title =
+                    recordTitle.value.trim();
+
+                const note =
+                    clinicalNote.value.trim();
+
+                if (!type) {
+
+                    showStatus(
+                        recordFormStatus,
+                        "Please select a record type.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                if (!title) {
+
+                    showStatus(
+                        recordFormStatus,
+                        "Please enter a record title.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                if (!note) {
+
+                    showStatus(
+                        recordFormStatus,
+                        "Please enter the clinical note.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+                saveRecordButton.disabled =
+                    true;
+
+                saveRecordButton.textContent =
+                    "Saving...";
+
+                showStatus(
+                    recordFormStatus,
+                    "Saving patient record...",
+                    "info"
+                );
+
+                try {
+
+                    const {
+                        error
+                    } =
+                        await window.CHA_SUPABASE
+                            .from("patient_records")
+                            .insert({
+                                patient_id:
+                                    selectedPatient.id,
+
+                                created_by:
+                                    currentUser.id,
+
+                                department_id:
+                                    currentProfile.department_id,
+
+                                record_type:
+                                    type,
+
+                                title:
+                                    title,
+
+                                clinical_note:
+                                    note
+                            });
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+                    recordForm.reset();
+
+                    showStatus(
+                        recordFormStatus,
+                        "Patient record saved successfully.",
+                        "success"
+                    );
+
+                    await loadPatientRecords();
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "CHA Save Patient Record Error:",
+                        error
+                    );
+
+                    showStatus(
+                        recordFormStatus,
+                        "Unable to save patient record: " +
+                        (
+                            error.message ||
+                            "Unknown error"
+                        ),
+                        "error"
+                    );
+
+                }
+                finally {
+
+                    saveRecordButton.disabled =
+                        false;
+
+                    saveRecordButton.textContent =
+                        "💾 Save Patient Record";
+
+                }
+
+            }
+        );
+
+
+        // ====================================================
+        // SEARCH BUTTON
+        // ====================================================
+
+        searchButton.addEventListener(
+            "click",
+            function() {
+
+                searchPatients();
+
+            }
+        );
+
+
+        // ====================================================
+        // ENTER SEARCH
+        // ====================================================
+
+        patientSearch.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    searchPatients();
+
+                }
+
+            }
+        );
+
+
+        // ====================================================
+        // CLEAR SEARCH
+        // ====================================================
+
+        clearSearchButton.addEventListener(
+            "click",
+            function() {
+
+                patientSearch.value =
+                    "";
+
+                patientsContainer.innerHTML =
+                    "";
+
+                patientsContainer.classList.add(
+                    "hidden"
+                );
+
+                patientsEmpty.classList.add(
+                    "hidden"
+                );
+
+                patientCount.textContent =
+                    "0 Patients";
+
+                hideStatus(
+                    searchStatus
+                );
+
+                closeSelectedPatient();
+
+            }
+        );
+
+
+        // ====================================================
+        // CLOSE PATIENT
+        // ====================================================
+
+        closePatientButton.addEventListener(
+            "click",
+            function() {
+
+                closeSelectedPatient();
+
+            }
+        );
+
+
+        function closeSelectedPatient() {
+
+            selectedPatient =
+                null;
+
+            selectedPatientSection.classList.add(
+                "hidden"
+            );
+
+            recordsContainer.innerHTML =
+                "";
+
+            recordsContainer.classList.add(
+                "hidden"
+            );
+
+            recordsEmpty.classList.add(
+                "hidden"
+            );
+
+            recordForm.reset();
+
+            hideStatus(
+                recordFormStatus
+            );
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        // ====================================================
+        // BACK TO DASHBOARD
+        // ====================================================
+
+        backButton.addEventListener(
+            "click",
+            function() {
+
+                window.location.href =
+                    "staff-dashboard.html";
+
+            }
+        );
+
+
+        // ====================================================
+        // INITIALIZE
+        // ====================================================
+
+        async function initializePatientRecords() {
+
+            try {
+
+                const profile =
+                    await loadCurrentStaff();
+
+                if (!profile) {
+                    return;
+                }
+
+                loading.classList.add(
+                    "hidden"
+                );
+
+                recordsPage.classList.remove(
+                    "hidden"
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "CHA Patient Records Initialization Error:",
+                    error
+                );
+
+                loading.innerHTML = `
+
+                    <div class="text-3xl">
+                        ⚠️
+                    </div>
+
+                    <p
+                        class="font-bold
+                              mt-3
+                              text-red-700"
+                    >
+                        Unable to load Patient Records
+                    </p>
+
+                    <p
+                        class="text-sm
+                              text-slate-500
+                              mt-2"
+                    >
+                        ${escapeHTML(
+                            error.message ||
+                            "Please try again."
+                        )}
+                    </p>
+
+                    <button
+                        type="button"
+                        id="returnDashboardButton"
+                        class="
+                            mt-5
+                            bg-blue-900
+                            hover:bg-blue-800
+                            text-white
+                            px-5
+                            py-3
+                            rounded-xl
+                            font-bold
+                        "
+                    >
+                        Return to Dashboard
+                    </button>
+
+                `;
+
+                const returnDashboardButton =
+                    document.getElementById(
+                        "returnDashboardButton"
+                    );
+
+                if (
+                    returnDashboardButton
+                ) {
+
+                    returnDashboardButton.addEventListener(
+                        "click",
+                        function() {
+
+                            window.location.href =
+                                "staff-dashboard.html";
+
+                        }
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        initializePatientRecords();
+
+    </script>
+
+</body>
+</html>
