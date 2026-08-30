@@ -3,7 +3,11 @@
 // COMMUNITY HOSPITAL AFARI
 // CHA AI ASSISTANT — GEMINI
 //
-// Secure Netlify Function
+// Optimized for:
+// - Faster responses
+// - Reliable JSON responses
+// - One quick retry for temporary errors
+// - Gemini 3.7 Flash low thinking
 //
 // IMPORTANT:
 // GEMINI_API_KEY must ONLY exist in Netlify environment variables.
@@ -13,7 +17,7 @@ exports.handler = async (event) => {
     const headers = {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
         "Access-Control-Allow-Methods": "POST, OPTIONS"
     };
     // ========================================================
@@ -67,10 +71,9 @@ exports.handler = async (event) => {
             JSON.parse(
                 event.body || "{}"
             );
-    }
-    catch (error) {
+    } catch (error) {
         console.error(
-            "CHA AI invalid request JSON:",
+            "CHA AI: Invalid request JSON.",
             error
         );
         return {
@@ -169,39 +172,11 @@ Do not unnecessarily repeat the contact information for
 unrelated questions.
 `;
     // ========================================================
-    // SAFE JSON RESPONSE READER
-    // ========================================================
-    async function readResponse(response) {
-        const rawText =
-            await response.text();
-        if (!rawText) {
-            return {
-                data: null,
-                rawText: ""
-            };
-        }
-        try {
-            return {
-                data:
-                    JSON.parse(rawText),
-                rawText
-            };
-        }
-        catch (error) {
-            console.error(
-                "CHA AI: Gemini returned non-JSON response:",
-                rawText.substring(0, 1000)
-            );
-            return {
-                data: null,
-                rawText
-            };
-        }
-    }
-    // ========================================================
     // GEMINI REQUEST
     // ========================================================
-    async function callGemini(model) {
+    async function callGemini() {
+        const model =
+            "gemini-3.7-flash";
         const url =
             "https://generativelanguage.googleapis.com/v1beta/models/" +
             model +
@@ -235,159 +210,58 @@ unrelated questions.
                             ]
                         }
                     ],
-                    // IMPORTANT:
-                    // Gemini 3.7 Flash does not use
-                    // the old temperature parameter.
                     generationConfig: {
                         maxOutputTokens:
-                            1000
+                            1000,
+                        thinkingConfig: {
+                            thinkingLevel:
+                                "low"
+                        }
                     }
                 })
             }
         );
     }
     // ========================================================
-    // SLEEP
+    // READ GEMINI RESPONSE SAFELY
     // ========================================================
-    function sleep(ms) {
-        return new Promise(
-            resolve =>
-                setTimeout(
-                    resolve,
-                    ms
-                )
-        );
-    }
-    // ========================================================
-    // TRY GEMINI MODEL
-    // ========================================================
-    async function tryModel(
-        model,
-        attempts = 3
+    async function readGeminiResponse(
+        response
     ) {
-        let lastResult = null;
-        for (
-            let attempt = 1;
-            attempt <= attempts;
-            attempt++
-        ) {
-            try {
-                console.log(
-                    `CHA AI: ${model} attempt ${attempt}/${attempts}`
-                );
-                const response =
-                    await callGemini(
-                        model
-                    );
-                const parsed =
-                    await readResponse(
-                        response
-                    );
-                const data =
-                    parsed.data;
-                lastResult = {
-                    ok:
-                        response.ok,
-                    status:
-                        response.status,
-                    data:
-                        data,
-                    rawText:
-                        parsed.rawText
-                };
-                // =================================================
-                // SUCCESS
-                // =================================================
-                if (response.ok) {
-                    return lastResult;
-                }
-                // =================================================
-                // TEMPORARY ERRORS
-                // =================================================
-                if (
-                    response.status === 429 ||
-                    response.status === 500 ||
-                    response.status === 502 ||
-                    response.status === 503 ||
-                    response.status === 504
-                ) {
-                    console.warn(
-                        `CHA AI temporary Gemini error: ${response.status}`
-                    );
-                    if (
-                        attempt < attempts
-                    ) {
-                        const delay =
-                            1500 *
-                            Math.pow(
-                                2,
-                                attempt - 1
-                            );
-                        await sleep(
-                            delay
-                        );
-                        continue;
-                    }
-                }
-                // =================================================
-                // PERMANENT ERROR
-                // =================================================
-                return lastResult;
-            }
-            catch (error) {
-                console.error(
-                    `CHA AI ${model} request error:`,
-                    error
-                );
-                lastResult = {
-                    ok: false,
-                    status: 500,
-                    data: {
-                        error: {
-                            message:
-                                error.message ||
-                                "Unknown Gemini request error."
-                        }
-                    },
-                    rawText: ""
-                };
-                if (
-                    attempt < attempts
-                ) {
-                    const delay =
-                        1500 *
-                        Math.pow(
-                            2,
-                            attempt - 1
-                        );
-                    await sleep(
-                        delay
-                    );
-                    continue;
-                }
-            }
-        }
-        return (
-            lastResult || {
-                ok: false,
-                status: 503,
-                data: {
-                    error: {
-                        message:
-                            "Gemini service is temporarily unavailable."
-                    }
-                },
+        const rawText =
+            await response.text();
+        if (!rawText) {
+            return {
+                data: null,
                 rawText: ""
-            }
-        );
+            };
+        }
+        try {
+            return {
+                data:
+                    JSON.parse(rawText),
+                rawText:
+                    rawText
+            };
+        } catch (error) {
+            console.error(
+                "CHA AI: Gemini returned invalid JSON.",
+                rawText.substring(
+                    0,
+                    1000
+                )
+            );
+            return {
+                data: null,
+                rawText:
+                    rawText
+            };
+        }
     }
     // ========================================================
-    // EXTRACT GEMINI ANSWER
+    // EXTRACT ANSWER
     // ========================================================
     function extractAnswer(data) {
-        // ------------------------------------------------------
-        // Normal generateContent response
-        // ------------------------------------------------------
         const candidates =
             Array.isArray(
                 data?.candidates
@@ -421,86 +295,102 @@ unrelated questions.
                 );
             }
         );
-        const answer =
-            texts.join("\n").trim();
-        if (answer) {
-            return answer;
-        }
-        return "";
+        return texts
+            .join("\n")
+            .trim();
     }
     // ========================================================
-    // MAIN GEMINI LOGIC
+    // WAIT
+    // ========================================================
+    function sleep(ms) {
+        return new Promise(
+            resolve =>
+                setTimeout(
+                    resolve,
+                    ms
+                )
+        );
+    }
+    // ========================================================
+    // MAIN AI REQUEST
     // ========================================================
     try {
         // -----------------------------------------------------
-        // PRIMARY MODEL
+        // FIRST REQUEST
         // -----------------------------------------------------
-        let result =
-            await tryModel(
-                "gemini-3.7-flash",
-                3
+        let response =
+            await callGemini();
+        let parsed =
+            await readGeminiResponse(
+                response
             );
         // -----------------------------------------------------
-        // FALLBACK MODEL
+        // ONE QUICK RETRY
         // -----------------------------------------------------
-        if (!result.ok) {
+        if (
+            !response.ok &&
+            (
+                response.status === 429 ||
+                response.status === 500 ||
+                response.status === 502 ||
+                response.status === 503 ||
+                response.status === 504
+            )
+        ) {
             console.warn(
-                "CHA AI: Primary model failed. Trying fallback model."
+                "CHA AI: Temporary Gemini error. Performing one retry."
             );
-            result =
-                await tryModel(
-                    "gemini-3.1-flash-lite",
-                    2
+            await sleep(800);
+            response =
+                await callGemini();
+            parsed =
+                await readGeminiResponse(
+                    response
                 );
         }
         // -----------------------------------------------------
-        // BOTH MODELS FAILED
+        // GEMINI ERROR
         // -----------------------------------------------------
-        if (!result.ok) {
-            const geminiMessage =
-                result?.data?.error?.message ||
+        if (!response.ok) {
+            const geminiError =
+                parsed?.data?.error?.message ||
                 "Unknown Gemini error.";
             console.error(
-                "CHA AI Gemini final error:",
+                "CHA AI Gemini error:",
                 {
                     status:
-                        result?.status,
+                        response.status,
                     message:
-                        geminiMessage,
-                    response:
-                        result?.data ||
-                        result?.rawText ||
-                        null
+                        geminiError
                 }
             );
             let userMessage =
-                "The AI service is temporarily unavailable. Please try again in a moment.";
-            // More useful messages for common errors.
+                "The AI service is temporarily unavailable. Please try again shortly.";
             if (
-                result?.status === 401 ||
-                result?.status === 403
+                response.status === 401 ||
+                response.status === 403
             ) {
                 userMessage =
                     "The AI service authentication needs attention. Please contact the hospital administrator.";
             }
             else if (
-                result?.status === 429
+                response.status === 429
             ) {
                 userMessage =
-                    "The AI service is temporarily busy. Please try again shortly.";
+                    "The AI service is currently busy. Please wait a moment and try again.";
             }
             else if (
-                result?.status >= 400 &&
-                result?.status < 500
+                response.status >= 400 &&
+                response.status < 500
             ) {
                 userMessage =
                     "The AI service could not process that request. Please try again.";
             }
             return {
                 statusCode:
-                    result?.status >= 400 &&
-                    result?.status < 600
-                        ? result.status
+                    response.status >= 400 &&
+                    response.status < 600
+                        ? response.status
                         : 502,
                 headers,
                 body:
@@ -516,24 +406,25 @@ unrelated questions.
         // -----------------------------------------------------
         const answer =
             extractAnswer(
-                result.data
+                parsed.data
             );
         // -----------------------------------------------------
-        // EMPTY RESPONSE / SAFETY BLOCK
+        // SAFETY BLOCK
         // -----------------------------------------------------
         if (!answer) {
-            console.error(
-                "CHA AI: Gemini returned no usable answer.",
-                JSON.stringify(
-                    result.data ||
-                    result.rawText ||
-                    {}
-                )
-            );
             const blockReason =
-                result?.data
+                parsed?.data
                     ?.promptFeedback
                     ?.blockReason;
+            console.error(
+                "CHA AI: No usable answer.",
+                {
+                    blockReason:
+                        blockReason || null,
+                    response:
+                        parsed?.data || null
+                }
+            );
             if (blockReason) {
                 return {
                     statusCode: 200,
@@ -553,7 +444,7 @@ unrelated questions.
                     JSON.stringify({
                         success: false,
                         error:
-                            "The AI service returned an empty response. Please try again."
+                            "The AI returned an empty response. Please try again."
                     })
             };
         }
