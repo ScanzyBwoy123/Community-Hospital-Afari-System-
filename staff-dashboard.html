@@ -10,6 +10,25 @@
         body {
             font-family: Arial, Helvetica, sans-serif;
         }
+        .dashboard-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: left;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+        }
+        .dashboard-card:focus {
+            outline: 3px solid rgba(59, 130, 246, 0.25);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
@@ -38,6 +57,7 @@
                 </div>
                 <button
                     id="logoutButton"
+                    type="button"
                     class="bg-red-600 hover:bg-red-700
                            px-4 py-2 rounded-lg
                            font-bold"
@@ -51,7 +71,9 @@
          MAIN
     ====================================================== -->
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Loading -->
+        <!-- =================================================
+             LOADING
+        ================================================== -->
         <div
             id="loading"
             class="bg-white rounded-2xl shadow p-8 text-center"
@@ -63,12 +85,16 @@
                 Checking staff authentication...
             </p>
         </div>
-        <!-- Dashboard -->
+        <!-- =================================================
+             DASHBOARD
+        ================================================== -->
         <div
             id="dashboard"
             class="hidden"
         >
-            <!-- Welcome -->
+            <!-- =================================================
+                 WELCOME
+            ================================================== -->
             <section
                 class="bg-white rounded-2xl shadow p-6 mb-8"
             >
@@ -96,11 +122,17 @@
                     ></span>
                 </div>
             </section>
-            <!-- Dashboard cards -->
+            <!-- =================================================
+                 DASHBOARD CARDS
+            ================================================== -->
             <section
                 class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
             >
+                <!-- =================================================
+                     PATIENTS
+                ================================================== -->
                 <button
+                    type="button"
                     class="dashboard-card"
                     data-section="patients"
                 >
@@ -114,7 +146,11 @@
                         Access authorized patient information.
                     </p>
                 </button>
+                <!-- =================================================
+                     APPOINTMENTS
+                ================================================== -->
                 <button
+                    type="button"
                     class="dashboard-card"
                     data-section="appointments"
                 >
@@ -128,10 +164,17 @@
                         Review and manage appointment requests.
                     </p>
                 </button>
-             <a
-    href="staff-messages.html"
-    class="dashboard-card block"
->
+                <!-- =================================================
+                     DEPARTMENT INBOX
+                     THIS IS A REAL LINK.
+                     IT MUST NOT USE THE PLACEHOLDER
+                     MODULE HANDLER.
+                ================================================== -->
+                <a
+                    href="staff-messages.html"
+                    class="dashboard-card block"
+                    id="departmentInboxCard"
+                >
                     <div class="text-4xl">
                         💬
                     </div>
@@ -142,7 +185,11 @@
                         Communicate with other hospital departments.
                     </p>
                 </a>
+                <!-- =================================================
+                     LABORATORY
+                ================================================== -->
                 <button
+                    type="button"
                     class="dashboard-card"
                     data-section="laboratory"
                 >
@@ -156,7 +203,11 @@
                         Access authorized laboratory results.
                     </p>
                 </button>
+                <!-- =================================================
+                     MEDICAL RECORDS
+                ================================================== -->
                 <button
+                    type="button"
                     class="dashboard-card"
                     data-section="records"
                 >
@@ -170,8 +221,12 @@
                         Manage authorized patient records.
                     </p>
                 </button>
+                <!-- =================================================
+                     ADMINISTRATION
+                ================================================== -->
                 <button
                     id="adminCard"
+                    type="button"
                     class="dashboard-card hidden"
                     data-section="administration"
                 >
@@ -186,8 +241,16 @@
                     </p>
                 </button>
             </section>
-            <!-- Information -->
-            <section class="mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-6">
+            <!-- =================================================
+                 INFORMATION
+            ================================================== -->
+            <section
+                class="mt-8
+                       bg-blue-50
+                       border border-blue-100
+                       rounded-2xl
+                       p-6"
+            >
                 <h2 class="font-black text-lg">
                     🔐 Security Notice
                 </h2>
@@ -208,6 +271,10 @@
          DASHBOARD LOGIC
     ====================================================== -->
     <script>
+        "use strict";
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
         const loading =
             document.getElementById("loading");
         const dashboard =
@@ -220,25 +287,56 @@
             document.getElementById("staffDepartment");
         const adminCard =
             document.getElementById("adminCard");
+        const logoutButton =
+            document.getElementById("logoutButton");
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+        function escapeHTML(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        // ====================================================
+        // LOAD STAFF DASHBOARD
+        // ====================================================
         async function loadStaffDashboard() {
             try {
+                // --------------------------------------------
+                // CHECK SUPABASE
+                // --------------------------------------------
                 if (!window.CHA_SUPABASE) {
                     throw new Error(
                         "Supabase is not configured."
                     );
                 }
+                // --------------------------------------------
+                // CHECK AUTHENTICATION
+                // --------------------------------------------
                 const {
                     data: authData,
                     error: authError
                 } =
-                    await window.CHA_SUPABASE.auth.getUser();
-                if (authError || !authData.user) {
+                    await window.CHA_SUPABASE
+                        .auth
+                        .getUser();
+                if (
+                    authError ||
+                    !authData ||
+                    !authData.user
+                ) {
                     window.location.href =
                         "staff-login.html";
                     return;
                 }
                 const user =
                     authData.user;
+                // --------------------------------------------
+                // LOAD STAFF PROFILE
+                // --------------------------------------------
                 const {
                     data: profile,
                     error: profileError
@@ -255,40 +353,69 @@
                                 name
                             )
                         `)
-                        .eq("id", user.id)
+                        .eq(
+                            "id",
+                            user.id
+                        )
                         .single();
                 if (profileError) {
                     throw profileError;
                 }
-                if (!profile || !profile.is_active) {
-                    await window.CHA_SUPABASE.auth.signOut();
+                // --------------------------------------------
+                // CHECK ACTIVE STAFF
+                // --------------------------------------------
+                if (
+                    !profile ||
+                    profile.is_active !== true
+                ) {
+                    await window.CHA_SUPABASE
+                        .auth
+                        .signOut();
                     window.location.href =
                         "staff-login.html";
                     return;
                 }
+                // --------------------------------------------
+                // DISPLAY STAFF INFORMATION
+                // --------------------------------------------
                 staffName.textContent =
-                    profile.full_name;
+                    profile.full_name ||
+                    "Staff Member";
                 staffRole.textContent =
                     "Role: " +
-                    profile.role;
+                    (
+                        profile.role ||
+                        "Staff"
+                    );
                 staffDepartment.textContent =
                     "Department: " +
                     (
                         profile.departments?.name ||
                         "Not assigned"
                     );
-                if (profile.role === "admin") {
+                // --------------------------------------------
+                // SHOW ADMINISTRATION
+                // --------------------------------------------
+                if (
+                    String(profile.role || "")
+                        .toLowerCase()
+                        === "admin"
+                ) {
                     adminCard.classList.remove(
                         "hidden"
                     );
                 }
+                // --------------------------------------------
+                // SHOW DASHBOARD
+                // --------------------------------------------
                 loading.classList.add(
                     "hidden"
                 );
                 dashboard.classList.remove(
                     "hidden"
                 );
-            } catch (error) {
+            }
+            catch (error) {
                 console.error(
                     "CHA Dashboard Error:",
                     error
@@ -297,90 +424,172 @@
                     <div class="text-3xl">
                         ⚠️
                     </div>
-                    <p class="font-bold mt-3 text-red-700">
+                    <p
+                        class="font-bold
+                               mt-3
+                               text-red-700"
+                    >
                         Unable to load Staff Portal
                     </p>
-                    <p class="text-sm text-slate-500 mt-2">
-                        ${error.message || "Please try again."}
+                    <p
+                        class="text-sm
+                               text-slate-500
+                               mt-2"
+                    >
+                        ${escapeHTML(
+                            error.message ||
+                            "Please try again."
+                        )}
                     </p>
                     <button
-                        onclick="window.location.href='staff-login.html'"
-                        class="mt-5 bg-blue-900 text-white
-                               px-5 py-3 rounded-xl font-bold"
+                        type="button"
+                        id="returnLoginButton"
+                        class="
+                            mt-5
+                            bg-blue-900
+                            hover:bg-blue-800
+                            text-white
+                            px-5
+                            py-3
+                            rounded-xl
+                            font-bold
+                        "
                     >
                         Return to Login
                     </button>
                 `;
+                const returnLoginButton =
+                    document.getElementById(
+                        "returnLoginButton"
+                    );
+                if (returnLoginButton) {
+                    returnLoginButton.addEventListener(
+                        "click",
+                        function() {
+                            window.location.href =
+                                "staff-login.html";
+                        }
+                    );
+                }
             }
         }
-        // ----------------------------------------------------
-        // Logout
-        // ----------------------------------------------------
-        document
-            .getElementById("logoutButton")
-            .addEventListener(
-                "click",
-                async function() {
-                    await window.CHA_SUPABASE.auth.signOut();
+        // ====================================================
+        // LOGOUT
+        // ====================================================
+        logoutButton.addEventListener(
+            "click",
+            async function() {
+                logoutButton.disabled =
+                    true;
+                logoutButton.textContent =
+                    "Logging out...";
+                try {
+                    if (window.CHA_SUPABASE) {
+                        await window.CHA_SUPABASE
+                            .auth
+                            .signOut();
+                    }
+                }
+                catch (error) {
+                    console.error(
+                        "CHA Logout Error:",
+                        error
+                    );
+                }
+                finally {
                     window.location.href =
                         "staff-login.html";
                 }
-            );
-        // ----------------------------------------------------
-        // Dashboard cards
-        // ----------------------------------------------------
-        document
-    .querySelectorAll(".dashboard-card")
-    .forEach(function(card) {
-
-        card.addEventListener(
-            "click",
-            function() {
-
-                const section =
-                    this.dataset.section;
-
-                if (section === "appointments") {
-                    window.location.href =
-    "staff-appointments.html";
-                    return;
-                }
-if (section === "administration") {
-    window.location.href =
-        "staff-administration.html";
-    return;
-}
-                alert(
-                    section +
-                    " module will be connected next."
-                );
             }
         );
-
-    });
+        // ====================================================
+        // DASHBOARD CARD NAVIGATION
+        // IMPORTANT:
+        // ONLY BUTTON CARDS ARE HANDLED HERE.
+        //
+        // Department Inbox is an <a> and therefore
+        // will NOT reach this code.
+        // ====================================================
+        document
+            .querySelectorAll(
+                "button.dashboard-card[data-section]"
+            )
+            .forEach(
+                function(card) {
+                    card.addEventListener(
+                        "click",
+                        function() {
+                            const section =
+                                this.dataset.section;
+                            // --------------------------------
+                            // APPOINTMENTS
+                            // --------------------------------
+                            if (
+                                section ===
+                                "appointments"
+                            ) {
+                                window.location.href =
+                                    "staff-appointments.html";
+                                return;
+                            }
+                            // --------------------------------
+                            // ADMINISTRATION
+                            // --------------------------------
+                            if (
+                                section ===
+                                "administration"
+                            ) {
+                                window.location.href =
+                                    "staff-administration.html";
+                                return;
+                            }
+                            // --------------------------------
+                            // PLACEHOLDER MODULES
+                            // --------------------------------
+                            if (
+                                section === "patients" ||
+                                section === "laboratory" ||
+                                section === "records"
+                            ) {
+                                const moduleNames = {
+                                    patients:
+                                        "Patients",
+                                    laboratory:
+                                        "Laboratory",
+                                    records:
+                                        "Medical Records"
+                                };
+                                alert(
+                                    moduleNames[section] +
+                                    " module will be connected next."
+                                );
+                                return;
+                            }
+                            // --------------------------------
+                            // UNKNOWN SECTION
+                            // --------------------------------
+                            console.warn(
+                                "Unknown dashboard section:",
+                                section
+                            );
+                        }
+                    );
+                }
+            );
+        // ====================================================
+        // DEPARTMENT INBOX SAFETY
+        // ====================================================
+        //
+        // Do NOT add a click handler that redirects the
+        // Department Inbox to the placeholder alert.
+        //
+        // The <a href="staff-messages.html"> handles
+        // navigation naturally.
+        // ====================================================
+        // ====================================================
+        // INITIALIZE
+        // ====================================================
         loadStaffDashboard();
     </script>
-    <!-- =====================================================
-         CARD STYLING
-    ====================================================== -->
-    <style>
-        .dashboard-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            text-align: left;
-            box-shadow:
-                0 4px 10px rgba(0,0,0,0.04);
-            transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
-        }
-        .dashboard-card:hover {
-            transform: translateY(-3px);
-            box-shadow:
-                0 12px 25px rgba(0,0,0,0.08);
-        }
-    </style>
 </body>
 </html>
