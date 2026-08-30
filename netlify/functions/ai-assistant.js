@@ -42,17 +42,13 @@ exports.handler = async (event) => {
     }
 
     // --------------------------------------------------------
-    // GEMINI API KEY
+    // API KEY
     // --------------------------------------------------------
 
-    const apiKey =
-        process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-
-        console.error(
-            "GEMINI_API_KEY is missing."
-        );
+        console.error("GEMINI_API_KEY is missing.");
 
         return {
             statusCode: 500,
@@ -72,105 +68,71 @@ exports.handler = async (event) => {
     let body;
 
     try {
-
-        body = JSON.parse(
-            event.body || "{}"
-        );
-
+        body = JSON.parse(event.body || "{}");
     } catch (error) {
-
         return {
             statusCode: 400,
             headers,
             body: JSON.stringify({
                 success: false,
-                error:
-                    "Invalid JSON request."
+                error: "Invalid JSON request."
             })
         };
     }
 
     const message =
-        String(
-            body.message || ""
-        ).trim();
-
-    // --------------------------------------------------------
-    // VALIDATION
-    // --------------------------------------------------------
+        String(body.message || "").trim();
 
     if (!message) {
-
         return {
             statusCode: 400,
             headers,
             body: JSON.stringify({
                 success: false,
-                error:
-                    "Please enter a question."
+                error: "Please enter a question."
             })
         };
     }
 
     if (message.length > 4000) {
-
         return {
             statusCode: 400,
             headers,
             body: JSON.stringify({
                 success: false,
-                error:
-                    "Question is too long."
+                error: "Question is too long."
             })
         };
     }
 
-    // ========================================================
-    // COMMUNITY HOSPITAL AFARI AI INSTRUCTIONS
-    // ========================================================
+    // --------------------------------------------------------
+    // SYSTEM INSTRUCTION
+    // --------------------------------------------------------
 
     const systemInstruction = `
-
 You are CHA AI Assistant for Community Hospital Afari.
 
-You provide clear, helpful, friendly and safe general
-health information.
+You provide clear, helpful and safe general health information.
+
+IMPORTANT RULES:
+
+- You are an AI assistant, not a doctor.
+- Do not claim to have examined a patient.
+- Do not make definitive diagnoses.
+- Do not prescribe medication.
+- Do not provide individualized medication dosing.
+- Explain medical terms in simple language.
+- Encourage professional medical assessment when appropriate.
+- If someone describes a possible emergency, advise them to
+  seek urgent medical attention.
+- Never invent patient records, laboratory results,
+  appointments or hospital information.
+- Protect patient privacy.
+- Do not request unnecessary personal information.
+- Be professional, concise and easy to understand.
 
 ============================================================
-IMPORTANT SAFETY RULES
-============================================================
-
-1. You are an AI assistant, not a doctor or nurse.
-
-2. Do not claim that you personally examined a patient.
-
-3. Do not make definitive diagnoses.
-
-4. Do not prescribe medication.
-
-5. Do not provide individualized medication doses.
-
-6. Do not replace a qualified healthcare professional.
-
-7. Explain medical terminology in simple language.
-
-8. Encourage users to speak with a qualified healthcare
-   professional when appropriate.
-
-9. If someone describes a possible medical emergency,
-   advise them to seek urgent medical attention immediately.
-
-10. Never invent patient records, laboratory results,
-    appointments, diagnoses or hospital information.
-
-11. Protect patient privacy.
-
-12. Do not request unnecessary personal information.
-
-13. Be professional, friendly and easy to understand.
-
-============================================================
-COMMUNITY HOSPITAL AFARI INFORMATION
+COMMUNITY HOSPITAL AFARI CONTACT INFORMATION
 ============================================================
 
 Hospital:
@@ -192,91 +154,56 @@ Ashanti Region,
 Ghana.
 
 ============================================================
-HOSPITAL CONTACT RECOMMENDATIONS
+CONTACT RECOMMENDATIONS
 ============================================================
 
-When a user's question is related to Community Hospital
-Afari, hospital services, appointments, booking,
-referrals, visiting the hospital, follow-up care,
-directions, or getting further assistance, recommend
-contacting Community Hospital Afari when appropriate.
+If a user asks how to contact Community Hospital Afari,
+provide the hospital's general phone number and email.
 
-General contact:
+If a user asks for the hospital email, provide:
 
-Phone:
-+233 24 412 3456
-
-Email:
 info@afaricommunityhospital.gh
 
-For emergencies:
+If a user asks for the hospital phone number, provide:
+
++233 24 412 3456
+
+If a user asks how to book an appointment, tell them they
+can use the hospital appointment system or contact the
+hospital directly.
+
+If the user's question is related to hospital services,
+referrals, follow-up care, visiting the hospital, directions,
+or getting further assistance, recommend contacting the
+hospital when appropriate.
+
+For emergencies, advise the user to seek urgent medical
+attention immediately and provide:
 
 Emergency:
 +233 20 567 8901
 
-If the user specifically asks how to contact the hospital,
-always provide the general phone number and email.
+Do not invent, modify or guess the hospital contact details.
 
-If the user asks for the hospital email, provide:
-
-info@afaricommunityhospital.gh
-
-If the user asks for the hospital phone number, provide:
-
-+233 24 412 3456
-
-If the user asks how to book an appointment, explain that
-they can use the hospital's appointment booking system or
-contact the hospital directly.
-
-If the user asks how to reach the hospital or where the
-hospital is located, provide the hospital location and,
-when useful, the general phone number.
-
-If the user needs further medical assistance after
-receiving general information, recommend contacting the
-hospital or speaking with a qualified healthcare professional.
-
-Do not invent, modify or guess the hospital's contact
-information.
-
-============================================================
-ANSWER STYLE
-============================================================
-
-Answer the user's question directly.
-
-Use simple language.
-
-Do not unnecessarily repeat the same information.
-
-When hospital contact information is relevant, include it
-naturally in the response.
-
-For emergencies, prioritize urgent medical care and the
-emergency phone number.
+Do not unnecessarily repeat the contact information for
+unrelated questions.
 
 ============================================================
 `;
 
-    // ========================================================
+    // --------------------------------------------------------
     // DELAY HELPER
-    // ========================================================
+    // --------------------------------------------------------
 
     function sleep(ms) {
-
-        return new Promise(
-            resolve => setTimeout(
-                resolve,
-                ms
-            )
+        return new Promise(resolve =>
+            setTimeout(resolve, ms)
         );
-
     }
 
-    // ========================================================
+    // --------------------------------------------------------
     // GEMINI REQUEST
-    // ========================================================
+    // --------------------------------------------------------
 
     async function callGemini(model) {
 
@@ -284,9 +211,7 @@ emergency phone number.
             "https://generativelanguage.googleapis.com/v1beta/models/" +
             model +
             ":generateContent?key=" +
-            encodeURIComponent(
-                apiKey
-            );
+            encodeURIComponent(apiKey);
 
         return fetch(
             url,
@@ -301,50 +226,40 @@ emergency phone number.
                 body: JSON.stringify({
 
                     systemInstruction: {
-
                         parts: [
                             {
                                 text:
                                     systemInstruction
                             }
                         ]
-
                     },
 
                     contents: [
-
                         {
                             role: "user",
 
                             parts: [
-
                                 {
                                     text:
                                         message
                                 }
-
                             ]
                         }
-
                     ],
 
                     generationConfig: {
-
                         temperature: 0.3,
-
                         maxOutputTokens: 1000
-
                     }
 
                 })
             }
         );
-
     }
 
-    // ========================================================
-    // RETRY MODEL
-    // ========================================================
+    // --------------------------------------------------------
+    // TRY MODEL WITH RETRIES
+    // --------------------------------------------------------
 
     async function tryModel(
         model,
@@ -371,9 +286,7 @@ emergency phone number.
                 const data =
                     await response.json();
 
-                // ------------------------------------------------
-                // SUCCESS
-                // ------------------------------------------------
+                // Successful response
 
                 if (response.ok) {
 
@@ -385,7 +298,7 @@ emergency phone number.
                 }
 
                 // ------------------------------------------------
-                // TEMPORARY ERRORS
+                // RETRY TEMPORARY SERVER ERRORS
                 // ------------------------------------------------
 
                 if (
@@ -423,22 +336,18 @@ emergency phone number.
 
                 }
 
-                // ------------------------------------------------
-                // PERMANENT ERROR
-                // ------------------------------------------------
+                // Permanent error
 
                 return {
-
                     ok: false,
-
                     status:
                         response.status,
-
                     data
-
                 };
 
-            } catch (error) {
+            }
+
+            catch (error) {
 
                 console.error(
                     "Gemini request error:",
@@ -465,22 +374,14 @@ emergency phone number.
                 }
 
                 return {
-
                     ok: false,
-
                     status: 500,
-
                     data: {
-
                         error: {
-
                             message:
                                 error.message
-
                         }
-
                     }
-
                 };
 
             }
@@ -488,35 +389,29 @@ emergency phone number.
         }
 
         return {
-
             ok: false,
-
             status: 503,
-
             data: {
-
                 error: {
-
                     message:
                         "Gemini service is temporarily unavailable."
-
                 }
-
             }
-
         };
 
     }
 
-    // ========================================================
-    // MAIN AI LOGIC
-    // ========================================================
+    // --------------------------------------------------------
+    // MAIN GEMINI LOGIC
+    // --------------------------------------------------------
 
     try {
 
-        // ------------------------------------------------------
-        // PRIMARY MODEL
-        // ------------------------------------------------------
+        /*
+         * First try the main model.
+         *
+         * Keep this exactly as in the working version.
+         */
 
         let result =
             await tryModel(
@@ -524,9 +419,15 @@ emergency phone number.
                 3
             );
 
-        // ------------------------------------------------------
+
+        // -----------------------------------------------------
         // FALLBACK MODEL
-        // ------------------------------------------------------
+        // -----------------------------------------------------
+
+        /*
+         * If the main model is temporarily unavailable,
+         * try the fallback model.
+         */
 
         if (!result.ok) {
 
@@ -542,9 +443,10 @@ emergency phone number.
 
         }
 
-        // ------------------------------------------------------
-        // BOTH FAILED
-        // ------------------------------------------------------
+
+        // -----------------------------------------------------
+        // STILL FAILED
+        // -----------------------------------------------------
 
         if (!result.ok) {
 
@@ -558,7 +460,6 @@ emergency phone number.
             );
 
             return {
-
                 statusCode:
                     result.status || 502,
 
@@ -566,21 +467,18 @@ emergency phone number.
 
                 body:
                     JSON.stringify({
-
                         success: false,
-
                         error:
                             "The AI service is temporarily busy. Please try again in a moment."
-
                     })
-
             };
 
         }
 
-        // ======================================================
+
+        // -----------------------------------------------------
         // EXTRACT ANSWER
-        // ======================================================
+        // -----------------------------------------------------
 
         const answer =
             result?.data?.candidates?.[0]
@@ -592,6 +490,7 @@ emergency phone number.
                 .join("")
                 .trim();
 
+
         if (!answer) {
 
             console.error(
@@ -602,47 +501,36 @@ emergency phone number.
             );
 
             return {
-
                 statusCode: 502,
-
                 headers,
-
                 body:
                     JSON.stringify({
-
                         success: false,
-
                         error:
                             "The AI returned an empty response."
-
                     })
-
             };
 
         }
 
-        // ======================================================
+
+        // -----------------------------------------------------
         // SUCCESS
-        // ======================================================
+        // -----------------------------------------------------
 
         return {
-
             statusCode: 200,
-
             headers,
-
             body:
                 JSON.stringify({
-
                     success: true,
-
                     answer
-
                 })
-
         };
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
             "CHA AI fatal error:",
@@ -650,21 +538,14 @@ emergency phone number.
         );
 
         return {
-
             statusCode: 500,
-
             headers,
-
             body:
                 JSON.stringify({
-
                     success: false,
-
                     error:
                         "Unable to connect to the AI service."
-
                 })
-
         };
 
     }
