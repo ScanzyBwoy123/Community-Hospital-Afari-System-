@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CHA Department Inbox</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .message-card {
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .message-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="bg-blue-900 text-white shadow-lg">
+
+        <div class="max-w-7xl mx-auto px-4">
+
+            <div class="min-h-20 flex items-center justify-between gap-4">
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-12 h-12 rounded-full bg-white
+                               text-blue-900 flex items-center
+                               justify-center font-black"
+                    >
+                        CHA
+                    </div>
+
+                    <div>
+
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+
+                        <div class="text-blue-200 text-sm">
+                            Department Inbox
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    id="backButton"
+                    class="bg-white text-blue-900
+                           hover:bg-blue-50
+                           px-4 py-2
+                           rounded-lg
+                           font-bold"
+                >
+                    ← Dashboard
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- Loading -->
+
+        <div
+            id="loading"
+            class="bg-white rounded-2xl shadow p-8 text-center"
+        >
+
+            <div class="text-3xl">
+                🔐
+            </div>
+
+            <p class="font-bold mt-3">
+                Loading Department Inbox...
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             INBOX
+        ================================================== -->
+
+        <div
+            id="inboxPage"
+            class="hidden"
+        >
+
+            <!-- Heading -->
+
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+
+                <div
+                    class="flex flex-col
+                           sm:flex-row
+                           sm:items-center
+                           sm:justify-between
+                           gap-4"
+                >
+
+                    <div>
+
+                        <p class="text-sm text-slate-500">
+                            Hospital Communication
+                        </p>
+
+                        <h1
+                            id="departmentTitle"
+                            class="text-3xl font-black text-slate-900 mt-1"
+                        >
+                            Department Inbox
+                        </h1>
+
+                        <p
+                            id="staffWelcome"
+                            class="text-sm text-slate-500 mt-2"
+                        >
+                            Secure communication between authorized
+                            hospital staff.
+                        </p>
+
+                    </div>
+
+                    <button
+                        id="refreshButton"
+                        class="bg-blue-900
+                               hover:bg-blue-800
+                               text-white
+                               px-5 py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        ↻ Refresh
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SEND MESSAGE
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-2xl shadow p-6 mb-8"
+            >
+
+                <h2 class="text-xl font-black">
+                    ✉️ Send Department Message
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Send a message to an authorized hospital department.
+                </p>
+
+
+                <form
+                    id="messageForm"
+                    class="mt-6 space-y-5"
+                >
+
+                    <!-- Recipient -->
+
+                    <div>
+
+                        <label
+                            for="recipientDepartment"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Recipient Department
+                        </label>
+
+                        <select
+                            id="recipientDepartment"
+                            required
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   bg-white
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+
+                            <option value="">
+                                Select department
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- Subject -->
+
+                    <div>
+
+                        <label
+                            for="messageSubject"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Subject
+                        </label>
+
+                        <input
+                            id="messageSubject"
+                            type="text"
+                            maxlength="150"
+                            required
+                            placeholder="Enter message subject"
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        >
+
+                    </div>
+
+
+                    <!-- Message -->
+
+                    <div>
+
+                        <label
+                            for="messageBody"
+                            class="block text-sm font-bold mb-2"
+                        >
+                            Message
+                        </label>
+
+                        <textarea
+                            id="messageBody"
+                            rows="6"
+                            maxlength="5000"
+                            required
+                            placeholder="Write your message..."
+                            class="w-full
+                                   border border-slate-300
+                                   rounded-xl
+                                   px-4 py-3
+                                   resize-y
+                                   focus:outline-none
+                                   focus:ring-2
+                                   focus:ring-blue-500"
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- Status -->
+
+                    <div
+                        id="formStatus"
+                        class="hidden
+                               p-4
+                               rounded-xl
+                               text-sm"
+                    ></div>
+
+
+                    <!-- Send -->
+
+                    <button
+                        id="sendButton"
+                        type="submit"
+                        class="bg-green-600
+                               hover:bg-green-700
+                               text-white
+                               px-6 py-3
+                               rounded-xl
+                               font-bold"
+                    >
+                        Send Message
+                    </button>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 INBOX MESSAGES
+            ================================================== -->
+
+            <section
+                class="bg-white rounded-2xl shadow overflow-hidden"
+            >
+
+                <div
+                    class="p-6 border-b border-slate-200"
+                >
+
+                    <div
+                        class="flex flex-col
+                               sm:flex-row
+                               sm:items-center
+                               sm:justify-between
+                               gap-3"
+                    >
+
+                        <div>
+
+                            <h2 class="text-xl font-black">
+                                📥 Messages
+                            </h2>
+
+                            <p class="text-sm text-slate-500 mt-1">
+                                Messages received by your department.
+                            </p>
+
+                        </div>
+
+                        <span
+                            id="messageCount"
+                            class="inline-flex
+                                   items-center
+                                   justify-center
+                                   bg-blue-100
+                                   text-blue-800
+                                   px-3 py-1
+                                   rounded-full
+                                   text-sm
+                                   font-black"
+                        >
+                            0 Messages
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Inbox status -->
+
+                <div
+                    id="inboxStatus"
+                    class="hidden m-6 p-4 rounded-xl text-sm"
+                ></div>
+
+
+                <!-- Empty -->
+
+                <div
+                    id="emptyState"
+                    class="hidden p-10 text-center"
+                >
+
+                    <div class="text-5xl">
+                        📭
+                    </div>
+
+                    <h3
+                        class="font-black text-xl mt-4"
+                    >
+                        No Messages
+                    </h3>
+
+                    <p
+                        class="text-slate-500 text-sm mt-2"
+                    >
+                        Your department has no messages yet.
+                    </p>
+
+                </div>
+
+
+                <!-- Messages -->
+
+                <div
+                    id="messagesContainer"
+                    class="hidden p-6 space-y-4"
+                ></div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECURITY NOTICE
+            ================================================== -->
+
+            <section
+                class="mt-8
+                       bg-blue-50
+                       border border-blue-100
+                       rounded-2xl
+                       p-6"
+            >
+
+                <h2 class="font-black text-lg">
+                    🔐 Communication Security
+                </h2>
+
+                <p
+                    class="text-sm
+                          text-blue-900
+                          mt-2"
+                >
+                    Use this inbox only for authorized hospital
+                    communication. Do not share passwords or
+                    confidential information with unauthorized
+                    personnel.
+                </p>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+
+    <script src="js/supabase.js"></script>
+
+
+
+    <!-- =====================================================
+         APPLICATION LOGIC
+    ====================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
+
+        const loading =
+            document.getElementById("loading");
+
+        const inboxPage =
+            document.getElementById("inboxPage");
+
+        const departmentTitle =
+            document.getElementById("departmentTitle");
+
+        const staffWelcome =
+            document.getElementById("staffWelcome");
+
+        const recipientDepartment =
+            document.getElementById("recipientDepartment");
+
+        const messageForm =
+            document.getElementById("messageForm");
+
+        const messageSubject =
+            document.getElementById("messageSubject");
+
+        const messageBody =
+            document.getElementById("messageBody");
+
+        const sendButton =
+            document.getElementById("sendButton");
+
+        const formStatus =
+            document.getElementById("formStatus");
+
+        const inboxStatus =
+            document.getElementById("inboxStatus");
+
+        const messageCount =
+            document.getElementById("messageCount");
+
+        const emptyState =
+            document.getElementById("emptyState");
+
+        const messagesContainer =
+            document.getElementById("messagesContainer");
+
+        const refreshButton =
+            document.getElementById("refreshButton");
+
+        const backButton =
+            document.getElementById("backButton");
+
+
+
+        // ====================================================
+        // CURRENT STAFF
+        // ====================================================
+
+        let currentUser = null;
+        let currentProfile = null;
+
+
+
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+
+        function escapeHTML(value) {
+
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+
+        // ====================================================
+        // STATUS
+        // ====================================================
+
+        function showFormStatus(message, type) {
+
+            formStatus.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700"
+            );
+
+
+            if (type === "error") {
+
+                formStatus.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+
+            }
+
+            else if (type === "success") {
+
+                formStatus.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+
+            }
+
+            else {
+
+                formStatus.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+
+            }
+
+
+            formStatus.textContent =
+                message;
+
+        }
+
+
+
+        function showInboxStatus(message, type) {
+
+            inboxStatus.classList.remove(
+                "hidden",
+                "bg-red-50",
+                "text-red-700",
+                "bg-green-50",
+                "text-green-700",
+                "bg-blue-50",
+                "text-blue-700"
+            );
+
+
+            if (type === "error") {
+
+                inboxStatus.classList.add(
+                    "bg-red-50",
+                    "text-red-700"
+                );
+
+            }
+
+            else if (type === "success") {
+
+                inboxStatus.classList.add(
+                    "bg-green-50",
+                    "text-green-700"
+                );
+
+            }
+
+            else {
+
+                inboxStatus.classList.add(
+                    "bg-blue-50",
+                    "text-blue-700"
+                );
+
+            }
+
+
+            inboxStatus.textContent =
+                message;
+
+        }
+
+
+
+        // ====================================================
+        // FORMAT DATE
+        // ====================================================
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "Unknown date";
+            }
+
+
+            const date =
+                new Date(value);
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return "Unknown date";
+
+            }
+
+
+            return date.toLocaleString(
+                "en-GH",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+        }
+
+
+
+        // ====================================================
+        // LOAD CURRENT STAFF
+        // ====================================================
+
+        async function loadCurrentStaff() {
+
+            if (!window.CHA_SUPABASE) {
+
+                throw new Error(
+                    "Supabase is not configured."
+                );
+
+            }
+
+
+            const {
+                data: authData,
+                error: authError
+            } =
+                await window.CHA_SUPABASE.auth.getUser();
+
+
+            if (
+                authError ||
+                !authData ||
+                !authData.user
+            ) {
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+
+            currentUser =
+                authData.user;
+
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await window.CHA_SUPABASE
+                    .from("staff_profiles")
+                    .select(`
+                        id,
+                        full_name,
+                        staff_id,
+                        role,
+                        department_id,
+                        is_active,
+                        departments (
+                            id,
+                            name
+                        )
+                    `)
+                    .eq(
+                        "id",
+                        currentUser.id
+                    )
+                    .single();
+
+
+            if (profileError) {
+
+                throw profileError;
+
+            }
+
+
+            if (
+                !profile ||
+                profile.is_active !== true
+            ) {
+
+                await window.CHA_SUPABASE.auth.signOut();
+
+                window.location.href =
+                    "staff-login.html";
+
+                return null;
+
+            }
+
+
+            currentProfile =
+                profile;
+
+
+            const departmentName =
+                profile.departments?.name ||
+                "Department";
+
+
+            departmentTitle.textContent =
+                departmentName +
+                " — Inbox";
+
+
+            staffWelcome.textContent =
+                "Welcome " +
+                (
+                    profile.full_name ||
+                    "Staff Member"
+                ) +
+                ". Messages received by " +
+                departmentName +
+                " are shown below.";
+
+
+            return profile;
+
+        }
+
+
+
+        // ====================================================
+        // LOAD DEPARTMENTS
+        // ====================================================
+
+        async function loadDepartments() {
+
+            recipientDepartment.innerHTML = `
+                <option value="">
+                    Select department
+                </option>
+            `;
+
+
+            const {
+                data,
+                error
+            } =
+                await window.CHA_SUPABASE
+                    .from("departments")
+                    .select(`
+                        id,
+                        name
+                    `)
+                    .order(
+                        "name",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            const departments =
+                data || [];
+
+
+            departments.forEach(
+                function(department) {
+
+                    if (
+                        currentProfile &&
+                        department.id ===
+                            currentProfile.department_id
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+                    option.value =
+                        department.id;
+
+                    option.textContent =
+                        department.name;
+
+                    recipientDepartment.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+        }
+
+
+
+        // ====================================================
+        // LOAD INBOX
+        // ====================================================
+
+        async function loadInbox() {
+
+            messagesContainer.innerHTML = "";
+
+            messagesContainer.classList.add(
+                "hidden"
+            );
+
+            emptyState.classList.add(
+                "hidden"
+            );
+
+
+            try {
+
+                if (
+                    !currentProfile ||
+                    !currentProfile.department_id
+                ) {
+
+                    messageCount.textContent =
+                        "0 Messages";
+
+                    emptyState.classList.remove(
+                        "hidden"
+                    );
+
+                    showInboxStatus(
+                        "Your staff profile is not assigned to a department.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("department_messages")
+                        .select(`
+                            id,
+                            sender_id,
+                            sender_department_id,
+                            recipient_department_id,
+                            subject,
+                            message,
+                            is_read,
+                            created_at,
+                            sender:staff_profiles!department_messages_sender_id_fkey (
+                                full_name,
+                                staff_id,
+                                role
+                            ),
+                            sender_department:departments!department_messages_sender_department_id_fkey (
+                                name
+                            )
+                        `)
+                        .eq(
+                            "recipient_department_id",
+                            currentProfile.department_id
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                const messages =
+                    data || [];
+
+
+                messageCount.textContent =
+                    messages.length +
+                    (
+                        messages.length === 1
+                            ? " Message"
+                            : " Messages"
+                    );
+
+
+                if (
+                    messages.length === 0
+                ) {
+
+                    emptyState.classList.remove(
+                        "hidden"
+                    );
+
+                    return;
+
+                }
+
+
+                messages.forEach(
+                    function(item) {
+
+                        const card =
+                            document.createElement(
+                                "article"
+                            );
+
+
+                        card.className =
+                            "message-card border rounded-2xl p-5 " +
+                            (
+                                item.is_read
+                                    ? "bg-white border-slate-200"
+                                    : "bg-blue-50 border-blue-200"
+                            );
+
+
+                        const senderName =
+                            item.sender?.full_name ||
+                            "Unknown staff";
+
+
+                        const senderDepartment =
+                            item.sender_department?.name ||
+                            "Unknown department";
+
+
+                        const senderRole =
+                            item.sender?.role ||
+                            "Staff";
+
+
+                        card.innerHTML = `
+
+                            <div class="flex flex-col
+                                        sm:flex-row
+                                        sm:items-start
+                                        sm:justify-between
+                                        gap-3">
+
+                                <div>
+
+                                    <div class="flex flex-wrap
+                                                items-center
+                                                gap-2">
+
+                                        <h3
+                                            class="font-black
+                                                   text-lg
+                                                   text-slate-900"
+                                        >
+                                            ${escapeHTML(
+                                                item.subject
+                                            )}
+                                        </h3>
+
+                                        ${
+                                            item.is_read
+                                                ? ""
+                                                : `
+                                                    <span
+                                                        class="bg-blue-600
+                                                               text-white
+                                                               px-2 py-1
+                                                               rounded-full
+                                                               text-xs
+                                                               font-black"
+                                                    >
+                                                        NEW
+                                                    </span>
+                                                `
+                                        }
+
+                                    </div>
+
+
+                                    <p
+                                        class="text-sm
+                                              text-slate-500
+                                              mt-1"
+                                    >
+                                        From:
+                                        ${escapeHTML(
+                                            senderName
+                                        )}
+                                        —
+                                        ${escapeHTML(
+                                            senderDepartment
+                                        )}
+                                        —
+                                        ${escapeHTML(
+                                            senderRole
+                                        )}
+                                    </p>
+
+                                </div>
+
+
+                                <span
+                                    class="text-xs
+                                           text-slate-400"
+                                >
+                                    ${escapeHTML(
+                                        formatDate(
+                                            item.created_at
+                                        )
+                                    )}
+                                </span>
+
+                            </div>
+
+
+                            <div
+                                class="mt-4
+                                       bg-slate-50
+                                       rounded-xl
+                                       p-4
+                                       text-sm
+                                       whitespace-pre-wrap"
+                            >
+                                ${escapeHTML(
+                                    item.message
+                                )}
+                            </div>
+
+
+                            ${
+                                item.is_read
+                                    ? ""
+                                    : `
+                                        <button
+                                            class="mark-read-button
+                                                   mt-4
+                                                   bg-blue-900
+                                                   hover:bg-blue-800
+                                                   text-white
+                                                   px-4 py-2
+                                                   rounded-lg
+                                                   font-bold
+                                                   text-sm"
+                                            data-id="${escapeHTML(
+                                                item.id
+                                            )}"
+                                        >
+                                            ✓ Mark as read
+                                        </button>
+                                    `
+                            }
+
+                        `;
+
+
+                        messagesContainer.appendChild(
+                            card
+                        );
+
+                    }
+                );
+
+
+                messagesContainer.classList.remove(
+                    "hidden"
+                );
+
+
+                document
+                    .querySelectorAll(
+                        ".mark-read-button"
+                    )
+                    .forEach(
+                        function(button) {
+
+                            button.addEventListener(
+                                "click",
+                                function() {
+
+                                    markMessageRead(
+                                        this.dataset.id
+                                    );
+
+                                }
+                            );
+
+                        }
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Inbox Error:",
+                    error
+                );
+
+
+                showInboxStatus(
+                    "Unable to load messages: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // MARK MESSAGE READ
+        // ====================================================
+
+        async function markMessageRead(messageId) {
+
+            try {
+
+                const {
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("department_messages")
+                        .update({
+                            is_read: true
+                        })
+                        .eq(
+                            "id",
+                            messageId
+                        )
+                        .eq(
+                            "recipient_department_id",
+                            currentProfile.department_id
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                await loadInbox();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Mark Read Error:",
+                    error
+                );
+
+
+                showInboxStatus(
+                    "Unable to mark message as read: " +
+                    (
+                        error.message ||
+                        "Unknown error"
+                    ),
+                    "error"
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // SEND MESSAGE
+        // ====================================================
+
+        messageForm.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const recipientId =
+                    recipientDepartment.value;
+
+                const subject =
+                    messageSubject.value.trim();
+
+                const message =
+                    messageBody.value.trim();
+
+
+                if (!recipientId) {
+
+                    showFormStatus(
+                        "Please select a recipient department.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (!subject) {
+
+                    showFormStatus(
+                        "Please enter a subject.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (!message) {
+
+                    showFormStatus(
+                        "Please enter a message.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !currentProfile ||
+                    !currentProfile.department_id
+                ) {
+
+                    showFormStatus(
+                        "Your staff profile is not assigned to a department.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    recipientId ===
+                    currentProfile.department_id
+                ) {
+
+                    showFormStatus(
+                        "You cannot send a department message to your own department.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                sendButton.disabled =
+                    true;
+
+                sendButton.textContent =
+                    "Sending...";
+
+
+                showFormStatus(
+                    "Sending message...",
+                    "info"
+                );
+
+
+                try {
+
+                    const {
+                        error
+                    } =
+                        await window.CHA_SUPABASE
+                            .from("department_messages")
+                            .insert({
+                                sender_id:
+                                    currentUser.id,
+
+                                sender_department_id:
+                                    currentProfile.department_id,
+
+                                recipient_department_id:
+                                    recipientId,
+
+                                subject:
+                                    subject,
+
+                                message:
+                                    message,
+
+                                is_read:
+                                    false
+                            });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    messageForm.reset();
+
+
+                    showFormStatus(
+                        "Message sent successfully.",
+                        "success"
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "CHA Send Message Error:",
+                        error
+                    );
+
+
+                    showFormStatus(
+                        "Unable to send message: " +
+                        (
+                            error.message ||
+                            "Unknown error"
+                        ),
+                        "error"
+                    );
+
+                }
+
+                finally {
+
+                    sendButton.disabled =
+                        false;
+
+                    sendButton.textContent =
+                        "Send Message";
+
+                }
+
+            }
+        );
+
+
+
+        // ====================================================
+        // REFRESH
+        // ====================================================
+
+        refreshButton.addEventListener(
+            "click",
+            async function() {
+
+                refreshButton.disabled =
+                    true;
+
+                refreshButton.textContent =
+                    "Refreshing...";
+
+
+                try {
+
+                    await loadInbox();
+
+                }
+
+                finally {
+
+                    refreshButton.disabled =
+                        false;
+
+                    refreshButton.textContent =
+                        "↻ Refresh";
+
+                }
+
+            }
+        );
+
+
+
+        // ====================================================
+        // BACK
+        // ====================================================
+
+        backButton.addEventListener(
+            "click",
+            function() {
+
+                window.location.href =
+                    "staff-dashboard.html";
+
+            }
+        );
+
+
+
+        // ====================================================
+        // INITIALIZE
+        // ====================================================
+
+        async function initializeInbox() {
+
+            try {
+
+                const profile =
+                    await loadCurrentStaff();
+
+
+                if (!profile) {
+
+                    return;
+
+                }
+
+
+                await loadDepartments();
+
+                await loadInbox();
+
+
+                loading.classList.add(
+                    "hidden"
+                );
+
+                inboxPage.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Department Inbox Error:",
+                    error
+                );
+
+
+                loading.innerHTML = `
+
+                    <div class="text-3xl">
+                        ⚠️
+                    </div>
+
+                    <p
+                        class="font-bold
+                              mt-3
+                              text-red-700"
+                    >
+                        Unable to load Department Inbox
+                    </p>
+
+                    <p
+                        class="text-sm
+                              text-slate-500
+                              mt-2"
+                    >
+                        ${
+                            escapeHTML(
+                                error.message ||
+                                "Please try again."
+                            )
+                        }
+                    </p>
+
+                    <button
+                        onclick="window.location.href='staff-dashboard.html'"
+                        class="
+                            mt-5
+                            bg-blue-900
+                            text-white
+                            px-5
+                            py-3
+                            rounded-xl
+                            font-bold
+                        "
+                    >
+                        Return to Dashboard
+                    </button>
+
+                `;
+
+            }
+
+        }
+
+
+        initializeInbox();
+
+    </script>
+
+</body>
+</html>
