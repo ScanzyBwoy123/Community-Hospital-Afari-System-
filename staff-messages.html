@@ -1289,13 +1289,9 @@ async function loadSentMessages() {
 
     sentMessagesContainer.innerHTML = "";
 
-    sentMessagesContainer.classList.add(
-        "hidden"
-    );
+    sentMessagesContainer.classList.add("hidden");
 
-    sentEmptyState.classList.add(
-        "hidden"
-    );
+    sentEmptyState.classList.add("hidden");
 
     try {
 
@@ -1316,10 +1312,7 @@ async function loadSentMessages() {
                     subject,
                     message,
                     created_at,
-                    sender_deleted,
-                    recipient_department:departments!department_messages_recipient_department_id_fkey (
-                        name
-                    )
+                    sender_deleted
                 `)
                 .eq(
                     "sender_id",
@@ -1344,16 +1337,9 @@ async function loadSentMessages() {
             data || [];
 
         sentMessageCount.textContent =
-            messages.length +
-            (
-                messages.length === 1
-                    ? " Sent"
-                    : " Sent"
-            );
+            messages.length + " Sent";
 
-        if (
-            messages.length === 0
-        ) {
+        if (messages.length === 0) {
 
             sentEmptyState.classList.remove(
                 "hidden"
@@ -1373,10 +1359,6 @@ async function loadSentMessages() {
 
                 card.className =
                     "message-card border border-green-200 bg-white rounded-2xl p-5";
-
-                const recipientDepartment =
-                    item.recipient_department?.name ||
-                    "Unknown department";
 
                 card.innerHTML = `
 
@@ -1403,10 +1385,7 @@ async function loadSentMessages() {
                                       text-slate-500
                                       mt-1"
                             >
-                                To:
-                                ${escapeHTML(
-                                    recipientDepartment
-                                )}
+                                Sent to another hospital department
                             </p>
 
                         </div>
