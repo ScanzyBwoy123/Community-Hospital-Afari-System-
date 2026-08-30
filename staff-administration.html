@@ -1507,8 +1507,10 @@ async function rejectStaff(staffId) {
 // STAFF ACCESS MANAGEMENT
 // ====================================================
 
-const activeStaffCount =
-    document.getElementById("activeStaffCount");
+const activeStaffAccessCount =
+    document.getElementById(
+        "activeStaffCount"
+    );
 
 const staffAccessTableBody =
     document.getElementById("staffAccessTableBody");
@@ -1650,7 +1652,7 @@ async function loadStaffAccess() {
             ).length;
 
 
-        activeStaffCount.textContent =
+        activeStaffAccessCount.textContent =
             activeCount +
             (
                 activeCount === 1
