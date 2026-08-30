@@ -1,17 +1,11 @@
 "use strict";
 
-/*
- * COMMUNITY HOSPITAL AFARI
- * AI ASSISTANT — GEMINI NETLIFY FUNCTION
- *
- * The Gemini API key is NEVER stored in this file.
- * It must be stored as a Netlify environment variable.
- */
+// ============================================================
+// COMMUNITY HOSPITAL AFARI
+// CHA AI ASSISTANT — GEMINI
+// ============================================================
 
 exports.handler = async (event) => {
-    // ---------------------------------------------------------
-    // CORS
-    // ---------------------------------------------------------
 
     const headers = {
         "Content-Type": "application/json",
@@ -20,9 +14,9 @@ exports.handler = async (event) => {
         "Access-Control-Allow-Methods": "POST, OPTIONS"
     };
 
-    // ---------------------------------------------------------
-    // OPTIONS / PREFLIGHT
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
+    // CORS
+    // --------------------------------------------------------
 
     if (event.httpMethod === "OPTIONS") {
         return {
@@ -32,9 +26,9 @@ exports.handler = async (event) => {
         };
     }
 
-    // ---------------------------------------------------------
-    // ONLY POST REQUESTS
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
+    // METHOD
+    // --------------------------------------------------------
 
     if (event.httpMethod !== "POST") {
         return {
@@ -47,18 +41,14 @@ exports.handler = async (event) => {
         };
     }
 
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
     // GEMINI API KEY
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
 
-    const apiKey =
-        process.env.GEMINI_API_KEY ||
-        process.env.GOOGLE_GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
-        console.error(
-            "Gemini API key is not configured."
-        );
+        console.error("GEMINI_API_KEY is missing.");
 
         return {
             statusCode: 500,
@@ -66,40 +56,32 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 success: false,
                 error:
-                    "AI service is not configured yet."
+                    "GEMINI_API_KEY is not configured in Netlify."
             })
         };
     }
 
-    // ---------------------------------------------------------
-    // READ REQUEST BODY
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
+    // REQUEST BODY
+    // --------------------------------------------------------
 
     let body;
 
     try {
-        body = JSON.parse(
-            event.body || "{}"
-        );
+        body = JSON.parse(event.body || "{}");
     } catch (error) {
         return {
             statusCode: 400,
             headers,
             body: JSON.stringify({
                 success: false,
-                error: "Invalid request."
+                error: "Invalid JSON request."
             })
         };
     }
 
     const message =
-        String(
-            body.message || ""
-        ).trim();
-
-    // ---------------------------------------------------------
-    // VALIDATE MESSAGE
-    // ---------------------------------------------------------
+        String(body.message || "").trim();
 
     if (!message) {
         return {
@@ -107,8 +89,7 @@ exports.handler = async (event) => {
             headers,
             body: JSON.stringify({
                 success: false,
-                error:
-                    "Please enter a question."
+                error: "Please enter a question."
             })
         };
     }
@@ -119,64 +100,66 @@ exports.handler = async (event) => {
             headers,
             body: JSON.stringify({
                 success: false,
-                error:
-                    "Your question is too long."
+                error: "Question is too long."
             })
         };
     }
 
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
     // HOSPITAL AI INSTRUCTIONS
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
 
     const systemInstruction = `
-You are the Community Hospital Afari AI Assistant.
+You are CHA AI Assistant for Community Hospital Afari.
 
-Your role is to provide helpful, clear and safe
-health-information support.
+You provide clear, helpful and safe general health information.
 
-IMPORTANT SAFETY RULES:
+Important rules:
 
-1. You are an AI assistant, not a doctor or nurse.
-2. Do not claim to have examined a patient.
-3. Do not make a definitive diagnosis.
-4. Do not prescribe medication or give individualized
-   medication doses.
-5. Do not replace a qualified healthcare professional.
-6. For emergencies, advise the user to seek immediate
-   emergency medical care.
-7. Explain medical terminology in simple language.
-8. Be concise but useful.
-9. When appropriate, recommend speaking with a qualified
-   healthcare professional.
-10. Never invent patient records, laboratory results,
-    appointments or clinical information.
-11. Protect patient privacy. Do not request unnecessary
-    personal identifying information.
-12. If information is uncertain, clearly say so.
+- You are an AI assistant, not a doctor.
+- Do not claim that you examined a patient.
+- Do not make definitive diagnoses.
+- Do not prescribe medication.
+- Do not provide individualized medication dosing.
+- Explain medical terms in simple language.
+- Encourage professional medical assessment when appropriate.
+- If someone describes a possible emergency, advise them to seek
+  urgent medical attention.
+- Never invent patient records, laboratory results,
+  appointments or hospital information.
+- Protect patient privacy.
+- Do not request unnecessary personal information.
+- Be professional, concise and easy to understand.
 
-The hospital is Community Hospital Afari.
-
-Answer the user's question directly and professionally.
+Hospital:
+Community Hospital Afari.
 `;
 
-    // ---------------------------------------------------------
-    // GEMINI REQUEST
-    // ---------------------------------------------------------
+    // --------------------------------------------------------
+    // GEMINI API
+    // --------------------------------------------------------
+
+    const model = "gemini-3.7-flash";
+
+    const url =
+        "https://generativelanguage.googleapis.com/v1beta/models/" +
+        model +
+        ":generateContent?key=" +
+        encodeURIComponent(apiKey);
 
     try {
+
         const response = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" +
-                encodeURIComponent(apiKey),
+            url,
             {
                 method: "POST",
 
                 headers: {
-                    "Content-Type":
-                        "application/json"
+                    "Content-Type": "application/json"
                 },
 
                 body: JSON.stringify({
+
                     systemInstruction: {
                         parts: [
                             {
@@ -192,8 +175,7 @@ Answer the user's question directly and professionally.
 
                             parts: [
                                 {
-                                    text:
-                                        message
+                                    text: message
                                 }
                             ]
                         }
@@ -203,6 +185,7 @@ Answer the user's question directly and professionally.
                         temperature: 0.3,
                         maxOutputTokens: 1000
                     }
+
                 })
             }
         );
@@ -210,14 +193,49 @@ Answer the user's question directly and professionally.
         const data =
             await response.json();
 
-        // -----------------------------------------------------
+        // ----------------------------------------------------
         // GEMINI ERROR
-        // -----------------------------------------------------
+        // ----------------------------------------------------
 
         if (!response.ok) {
+
             console.error(
                 "Gemini API error:",
-                data
+                JSON.stringify(data)
+            );
+
+            const apiError =
+                data?.error?.message ||
+                "Gemini rejected the request.";
+
+            return {
+                statusCode: 502,
+                headers,
+                body: JSON.stringify({
+                    success: false,
+                    error:
+                        "Gemini error: " +
+                        apiError
+                })
+            };
+        }
+
+        // ----------------------------------------------------
+        // RESPONSE
+        // ----------------------------------------------------
+
+        const answer =
+            data?.candidates?.[0]
+                ?.content?.parts
+                ?.map(part => part.text || "")
+                .join("")
+                .trim();
+
+        if (!answer) {
+
+            console.error(
+                "Gemini returned no answer:",
+                JSON.stringify(data)
             );
 
             return {
@@ -226,50 +244,28 @@ Answer the user's question directly and professionally.
                 body: JSON.stringify({
                     success: false,
                     error:
-                        "The AI service could not process the request."
+                        "Gemini returned an empty response."
                 })
             };
         }
 
-        // -----------------------------------------------------
-        // EXTRACT ANSWER
-        // -----------------------------------------------------
-
-        const answer =
-            data?.candidates?.[0]?.content?.parts
-                ?.map(part => part.text || "")
-                .join("")
-                .trim();
-
-        if (!answer) {
-            return {
-                statusCode: 502,
-                headers,
-                body: JSON.stringify({
-                    success: false,
-                    error:
-                        "The AI returned an empty response."
-                })
-            };
-        }
-
-        // -----------------------------------------------------
+        // ----------------------------------------------------
         // SUCCESS
-        // -----------------------------------------------------
+        // ----------------------------------------------------
 
         return {
             statusCode: 200,
             headers,
             body: JSON.stringify({
                 success: true,
-                answer
+                answer: answer
             })
         };
 
     } catch (error) {
 
         console.error(
-            "AI Assistant error:",
+            "CHA AI connection error:",
             error
         );
 
@@ -279,7 +275,7 @@ Answer the user's question directly and professionally.
             body: JSON.stringify({
                 success: false,
                 error:
-                    "Unable to connect to the AI service."
+                    "Unable to connect to Gemini."
             })
         };
     }
