@@ -1,6 +1,6 @@
 // ============================================================
-// COMMUNITY HOSPITAL AFARI
-// SECURE TEST STAFF CLEANUP
+// CHA — DELETE TEST STAFF ACCOUNTS
+// Server-side cleanup function
 // ============================================================
 
 const { createClient } = require("@supabase/supabase-js");
@@ -8,7 +8,7 @@ const { createClient } = require("@supabase/supabase-js");
 exports.handler = async function (event) {
 
     // --------------------------------------------------------
-    // ONLY POST REQUESTS
+    // ONLY ALLOW POST
     // --------------------------------------------------------
 
     if (event.httpMethod !== "POST") {
@@ -43,7 +43,7 @@ exports.handler = async function (event) {
     ) {
 
         console.error(
-            "CHA cleanup: Supabase server configuration is missing."
+            "CHA delete-test-staff: Supabase server configuration is missing."
         );
 
         return {
@@ -53,7 +53,7 @@ exports.handler = async function (event) {
             },
             body: JSON.stringify({
                 error:
-                    "Supabase server configuration is missing."
+                    "Hospital server configuration is incomplete."
             })
         };
 
@@ -61,32 +61,7 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // GET AUTHORIZATION HEADER
-    // --------------------------------------------------------
-
-    const authorization =
-        event.headers?.authorization ||
-        event.headers?.Authorization;
-
-
-    if (!authorization) {
-
-        return {
-            statusCode: 401,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                error:
-                    "Authentication required."
-            })
-        };
-
-    }
-
-
-    // --------------------------------------------------------
-    // CREATE SUPABASE ADMIN CLIENT
+    // CREATE ADMIN SUPABASE CLIENT
     // --------------------------------------------------------
 
     const supabaseAdmin =
@@ -97,124 +72,9 @@ exports.handler = async function (event) {
                 auth: {
                     autoRefreshToken: false,
                     persistSession: false
-                },
-                global: {
-                    headers: {
-                        Authorization:
-                            authorization
-                    }
                 }
             }
         );
-
-
-    // --------------------------------------------------------
-    // VERIFY CURRENT USER
-    // --------------------------------------------------------
-
-    const {
-        data: authData,
-        error: authError
-    } =
-        await supabaseAdmin.auth.getUser();
-
-
-    if (
-        authError ||
-        !authData ||
-        !authData.user
-    ) {
-
-        console.error(
-            "CHA cleanup authentication error:",
-            authError
-        );
-
-        return {
-            statusCode: 401,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                error:
-                    "Invalid or expired administrator session."
-            })
-        };
-
-    }
-
-
-    const currentUser =
-        authData.user;
-
-
-    // --------------------------------------------------------
-    // VERIFY ADMIN PROFILE
-    // --------------------------------------------------------
-
-    const {
-        data: adminProfile,
-        error: adminError
-    } =
-        await supabaseAdmin
-            .from("staff_profiles")
-            .select(`
-                id,
-                role,
-                is_active
-            `)
-            .eq(
-                "id",
-                currentUser.id
-            )
-            .single();
-
-
-    if (
-        adminError ||
-        !adminProfile
-    ) {
-
-        console.error(
-            "CHA cleanup administrator profile error:",
-            adminError
-        );
-
-        return {
-            statusCode: 403,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                error:
-                    "Administrator profile not found."
-            })
-        };
-
-    }
-
-
-    // --------------------------------------------------------
-    // ADMIN CHECK
-    // --------------------------------------------------------
-
-    if (
-        adminProfile.role !== "admin" ||
-        adminProfile.is_active !== true
-    ) {
-
-        return {
-            statusCode: 403,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                error:
-                    "Administrator permission required."
-            })
-        };
-
-    }
 
 
     // --------------------------------------------------------
@@ -246,17 +106,16 @@ exports.handler = async function (event) {
             data,
             error
         } =
-            await supabaseAdmin.auth.admin
-                .listUsers({
-                    page,
-                    perPage: 100
-                });
+            await supabaseAdmin.auth.admin.listUsers({
+                page,
+                perPage: 100
+            });
 
 
         if (error) {
 
             console.error(
-                "CHA cleanup list users error:",
+                "CHA delete-test-staff listUsers error:",
                 error
             );
 
@@ -299,51 +158,26 @@ exports.handler = async function (event) {
 
 
             // ------------------------------------------------
-            // ONLY MATCH THE THREE TEST EMAILS
+            // ONLY DELETE THE THREE SPECIFIED TEST EMAILS
             // ------------------------------------------------
 
             if (
                 testEmails.includes(email)
             ) {
 
-                // --------------------------------------------
-                // EXTRA SAFETY:
-                // NEVER DELETE THE CURRENT ADMIN
-                // --------------------------------------------
-
-                if (
-                    user.id === currentUser.id
-                ) {
-
-                    failed.push({
-                        email,
-                        error:
-                            "Safety protection prevented deletion of the current administrator."
-                    });
-
-                    continue;
-
-                }
-
-
-                // --------------------------------------------
-                // DELETE AUTH USER
-                // --------------------------------------------
-
                 const {
                     error:
                         deleteError
                 } =
-                    await supabaseAdmin.auth.admin
-                        .deleteUser(
-                            user.id
-                        );
+                    await supabaseAdmin.auth.admin.deleteUser(
+                        user.id
+                    );
 
 
                 if (deleteError) {
 
                     console.error(
-                        "CHA cleanup delete error:",
+                        "CHA delete-test-staff deleteUser error:",
                         email,
                         deleteError
                     );
@@ -352,7 +186,7 @@ exports.handler = async function (event) {
                         email,
                         error:
                             deleteError.message ||
-                            "Delete failed."
+                            "Unable to delete account."
                     });
 
                 }
@@ -385,7 +219,7 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // CHECK WHICH TEST EMAILS WERE NOT FOUND
+    // FIND TEST EMAILS THAT WERE NOT FOUND
     // --------------------------------------------------------
 
     for (
@@ -411,8 +245,18 @@ exports.handler = async function (event) {
 
 
     // --------------------------------------------------------
-    // SUCCESS RESPONSE
+    // SUCCESS
     // --------------------------------------------------------
+
+    console.log(
+        "CHA test staff cleanup completed:",
+        {
+            deleted,
+            notFound,
+            failed
+        }
+    );
+
 
     return {
         statusCode: 200,
@@ -421,14 +265,10 @@ exports.handler = async function (event) {
         },
         body: JSON.stringify({
             success: true,
-
             message:
                 "Test account cleanup completed.",
-
             deleted,
-
             notFound,
-
             failed
         })
     };
