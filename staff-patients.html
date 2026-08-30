@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHA Patients</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,7 +17,7 @@
         }
         .patient-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
@@ -105,13 +102,18 @@
                             Hospital Patient Management
                         </p>
                         <h1
-                            class="text-3xl font-black text-slate-900 mt-1"
+                            class="text-3xl
+                                   font-black
+                                   text-slate-900
+                                   mt-1"
                         >
                             Patients
                         </h1>
                         <p
                             id="staffWelcome"
-                            class="text-sm text-slate-500 mt-2"
+                            class="text-sm
+                                   text-slate-500
+                                   mt-2"
                         >
                             Authorized patient information.
                         </p>
@@ -168,7 +170,7 @@
                     id="patientForm"
                     class="hidden mt-6 space-y-5"
                 >
-                    <!-- Patient number -->
+                    <!-- Patient Number -->
                     <div>
                         <label
                             for="patientNumber"
@@ -191,7 +193,7 @@
                                    focus:ring-blue-500"
                         >
                     </div>
-                    <!-- Full name -->
+                    <!-- Full Name -->
                     <div>
                         <label
                             for="fullName"
@@ -214,7 +216,7 @@
                                    focus:ring-blue-500"
                         >
                     </div>
-                    <!-- DOB / Sex -->
+                    <!-- Date of Birth / Sex -->
                     <div
                         class="grid sm:grid-cols-2 gap-5"
                     >
@@ -260,11 +262,18 @@
                                 <option value="">
                                     Select sex
                                 </option>
-                                <option value="Male">
+                                <!-- IMPORTANT:
+                                     Database accepts lowercase
+                                     male, female, other.
+                                -->
+                                <option value="male">
                                     Male
                                 </option>
-                                <option value="Female">
+                                <option value="female">
                                     Female
+                                </option>
+                                <option value="other">
+                                    Other
                                 </option>
                             </select>
                         </div>
@@ -314,7 +323,7 @@
                                    focus:ring-blue-500"
                         ></textarea>
                     </div>
-                    <!-- Form status -->
+                    <!-- Form Status -->
                     <div
                         id="formStatus"
                         class="hidden p-4 rounded-xl text-sm"
@@ -377,7 +386,7 @@
                 </div>
             </section>
             <!-- =================================================
-                 PATIENT COUNT / STATUS
+                 PATIENT LIST
             ================================================== -->
             <section
                 class="bg-white rounded-2xl shadow overflow-hidden"
@@ -416,11 +425,12 @@
                         </span>
                     </div>
                 </div>
+                <!-- Page Status -->
                 <div
                     id="pageStatus"
                     class="hidden m-6 p-4 rounded-xl text-sm"
                 ></div>
-                <!-- Empty -->
+                <!-- Empty State -->
                 <div
                     id="emptyState"
                     class="hidden p-10 text-center"
@@ -428,7 +438,9 @@
                     <div class="text-5xl">
                         📭
                     </div>
-                    <h3 class="font-black text-xl mt-4">
+                    <h3
+                        class="font-black text-xl mt-4"
+                    >
                         No Patients Found
                     </h3>
                     <p
@@ -554,7 +566,7 @@
         // ESCAPE HTML
         // ====================================================
         function escapeHTML(value) {
-            return String(value || "")
+            return String(value ?? "")
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
@@ -632,9 +644,29 @@
             pageStatus.textContent =
                 message;
         }
-        function hidePageStatus() {
-            pageStatus.classList.add(
-                "hidden"
+        // ====================================================
+        // FORMAT DATE
+        // ====================================================
+        function formatDate(value) {
+            if (!value) {
+                return "Unknown date";
+            }
+            const date =
+                new Date(value);
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return "Unknown date";
+            }
+            return date.toLocaleDateString(
+                "en-GH",
+                {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                }
             );
         }
         // ====================================================
@@ -705,16 +737,14 @@
                 profile;
             const departmentName =
                 profile.departments?.name ||
-                "Not assigned";
+                "Department";
             staffWelcome.textContent =
                 "Welcome " +
                 (
                     profile.full_name ||
                     "Staff Member"
                 ) +
-                ". You are viewing authorized patient information for " +
-                departmentName +
-                ".";
+                ". You are authorized to access hospital patient information.";
             return profile;
         }
         // ====================================================
@@ -728,7 +758,6 @@
             emptyState.classList.add(
                 "hidden"
             );
-            hidePageStatus();
             try {
                 const {
                     data,
@@ -765,12 +794,8 @@
                     "CHA Patients Error:",
                     error
                 );
-                allPatients = [];
                 patientCount.textContent =
                     "0 Patients";
-                emptyState.classList.remove(
-                    "hidden"
-                );
                 showPageStatus(
                     "Unable to load patients: " +
                     (
@@ -788,9 +813,6 @@
             patients
         ) {
             patientsContainer.innerHTML = "";
-            patientsContainer.classList.add(
-                "hidden"
-            );
             emptyState.classList.add(
                 "hidden"
             );
@@ -801,9 +823,7 @@
                         ? " Patient"
                         : " Patients"
                 );
-            if (
-                patients.length === 0
-            ) {
+            if (patients.length === 0) {
                 emptyState.classList.remove(
                     "hidden"
                 );
@@ -819,96 +839,124 @@
                         "patient-card border " +
                         "border-slate-200 " +
                         "bg-white " +
-                        "rounded-2xl p-5";
+                        "rounded-2xl " +
+                        "p-5";
+                    const sexLabel =
+                        patient.sex
+                            ? (
+                                patient.sex
+                                    .charAt(0)
+                                    .toUpperCase() +
+                                patient.sex.slice(1)
+                            )
+                            : "Not provided";
                     card.innerHTML = `
-                        <div class="flex items-start
-                                    justify-between
+                        <div class="flex flex-col
+                                    sm:flex-row
+                                    sm:items-start
+                                    sm:justify-between
                                     gap-3">
                             <div>
-                                <h3
-                                    class="font-black
-                                           text-lg
-                                           text-slate-900"
-                                >
-                                    ${escapeHTML(
-                                        patient.full_name
-                                    )}
-                                </h3>
-                                <p
-                                    class="text-sm
+                                <p class="text-xs
+                                          font-black
                                           text-blue-700
-                                          font-bold
-                                          mt-1"
-                                >
-                                    Patient No:
+                                          uppercase
+                                          tracking-wide">
+                                    Patient Number
+                                </p>
+                                <p class="font-black
+                                          text-lg
+                                          text-slate-900
+                                          mt-1">
                                     ${escapeHTML(
                                         patient.patient_number
                                     )}
                                 </p>
                             </div>
                             <span
-                                class="bg-slate-100
-                                       text-slate-700
-                                       px-2 py-1
+                                class="bg-blue-100
+                                       text-blue-800
+                                       px-3 py-1
                                        rounded-full
                                        text-xs
-                                       font-bold"
+                                       font-black"
                             >
                                 ${escapeHTML(
-                                    patient.sex
+                                    sexLabel
                                 )}
                             </span>
                         </div>
+                        <div class="mt-5">
+                            <h3
+                                class="text-xl
+                                       font-black
+                                       text-slate-900"
+                            >
+                                ${escapeHTML(
+                                    patient.full_name
+                                )}
+                            </h3>
+                        </div>
                         <div
                             class="mt-4
-                                   space-y-2
+                                   grid
+                                   sm:grid-cols-2
+                                   gap-3
                                    text-sm"
                         >
-                            <p>
-                                <span class="font-bold">
-                                    Date of Birth:
-                                </span>
-                                ${escapeHTML(
-                                    patient.date_of_birth ||
-                                    "Not provided"
-                                )}
+                            <div
+                                class="bg-slate-50
+                                       rounded-xl
+                                       p-3"
+                            >
+                                <p class="text-xs
+                                          text-slate-400
+                                          font-bold">
+                                    Date of Birth
+                                </p>
+                                <p class="font-bold mt-1">
+                                    ${escapeHTML(
+                                        formatDate(
+                                            patient.date_of_birth
+                                        )
+                                    )}
+                                </p>
+                            </div>
+                            <div
+                                class="bg-slate-50
+                                       rounded-xl
+                                       p-3"
+                            >
+                                <p class="text-xs
+                                          text-slate-400
+                                          font-bold">
+                                    Phone
+                                </p>
+                                <p class="font-bold mt-1">
+                                    ${escapeHTML(
+                                        patient.phone ||
+                                        "Not provided"
+                                    )}
+                                </p>
+                            </div>
+                        </div>
+                        <div
+                            class="mt-3
+                                   bg-slate-50
+                                   rounded-xl
+                                   p-3"
+                        >
+                            <p class="text-xs
+                                      text-slate-400
+                                      font-bold">
+                                Address
                             </p>
-                            <p>
-                                <span class="font-bold">
-                                    Phone:
-                                </span>
-                                ${escapeHTML(
-                                    patient.phone ||
-                                    "Not provided"
-                                )}
-                            </p>
-                            <p>
-                                <span class="font-bold">
-                                    Address:
-                                </span>
+                            <p class="font-bold mt-1 text-sm">
                                 ${escapeHTML(
                                     patient.address ||
                                     "Not provided"
                                 )}
                             </p>
-                        </div>
-                        <div class="mt-5">
-                            <button
-                                type="button"
-                                class="view-patient-button
-                                       bg-blue-900
-                                       hover:bg-blue-800
-                                       text-white
-                                       px-4 py-2
-                                       rounded-lg
-                                       font-bold
-                                       text-sm"
-                                data-id="${escapeHTML(
-                                    patient.id
-                                )}"
-                            >
-                                View Patient
-                            </button>
                         </div>
                     `;
                     patientsContainer.appendChild(
@@ -919,25 +967,9 @@
             patientsContainer.classList.remove(
                 "hidden"
             );
-            document
-                .querySelectorAll(
-                    ".view-patient-button"
-                )
-                .forEach(
-                    function(button) {
-                        button.addEventListener(
-                            "click",
-                            function() {
-                                openPatient(
-                                    this.dataset.id
-                                );
-                            }
-                        );
-                    }
-                );
         }
         // ====================================================
-        // SEARCH
+        // SEARCH PATIENTS
         // ====================================================
         function searchPatients() {
             const query =
@@ -989,26 +1021,7 @@
             );
         }
         // ====================================================
-        // OPEN PATIENT
-        // ====================================================
-        function openPatient(
-            patientId
-        ) {
-            /*
-             * We will build the detailed patient
-             * and patient-record page next.
-             *
-             * For now, store the patient ID so
-             * the next module can use it.
-             */
-            window.location.href =
-                "staff-patient-record.html?id=" +
-                encodeURIComponent(
-                    patientId
-                );
-        }
-        // ====================================================
-        // REGISTER PATIENT FORM
+        // REGISTER FORM
         // ====================================================
         toggleRegisterButton.addEventListener(
             "click",
@@ -1026,7 +1039,7 @@
                 }
                 else {
                     toggleRegisterButton.textContent =
-                        "Close Form";
+                        "Close Registration";
                     patientNumber.focus();
                 }
             }
@@ -1046,7 +1059,7 @@
             }
         );
         // ====================================================
-        // SAVE PATIENT
+        // REGISTER PATIENT
         // ====================================================
         patientForm.addEventListener(
             "submit",
@@ -1058,15 +1071,22 @@
                     fullName.value.trim();
                 const dob =
                     dateOfBirth.value;
+                /*
+                 * IMPORTANT:
+                 * Supabase constraint accepts:
+                 * male, female, other
+                 */
                 const patientSex =
-                    sex.value;
+                    sex.value
+                        .trim()
+                        .toLowerCase();
                 const patientPhone =
                     phone.value.trim();
                 const patientAddress =
                     address.value.trim();
                 if (!number) {
                     showFormStatus(
-                        "Please enter the patient number.",
+                        "Please enter a patient number.",
                         "error"
                     );
                     return;
@@ -1080,14 +1100,29 @@
                 }
                 if (!dob) {
                     showFormStatus(
-                        "Please enter the patient's date of birth.",
+                        "Please select the patient's date of birth.",
                         "error"
                     );
                     return;
                 }
-                if (!patientSex) {
+                if (
+                    ![
+                        "male",
+                        "female",
+                        "other"
+                    ].includes(
+                        patientSex
+                    )
+                ) {
                     showFormStatus(
-                        "Please select the patient's sex.",
+                        "Please select Male, Female, or Other.",
+                        "error"
+                    );
+                    return;
+                }
+                if (!currentUser) {
+                    showFormStatus(
+                        "Your staff session has expired. Please log in again.",
                         "error"
                     );
                     return;
@@ -1097,34 +1132,15 @@
                 savePatientButton.textContent =
                     "Saving...";
                 showFormStatus(
-                    "Saving patient...",
+                    "Registering patient...",
                     "info"
                 );
                 try {
                     /*
-                     * Check whether the patient number
-                     * already exists.
+                     * The sex value sent here is guaranteed
+                     * to be lowercase and therefore matches
+                     * the patients_sex_check constraint.
                      */
-                    const {
-                        data: existingPatient,
-                        error: existingError
-                    } =
-                        await window.CHA_SUPABASE
-                            .from("patients")
-                            .select("id")
-                            .eq(
-                                "patient_number",
-                                number
-                            )
-                            .maybeSingle();
-                    if (existingError) {
-                        throw existingError;
-                    }
-                    if (existingPatient) {
-                        throw new Error(
-                            "A patient with this patient number already exists."
-                        );
-                    }
                     const {
                         data,
                         error
@@ -1147,51 +1163,50 @@
                                     patientAddress ||
                                     null
                             })
-                            .select(`
-                                id,
-                                patient_number,
-                                full_name,
-                                date_of_birth,
-                                sex,
-                                phone,
-                                address
-                            `)
+                            .select()
                             .single();
                     if (error) {
                         throw error;
                     }
-                    patientForm.reset();
-                    patientForm.classList.add(
-                        "hidden"
-                    );
-                    toggleRegisterButton.textContent =
-                        "Register Patient";
                     showFormStatus(
                         "Patient registered successfully.",
                         "success"
                     );
-                    showPageStatus(
-                        "Patient " +
-                        (
-                            data?.patient_number ||
-                            number
-                        ) +
-                        " was registered successfully.",
-                        "success"
-                    );
+                    patientForm.reset();
                     await loadPatients();
+                    setTimeout(
+                        function() {
+                            patientForm.classList.add(
+                                "hidden"
+                            );
+                            toggleRegisterButton.textContent =
+                                "Register Patient";
+                            formStatus.classList.add(
+                                "hidden"
+                            );
+                        },
+                        1200
+                    );
                 }
                 catch (error) {
                     console.error(
                         "CHA Register Patient Error:",
                         error
                     );
+                    let message =
+                        error.message ||
+                        "Unable to register patient.";
+                    if (
+                        message.includes(
+                            "patients_sex_check"
+                        )
+                    ) {
+                        message =
+                            "The selected sex is not accepted by the database. Please select Male, Female, or Other.";
+                    }
                     showFormStatus(
                         "Unable to register patient: " +
-                        (
-                            error.message ||
-                            "Unknown error"
-                        ),
+                        message,
                         "error"
                     );
                 }
@@ -1204,7 +1219,7 @@
             }
         );
         // ====================================================
-        // SEARCH EVENT
+        // SEARCH INPUT
         // ====================================================
         searchInput.addEventListener(
             "input",
@@ -1232,7 +1247,7 @@
             }
         );
         // ====================================================
-        // BACK
+        // BACK TO DASHBOARD
         // ====================================================
         backButton.addEventListener(
             "click",
@@ -1306,9 +1321,7 @@
                     document.getElementById(
                         "returnDashboardButton"
                     );
-                if (
-                    returnDashboardButton
-                ) {
+                if (returnDashboardButton) {
                     returnDashboardButton.addEventListener(
                         "click",
                         function() {
