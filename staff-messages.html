@@ -22,7 +22,7 @@
 
         .message-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
@@ -30,9 +30,7 @@
 <body class="bg-slate-100 text-slate-800">
 
 <header class="bg-blue-900 text-white shadow-lg">
-
     <div class="max-w-7xl mx-auto px-4">
-
         <div class="min-h-20 flex items-center justify-between gap-4">
 
             <div class="flex items-center gap-3">
@@ -46,7 +44,6 @@
                 </div>
 
                 <div>
-
                     <div class="font-black">
                         COMMUNITY HOSPITAL AFARI
                     </div>
@@ -54,7 +51,6 @@
                     <div class="text-blue-200 text-sm">
                         Staff Messages
                     </div>
-
                 </div>
 
             </div>
@@ -71,9 +67,7 @@
             </button>
 
         </div>
-
     </div>
-
 </header>
 
 
@@ -85,7 +79,6 @@
         id="loading"
         class="bg-white rounded-2xl shadow p-8 text-center"
     >
-
         <div class="text-3xl">
             🔐
         </div>
@@ -94,28 +87,19 @@
             Loading Staff Messages...
         </p>
 
-        <p
-            id="loadingText"
-            class="text-sm text-slate-500 mt-2"
-        >
+        <p class="text-sm text-slate-500 mt-2">
             Please wait...
         </p>
-
     </div>
 
 
     <!-- MAIN PAGE -->
 
-    <div
-        id="messagesPage"
-        class="hidden"
-    >
+    <div id="inboxPage" class="hidden">
 
         <!-- HEADER -->
 
-        <section
-            class="bg-white rounded-2xl shadow p-6 mb-8"
-        >
+        <section class="bg-white rounded-2xl shadow p-6 mb-8">
 
             <div
                 class="flex flex-col
@@ -142,8 +126,7 @@
                         id="staffWelcome"
                         class="text-sm text-slate-500 mt-2"
                     >
-                        Secure communication between authorized
-                        hospital staff.
+                        Secure communication between authorized hospital staff.
                     </p>
 
                 </div>
@@ -165,14 +148,6 @@
         </section>
 
 
-        <!-- STATUS -->
-
-        <div
-            id="inboxStatus"
-            class="hidden mb-6 p-4 rounded-xl text-sm"
-        ></div>
-
-
         <!-- SEND MESSAGE -->
 
         <section
@@ -192,6 +167,8 @@
                 id="messageForm"
                 class="mt-6 space-y-5"
             >
+
+                <!-- RECIPIENT -->
 
                 <div>
 
@@ -224,6 +201,8 @@
                 </div>
 
 
+                <!-- SUBJECT -->
+
                 <div>
 
                     <label
@@ -250,6 +229,8 @@
 
                 </div>
 
+
+                <!-- MESSAGE -->
 
                 <div>
 
@@ -279,11 +260,18 @@
                 </div>
 
 
+                <!-- FORM STATUS -->
+
                 <div
                     id="formStatus"
-                    class="hidden p-4 rounded-xl text-sm"
+                    class="hidden
+                           p-4
+                           rounded-xl
+                           text-sm"
                 ></div>
 
+
+                <!-- SEND -->
 
                 <button
                     id="sendButton"
@@ -324,7 +312,7 @@
                     <div>
 
                         <h2 class="text-xl font-black">
-                            📥 Received Messages
+                            📥 Messages
                         </h2>
 
                         <p class="text-sm text-slate-500 mt-1">
@@ -354,6 +342,12 @@
 
 
             <div
+                id="inboxStatus"
+                class="hidden m-6 p-4 rounded-xl text-sm"
+            ></div>
+
+
+            <div
                 id="emptyState"
                 class="hidden p-10 text-center"
             >
@@ -367,7 +361,7 @@
                 </h3>
 
                 <p class="text-slate-500 text-sm mt-2">
-                    Your department has no received messages.
+                    Your department has no messages yet.
                 </p>
 
             </div>
@@ -473,9 +467,14 @@
                 🔐 Communication Security
             </h2>
 
-            <p class="text-sm text-blue-900 mt-2">
-                Use this messaging system only for authorized
-                hospital communication.
+            <p
+                class="text-sm
+                      text-blue-900
+                      mt-2"
+            >
+                Use this inbox only for authorized hospital communication.
+                Do not share passwords or confidential information with
+                unauthorized personnel.
             </p>
 
         </section>
@@ -495,18 +494,15 @@
 "use strict";
 
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+// ============================================================
+// ELEMENTS
+// ============================================================
 
 const loading =
     document.getElementById("loading");
 
-const loadingText =
-    document.getElementById("loadingText");
-
-const messagesPage =
-    document.getElementById("messagesPage");
+const inboxPage =
+    document.getElementById("inboxPage");
 
 const departmentTitle =
     document.getElementById("departmentTitle");
@@ -560,18 +556,17 @@ const backButton =
     document.getElementById("backButton");
 
 
-/* =========================================================
-   CURRENT USER
-========================================================= */
+// ============================================================
+// CURRENT STAFF
+// ============================================================
 
 let currentUser = null;
-
 let currentProfile = null;
 
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
+// ============================================================
+// ESCAPE HTML
+// ============================================================
 
 function escapeHTML(value) {
 
@@ -585,9 +580,105 @@ function escapeHTML(value) {
 }
 
 
-/* =========================================================
-   DATE
-========================================================= */
+// ============================================================
+// FORM STATUS
+// ============================================================
+
+function showFormStatus(message, type) {
+
+    formStatus.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+
+    if (type === "error") {
+
+        formStatus.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+
+    }
+
+    else if (type === "success") {
+
+        formStatus.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+
+    }
+
+    else {
+
+        formStatus.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+
+    }
+
+    formStatus.textContent = message;
+
+}
+
+
+// ============================================================
+// INBOX STATUS
+// ============================================================
+
+function showInboxStatus(message, type) {
+
+    inboxStatus.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+
+    if (type === "error") {
+
+        inboxStatus.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+
+    }
+
+    else if (type === "success") {
+
+        inboxStatus.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+
+    }
+
+    else {
+
+        inboxStatus.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+
+    }
+
+    inboxStatus.textContent = message;
+
+}
+
+
+// ============================================================
+// FORMAT DATE
+// ============================================================
 
 function formatDate(value) {
 
@@ -595,14 +686,9 @@ function formatDate(value) {
         return "Unknown date";
     }
 
-    const date =
-        new Date(value);
+    const date = new Date(value);
 
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
+    if (Number.isNaN(date.getTime())) {
         return "Unknown date";
     }
 
@@ -617,91 +703,9 @@ function formatDate(value) {
 }
 
 
-/* =========================================================
-   STATUS
-========================================================= */
-
-function showFormStatus(
-    message,
-    type
-) {
-
-    formStatus.className =
-        "p-4 rounded-xl text-sm";
-
-    if (type === "error") {
-
-        formStatus.classList.add(
-            "bg-red-50",
-            "text-red-700"
-        );
-
-    }
-    else if (type === "success") {
-
-        formStatus.classList.add(
-            "bg-green-50",
-            "text-green-700"
-        );
-
-    }
-    else {
-
-        formStatus.classList.add(
-            "bg-blue-50",
-            "text-blue-700"
-        );
-
-    }
-
-    formStatus.textContent =
-        message;
-
-}
-
-
-function showInboxStatus(
-    message,
-    type
-) {
-
-    inboxStatus.className =
-        "mb-6 p-4 rounded-xl text-sm";
-
-    if (type === "error") {
-
-        inboxStatus.classList.add(
-            "bg-red-50",
-            "text-red-700"
-        );
-
-    }
-    else if (type === "success") {
-
-        inboxStatus.classList.add(
-            "bg-green-50",
-            "text-green-700"
-        );
-
-    }
-    else {
-
-        inboxStatus.classList.add(
-            "bg-blue-50",
-            "text-blue-700"
-        );
-
-    }
-
-    inboxStatus.textContent =
-        message;
-
-}
-
-
-/* =========================================================
-   LOAD CURRENT STAFF
-========================================================= */
+// ============================================================
+// LOAD CURRENT STAFF
+// ============================================================
 
 async function loadCurrentStaff() {
 
@@ -713,18 +717,11 @@ async function loadCurrentStaff() {
 
     }
 
-    loadingText.textContent =
-        "Checking your staff account...";
-
-
     const {
         data: authData,
         error: authError
     } =
-        await window.CHA_SUPABASE
-            .auth
-            .getUser();
-
+        await window.CHA_SUPABASE.auth.getUser();
 
     if (
         authError ||
@@ -739,20 +736,13 @@ async function loadCurrentStaff() {
 
     }
 
-
     currentUser =
         authData.user;
-
 
     console.log(
         "CHA CURRENT USER ID:",
         currentUser.id
     );
-
-
-    loadingText.textContent =
-        "Loading your staff profile...";
-
 
     const {
         data: profile,
@@ -778,22 +768,16 @@ async function loadCurrentStaff() {
             )
             .single();
 
-
     if (profileError) {
-
         throw profileError;
-
     }
-
 
     if (
         !profile ||
         profile.is_active !== true
     ) {
 
-        await window.CHA_SUPABASE
-            .auth
-            .signOut();
+        await window.CHA_SUPABASE.auth.signOut();
 
         window.location.href =
             "staff-login.html";
@@ -802,20 +786,16 @@ async function loadCurrentStaff() {
 
     }
 
-
     currentProfile =
         profile;
-
 
     const departmentName =
         profile.departments?.name ||
         "Department";
 
-
     departmentTitle.textContent =
         departmentName +
         " — Messages";
-
 
     staffWelcome.textContent =
         "Welcome " +
@@ -823,17 +803,18 @@ async function loadCurrentStaff() {
             profile.full_name ||
             "Staff Member"
         ) +
-        ". You can send and receive department messages here.";
-
+        ". Messages received by " +
+        departmentName +
+        " are shown below.";
 
     return profile;
 
 }
 
 
-/* =========================================================
-   LOAD DEPARTMENTS
-========================================================= */
+// ============================================================
+// LOAD DEPARTMENTS
+// ============================================================
 
 async function loadDepartments() {
 
@@ -842,7 +823,6 @@ async function loadDepartments() {
             Select department
         </option>
     `;
-
 
     const {
         data,
@@ -861,17 +841,12 @@ async function loadDepartments() {
                 }
             );
 
-
     if (error) {
-
         throw error;
-
     }
-
 
     const departments =
         data || [];
-
 
     departments.forEach(
         function(department) {
@@ -879,27 +854,23 @@ async function loadDepartments() {
             if (
                 currentProfile &&
                 department.id ===
-                currentProfile.department_id
+                    currentProfile.department_id
             ) {
 
                 return;
 
             }
 
-
             const option =
                 document.createElement(
                     "option"
                 );
 
-
             option.value =
                 department.id;
 
-
             option.textContent =
                 department.name;
-
 
             recipientDepartment.appendChild(
                 option
@@ -911,9 +882,9 @@ async function loadDepartments() {
 }
 
 
-/* =========================================================
-   LOAD RECEIVED MESSAGES
-========================================================= */
+// ============================================================
+// LOAD INBOX
+// ============================================================
 
 async function loadInbox() {
 
@@ -927,277 +898,297 @@ async function loadInbox() {
         "hidden"
     );
 
+    messageCount.textContent =
+        "0 Messages";
 
-    if (
-        !currentProfile ||
-        !currentProfile.department_id
-    ) {
+    try {
 
-        messageCount.textContent =
-            "0 Messages";
+        if (
+            !currentProfile ||
+            !currentProfile.department_id
+        ) {
 
-        emptyState.classList.remove(
-            "hidden"
-        );
-
-        showInboxStatus(
-            "Your staff profile is not assigned to a department.",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await window.CHA_SUPABASE
-            .from("department_messages")
-            .select(`
-                id,
-                sender_id,
-                sender_department_id,
-                recipient_department_id,
-                subject,
-                message,
-                is_read,
-                created_at,
-                sender:staff_profiles!department_messages_sender_id_fkey (
-                    full_name,
-                    staff_id,
-                    role
-                ),
-                sender_department:departments!department_messages_sender_department_id_fkey (
-                    name
-                )
-            `)
-            .eq(
-                "recipient_department_id",
-                currentProfile.department_id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
+            emptyState.classList.remove(
+                "hidden"
             );
 
+            showInboxStatus(
+                "Your staff profile is not assigned to a department.",
+                "error"
+            );
 
-    if (error) {
+            return;
 
-        throw error;
+        }
 
-    }
-
-
-    const messages =
-        data || [];
-
-
-    messageCount.textContent =
-        messages.length +
-        (
-            messages.length === 1
-                ? " Message"
-                : " Messages"
-        );
-
-
-    if (
-        messages.length === 0
-    ) {
-
-        emptyState.classList.remove(
-            "hidden"
-        );
-
-        return;
-
-    }
-
-
-    messages.forEach(
-        function(item) {
-
-            const card =
-                document.createElement(
-                    "article"
+        const {
+            data,
+            error
+        } =
+            await window.CHA_SUPABASE
+                .from("department_messages")
+                .select(`
+                    id,
+                    sender_id,
+                    sender_department_id,
+                    recipient_department_id,
+                    subject,
+                    message,
+                    is_read,
+                    created_at,
+                    sender_deleted,
+                    sender:staff_profiles!department_messages_sender_id_fkey (
+                        full_name,
+                        staff_id,
+                        role
+                    ),
+                    sender_department:departments!department_messages_sender_department_id_fkey (
+                        name
+                    )
+                `)
+                .eq(
+                    "recipient_department_id",
+                    currentProfile.department_id
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
                 );
 
+        if (error) {
+            throw error;
+        }
 
-            card.className =
-                "message-card border rounded-2xl p-5 " +
-                (
-                    item.is_read
-                        ? "bg-white border-slate-200"
-                        : "bg-blue-50 border-blue-200"
-                );
+        const messages =
+            data || [];
 
+        messageCount.textContent =
+            messages.length +
+            (
+                messages.length === 1
+                    ? " Message"
+                    : " Messages"
+            );
 
-            const senderName =
-                item.sender?.full_name ||
-                "Unknown staff";
+        if (
+            messages.length === 0
+        ) {
 
+            emptyState.classList.remove(
+                "hidden"
+            );
 
-            const senderDepartment =
-                item.sender_department?.name ||
-                "Unknown department";
+            return;
 
+        }
 
-            const senderRole =
-                item.sender?.role ||
-                "Staff";
+        messages.forEach(
+            function(item) {
 
+                const card =
+                    document.createElement(
+                        "article"
+                    );
 
-            card.innerHTML = `
+                card.className =
+                    "message-card border rounded-2xl p-5 " +
+                    (
+                        item.is_read
+                            ? "bg-white border-slate-200"
+                            : "bg-blue-50 border-blue-200"
+                    );
 
-                <div class="flex flex-col
-                            sm:flex-row
-                            sm:items-start
-                            sm:justify-between
-                            gap-3">
+                const senderName =
+                    item.sender?.full_name ||
+                    "Unknown staff";
 
-                    <div>
+                const senderDepartment =
+                    item.sender_department?.name ||
+                    "Unknown department";
 
-                        <div class="flex flex-wrap
-                                    items-center
-                                    gap-2">
+                const senderRole =
+                    item.sender?.role ||
+                    "Staff";
 
-                            <h3
-                                class="font-black
-                                       text-lg
-                                       text-slate-900"
+                card.innerHTML = `
+
+                    <div
+                        class="flex flex-col
+                               sm:flex-row
+                               sm:items-start
+                               sm:justify-between
+                               gap-3"
+                    >
+
+                        <div>
+
+                            <div
+                                class="flex flex-wrap
+                                       items-center
+                                       gap-2"
                             >
-                                ${escapeHTML(item.subject)}
-                            </h3>
 
-                            ${
-                                item.is_read
-                                    ? ""
-                                    : `
-                                        <span
-                                            class="bg-blue-600
-                                                   text-white
-                                                   px-2 py-1
-                                                   rounded-full
-                                                   text-xs
-                                                   font-black"
-                                        >
-                                            NEW
-                                        </span>
-                                    `
-                            }
+                                <h3
+                                    class="font-black
+                                           text-lg
+                                           text-slate-900"
+                                >
+                                    ${escapeHTML(
+                                        item.subject
+                                    )}
+                                </h3>
+
+                                ${
+                                    item.is_read
+                                        ? ""
+                                        : `
+                                            <span
+                                                class="bg-blue-600
+                                                       text-white
+                                                       px-2 py-1
+                                                       rounded-full
+                                                       text-xs
+                                                       font-black"
+                                            >
+                                                NEW
+                                            </span>
+                                        `
+                                }
+
+                            </div>
+
+                            <p
+                                class="text-sm
+                                      text-slate-500
+                                      mt-1"
+                            >
+                                From:
+                                ${escapeHTML(
+                                    senderName
+                                )}
+                                —
+                                ${escapeHTML(
+                                    senderDepartment
+                                )}
+                                —
+                                ${escapeHTML(
+                                    senderRole
+                                )}
+                            </p>
 
                         </div>
 
-
-                        <p
-                            class="text-sm
-                                  text-slate-500
-                                  mt-1"
+                        <span
+                            class="text-xs
+                                   text-slate-400"
                         >
-                            From:
-                            ${escapeHTML(senderName)}
-                            —
-                            ${escapeHTML(senderDepartment)}
-                            —
-                            ${escapeHTML(senderRole)}
-                        </p>
+                            ${escapeHTML(
+                                formatDate(
+                                    item.created_at
+                                )
+                            )}
+                        </span>
 
                     </div>
 
-
-                    <span
-                        class="text-xs
-                               text-slate-400"
+                    <div
+                        class="mt-4
+                               bg-slate-50
+                               rounded-xl
+                               p-4
+                               text-sm
+                               whitespace-pre-wrap"
                     >
                         ${escapeHTML(
-                            formatDate(item.created_at)
+                            item.message
                         )}
-                    </span>
+                    </div>
 
-                </div>
-
-
-                <div
-                    class="mt-4
-                           bg-slate-50
-                           rounded-xl
-                           p-4
-                           text-sm
-                           whitespace-pre-wrap"
-                >
-                    ${escapeHTML(item.message)}
-                </div>
-
-
-                ${
-                    item.is_read
-                        ? ""
-                        : `
-                            <button
-                                class="mark-read-button
-                                       mt-4
-                                       bg-blue-900
-                                       hover:bg-blue-800
-                                       text-white
-                                       px-4 py-2
-                                       rounded-lg
-                                       font-bold
-                                       text-sm"
-                                data-id="${escapeHTML(item.id)}"
-                            >
-                                ✓ Mark as read
-                            </button>
-                        `
-                }
-
-            `;
-
-
-            messagesContainer.appendChild(
-                card
-            );
-
-        }
-    );
-
-
-    messagesContainer.classList.remove(
-        "hidden"
-    );
-
-
-    document
-        .querySelectorAll(
-            ".mark-read-button"
-        )
-        .forEach(
-            function(button) {
-
-                button.addEventListener(
-                    "click",
-                    function() {
-
-                        markMessageRead(
-                            this.dataset.id
-                        );
-
+                    ${
+                        item.is_read
+                            ? ""
+                            : `
+                                <button
+                                    class="mark-read-button
+                                           mt-4
+                                           bg-blue-900
+                                           hover:bg-blue-800
+                                           text-white
+                                           px-4 py-2
+                                           rounded-lg
+                                           font-bold
+                                           text-sm"
+                                    data-id="${escapeHTML(
+                                        item.id
+                                    )}"
+                                >
+                                    ✓ Mark as read
+                                </button>
+                            `
                     }
+
+                `;
+
+                messagesContainer.appendChild(
+                    card
                 );
 
             }
         );
 
+        messagesContainer.classList.remove(
+            "hidden"
+        );
+
+        document
+            .querySelectorAll(
+                ".mark-read-button"
+            )
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            markMessageRead(
+                                this.dataset.id
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Inbox Error:",
+            error
+        );
+
+        showInboxStatus(
+            "Unable to load messages: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }
+
 }
 
 
-/* =========================================================
-   LOAD SENT MESSAGES
-========================================================= */
+// ============================================================
+// LOAD SENT MESSAGES
+// ============================================================
 
 async function loadSentMessages() {
 
@@ -1211,245 +1202,265 @@ async function loadSentMessages() {
         "hidden"
     );
 
-
-    if (!currentUser) {
-
-        sentMessageCount.textContent =
-            "0 Sent";
-
-        sentEmptyState.classList.remove(
-            "hidden"
-        );
-
-        return;
-
-    }
-
-
-    console.log(
-        "Loading sent messages for:",
-        currentUser.id
-    );
-
-
-    const {
-        data,
-        error
-    } =
-        await window.CHA_SUPABASE
-            .from("department_messages")
-            .select(`
-                id,
-                sender_id,
-                recipient_department_id,
-                subject,
-                message,
-                created_at,
-                sender_deleted
-            `)
-            .eq(
-                "sender_id",
-                currentUser.id
-            )
-            .eq(
-                "sender_deleted",
-                false
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (error) {
-
-        throw error;
-
-    }
-
-
-    const messages =
-        data || [];
-
-
-    console.log(
-        "Sent messages found:",
-        messages.length
-    );
-
-
     sentMessageCount.textContent =
-        messages.length +
-        (
-            messages.length === 1
-                ? " Sent Message"
-                : " Sent Messages"
-        );
+        "0 Sent";
 
+    try {
 
-    if (
-        messages.length === 0
-    ) {
+        if (!currentUser) {
 
-        sentEmptyState.classList.remove(
-            "hidden"
-        );
-
-        return;
-
-    }
-
-
-    messages.forEach(
-        function(item) {
-
-            const card =
-                document.createElement(
-                    "article"
-                );
-
-
-            card.className =
-                "message-card border border-green-200 bg-white rounded-2xl p-5";
-
-
-            card.innerHTML = `
-
-                <div
-                    class="flex flex-col
-                           sm:flex-row
-                           sm:items-start
-                           sm:justify-between
-                           gap-3"
-                >
-
-                    <div>
-
-                        <h3
-                            class="font-black
-                                   text-lg
-                                   text-slate-900"
-                        >
-                            ${escapeHTML(item.subject)}
-                        </h3>
-
-                        <p
-                            class="text-sm
-                                  text-slate-500
-                                  mt-1"
-                        >
-                            Sent to another hospital department
-                        </p>
-
-                    </div>
-
-
-                    <span
-                        class="text-xs
-                               text-slate-400"
-                    >
-                        ${escapeHTML(
-                            formatDate(item.created_at)
-                        )}
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="mt-4
-                           bg-slate-50
-                           rounded-xl
-                           p-4
-                           text-sm
-                           whitespace-pre-wrap"
-                >
-                    ${escapeHTML(item.message)}
-                </div>
-
-
-                <div class="mt-4">
-
-                    <button
-                        class="delete-sent-button
-                               bg-red-600
-                               hover:bg-red-700
-                               text-white
-                               px-4 py-2
-                               rounded-lg
-                               font-bold
-                               text-sm"
-                        data-id="${escapeHTML(item.id)}"
-                    >
-                        🗑️ Delete from Sent
-                    </button>
-
-                </div>
-
-            `;
-
-
-            sentMessagesContainer.appendChild(
-                card
+            throw new Error(
+                "Current user is not available."
             );
 
         }
-    );
 
+        console.log(
+            "CHA LOADING SENT MESSAGES FOR:",
+            currentUser.id
+        );
 
-    sentMessagesContainer.classList.remove(
-        "hidden"
-    );
-
-
-    sentMessagesContainer
-        .querySelectorAll(
-            ".delete-sent-button"
-        )
-        .forEach(
-            function(button) {
-
-                button.addEventListener(
-                    "click",
-                    function() {
-
-                        deleteSentMessage(
-                            this.dataset.id
-                        );
-
+        const {
+            data,
+            error
+        } =
+            await window.CHA_SUPABASE
+                .from("department_messages")
+                .select(`
+                    id,
+                    sender_id,
+                    sender_department_id,
+                    recipient_department_id,
+                    subject,
+                    message,
+                    created_at,
+                    sender_deleted,
+                    recipient_department:departments!department_messages_recipient_department_id_fkey (
+                        name
+                    )
+                `)
+                .eq(
+                    "sender_id",
+                    currentUser.id
+                )
+                .eq(
+                    "sender_deleted",
+                    false
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
                     }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        const messages =
+            data || [];
+
+        console.log(
+            "CHA SENT MESSAGES FOUND:",
+            messages.length
+        );
+
+        sentMessageCount.textContent =
+            messages.length +
+            (
+                messages.length === 1
+                    ? " Sent"
+                    : " Sent"
+            );
+
+        if (
+            messages.length === 0
+        ) {
+
+            sentEmptyState.classList.remove(
+                "hidden"
+            );
+
+            return;
+
+        }
+
+        messages.forEach(
+            function(item) {
+
+                const card =
+                    document.createElement(
+                        "article"
+                    );
+
+                card.className =
+                    "message-card border border-green-200 bg-white rounded-2xl p-5";
+
+                const recipientName =
+                    item.recipient_department?.name ||
+                    "Another department";
+
+                card.innerHTML = `
+
+                    <div
+                        class="flex flex-col
+                               sm:flex-row
+                               sm:items-start
+                               sm:justify-between
+                               gap-3"
+                    >
+
+                        <div>
+
+                            <h3
+                                class="font-black
+                                       text-lg
+                                       text-slate-900"
+                            >
+                                ${escapeHTML(
+                                    item.subject
+                                )}
+                            </h3>
+
+                            <p
+                                class="text-sm
+                                      text-slate-500
+                                      mt-1"
+                            >
+                                To:
+                                ${escapeHTML(
+                                    recipientName
+                                )}
+                            </p>
+
+                        </div>
+
+                        <span
+                            class="text-xs
+                                   text-slate-400"
+                        >
+                            ${escapeHTML(
+                                formatDate(
+                                    item.created_at
+                                )
+                            )}
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="mt-4
+                               bg-slate-50
+                               rounded-xl
+                               p-4
+                               text-sm
+                               whitespace-pre-wrap"
+                    >
+                        ${escapeHTML(
+                            item.message
+                        )}
+                    </div>
+
+                    <div class="mt-4">
+
+                        <button
+                            class="delete-sent-button
+                                   bg-red-600
+                                   hover:bg-red-700
+                                   text-white
+                                   px-4 py-2
+                                   rounded-lg
+                                   font-bold
+                                   text-sm"
+                            data-id="${escapeHTML(
+                                item.id
+                            )}"
+                        >
+                            🗑️ Delete from Sent
+                        </button>
+
+                    </div>
+
+                `;
+
+                sentMessagesContainer.appendChild(
+                    card
                 );
 
             }
         );
 
+        sentMessagesContainer.classList.remove(
+            "hidden"
+        );
+
+        document
+            .querySelectorAll(
+                ".delete-sent-button"
+            )
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            deleteSentMessage(
+                                this.dataset.id
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Sent Messages Error:",
+            error
+        );
+
+        showInboxStatus(
+            "Unable to load sent messages: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
+            "error"
+        );
+
+    }
+
 }
 
 
-/* =========================================================
-   DELETE SENT MESSAGE
-========================================================= */
+// ============================================================
+// DELETE SENT MESSAGE
+// ============================================================
 
-async function deleteSentMessage(
-    messageId
-) {
+async function deleteSentMessage(messageId) {
 
     const confirmed =
         window.confirm(
             "Delete this message from your Sent Messages?\n\nThe recipient will still be able to see their copy."
         );
 
-
     if (!confirmed) {
-
         return;
-
     }
 
-
     try {
+
+        if (!currentUser) {
+            throw new Error(
+                "Current user is not available."
+            );
+        }
 
         const {
             error
@@ -1468,19 +1479,14 @@ async function deleteSentMessage(
                     currentUser.id
                 );
 
-
         if (error) {
-
             throw error;
-
         }
-
 
         showInboxStatus(
             "Message removed from your Sent Messages.",
             "success"
         );
-
 
         await loadSentMessages();
 
@@ -1492,7 +1498,6 @@ async function deleteSentMessage(
             "CHA Delete Sent Message Error:",
             error
         );
-
 
         showInboxStatus(
             "Unable to delete sent message: " +
@@ -1508,15 +1513,24 @@ async function deleteSentMessage(
 }
 
 
-/* =========================================================
-   MARK MESSAGE READ
-========================================================= */
+// ============================================================
+// MARK MESSAGE READ
+// ============================================================
 
-async function markMessageRead(
-    messageId
-) {
+async function markMessageRead(messageId) {
 
     try {
+
+        if (
+            !currentProfile ||
+            !currentProfile.department_id
+        ) {
+
+            throw new Error(
+                "Current staff department is not available."
+            );
+
+        }
 
         const {
             error
@@ -1535,13 +1549,9 @@ async function markMessageRead(
                     currentProfile.department_id
                 );
 
-
         if (error) {
-
             throw error;
-
         }
-
 
         await loadInbox();
 
@@ -1555,7 +1565,6 @@ async function markMessageRead(
             "CHA Mark Read Error:",
             error
         );
-
 
         showInboxStatus(
             "Unable to mark message as read: " +
@@ -1571,9 +1580,9 @@ async function markMessageRead(
 }
 
 
-/* =========================================================
-   SEND MESSAGE
-========================================================= */
+// ============================================================
+// SEND MESSAGE
+// ============================================================
 
 messageForm.addEventListener(
     "submit",
@@ -1581,18 +1590,14 @@ messageForm.addEventListener(
 
         event.preventDefault();
 
-
         const recipientId =
             recipientDepartment.value;
-
 
         const subject =
             messageSubject.value.trim();
 
-
         const message =
             messageBody.value.trim();
-
 
         if (!recipientId) {
 
@@ -1605,7 +1610,6 @@ messageForm.addEventListener(
 
         }
 
-
         if (!subject) {
 
             showFormStatus(
@@ -1616,7 +1620,6 @@ messageForm.addEventListener(
             return;
 
         }
-
 
         if (!message) {
 
@@ -1629,14 +1632,10 @@ messageForm.addEventListener(
 
         }
 
-
-        if (
-            !currentUser ||
-            !currentProfile
-        ) {
+        if (!currentUser) {
 
             showFormStatus(
-                "Your staff account is not ready.",
+                "Your login session is not available. Please log in again.",
                 "error"
             );
 
@@ -1644,8 +1643,8 @@ messageForm.addEventListener(
 
         }
 
-
         if (
+            !currentProfile ||
             !currentProfile.department_id
         ) {
 
@@ -1658,14 +1657,13 @@ messageForm.addEventListener(
 
         }
 
-
         if (
             recipientId ===
             currentProfile.department_id
         ) {
 
             showFormStatus(
-                "You cannot send a message to your own department.",
+                "You cannot send a department message to your own department.",
                 "error"
             );
 
@@ -1673,20 +1671,16 @@ messageForm.addEventListener(
 
         }
 
-
         sendButton.disabled =
             true;
 
-
         sendButton.textContent =
             "Sending...";
-
 
         showFormStatus(
             "Sending message...",
             "info"
         );
-
 
         try {
 
@@ -1696,7 +1690,6 @@ messageForm.addEventListener(
                 await window.CHA_SUPABASE
                     .from("department_messages")
                     .insert({
-
                         sender_id:
                             currentUser.id,
 
@@ -1717,35 +1710,20 @@ messageForm.addEventListener(
 
                         sender_deleted:
                             false
-
                     });
 
-
             if (error) {
-
                 throw error;
-
             }
 
-
             messageForm.reset();
-
 
             showFormStatus(
                 "Message sent successfully.",
                 "success"
             );
 
-
-            /*
-             * IMPORTANT:
-             * Reload Sent Messages immediately.
-             * This makes the newly sent message
-             * appear without refreshing the page.
-             */
-
             await loadSentMessages();
-
 
         }
 
@@ -1755,7 +1733,6 @@ messageForm.addEventListener(
                 "CHA Send Message Error:",
                 error
             );
-
 
             showFormStatus(
                 "Unable to send message: " +
@@ -1773,7 +1750,6 @@ messageForm.addEventListener(
             sendButton.disabled =
                 false;
 
-
             sendButton.textContent =
                 "Send Message";
 
@@ -1783,9 +1759,9 @@ messageForm.addEventListener(
 );
 
 
-/* =========================================================
-   REFRESH
-========================================================= */
+// ============================================================
+// REFRESH
+// ============================================================
 
 refreshButton.addEventListener(
     "click",
@@ -1794,21 +1770,14 @@ refreshButton.addEventListener(
         refreshButton.disabled =
             true;
 
-
         refreshButton.textContent =
             "Refreshing...";
-
 
         try {
 
             await loadInbox();
 
             await loadSentMessages();
-
-            showInboxStatus(
-                "Messages refreshed successfully.",
-                "success"
-            );
 
         }
 
@@ -1819,23 +1788,12 @@ refreshButton.addEventListener(
                 error
             );
 
-
-            showInboxStatus(
-                "Unable to refresh messages: " +
-                (
-                    error.message ||
-                    "Unknown error"
-                ),
-                "error"
-            );
-
         }
 
         finally {
 
             refreshButton.disabled =
                 false;
-
 
             refreshButton.textContent =
                 "↻ Refresh";
@@ -1846,9 +1804,9 @@ refreshButton.addEventListener(
 );
 
 
-/* =========================================================
-   BACK BUTTON
-========================================================= */
+// ============================================================
+// BACK
+// ============================================================
 
 backButton.addEventListener(
     "click",
@@ -1861,75 +1819,67 @@ backButton.addEventListener(
 );
 
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+// ============================================================
+// INITIALIZE
+// ============================================================
 
-async function initializeMessages() {
+async function initializeInbox() {
 
     try {
 
-        loadingText.textContent =
-            "Checking your staff account...";
+        loading.innerHTML = `
+            <div class="text-3xl">
+                🔐
+            </div>
 
+            <p class="font-bold mt-3">
+                Loading Staff Messages...
+            </p>
+
+            <p class="text-sm text-slate-500 mt-2">
+                Checking your secure staff session...
+            </p>
+        `;
 
         const profile =
             await loadCurrentStaff();
 
-
         if (!profile) {
-
             return;
-
         }
-
-
-        loadingText.textContent =
-            "Loading departments...";
-
 
         await loadDepartments();
 
-
-        loadingText.textContent =
-            "Loading received messages...";
-
+        /*
+         * IMPORTANT:
+         * currentUser is already loaded by
+         * loadCurrentStaff().
+         *
+         * We now load BOTH:
+         * 1. Received messages
+         * 2. Sent messages
+         */
 
         await loadInbox();
 
-
-        loadingText.textContent =
-            "Loading sent messages...";
-
-
         await loadSentMessages();
-
-
-        /*
-         * Only hide loading AFTER
-         * BOTH inbox and sent messages
-         * have finished loading.
-         */
 
         loading.classList.add(
             "hidden"
         );
 
-
-        messagesPage.classList.remove(
+        inboxPage.classList.remove(
             "hidden"
         );
-
 
     }
 
     catch (error) {
 
         console.error(
-            "CHA Staff Messages Error:",
+            "CHA Department Messages Error:",
             error
         );
-
 
         loading.innerHTML = `
 
@@ -1957,7 +1907,7 @@ async function initializeMessages() {
             </p>
 
             <button
-                onclick="window.location.reload()"
+                onclick="window.location.href='staff-dashboard.html'"
                 class="
                     mt-5
                     bg-blue-900
@@ -1968,7 +1918,7 @@ async function initializeMessages() {
                     font-bold
                 "
             >
-                Try Again
+                Return to Dashboard
             </button>
 
         `;
@@ -1978,11 +1928,11 @@ async function initializeMessages() {
 }
 
 
-/* =========================================================
-   START
-========================================================= */
+// ============================================================
+// START
+// ============================================================
 
-initializeMessages();
+initializeInbox();
 
 </script>
 
