@@ -555,7 +555,107 @@
     ></div>
 
 </section>
+<!-- =================================================
+     ACTIVE & INACTIVE STAFF
+================================================== -->
 
+<section
+    class="bg-white rounded-2xl shadow overflow-hidden mt-8"
+>
+
+    <div class="p-6 border-b border-slate-200">
+
+        <h2 class="text-xl font-black">
+            👥 Staff Account Status
+        </h2>
+
+        <p class="text-sm text-slate-500 mt-1">
+            Manage staff portal access. Deactivate staff
+            accounts when a staff member leaves the hospital.
+        </p>
+
+    </div>
+
+    <div class="p-6">
+
+        <div
+            id="staffStatusMessage"
+            class="hidden mb-5 p-4 rounded-xl text-sm"
+        ></div>
+
+        <div
+            id="staffStatusLoading"
+            class="text-center py-8"
+        >
+            <div class="text-3xl">🔄</div>
+
+            <p class="font-bold mt-3">
+                Loading staff accounts...
+            </p>
+        </div>
+
+        <div
+            id="staffStatusEmpty"
+            class="hidden text-center py-8"
+        >
+            <div class="text-4xl">👥</div>
+
+            <p class="font-bold mt-3">
+                No staff accounts found.
+            </p>
+        </div>
+
+        <div
+            id="staffStatusTableContainer"
+            class="hidden overflow-x-auto"
+        >
+
+            <table class="w-full text-sm">
+
+                <thead class="bg-slate-50 border-b">
+
+                    <tr>
+
+                        <th class="text-left px-4 py-3 font-black">
+                            Staff
+                        </th>
+
+                        <th class="text-left px-4 py-3 font-black">
+                            Staff ID
+                        </th>
+
+                        <th class="text-left px-4 py-3 font-black">
+                            Position
+                        </th>
+
+                        <th class="text-left px-4 py-3 font-black">
+                            Department
+                        </th>
+
+                        <th class="text-left px-4 py-3 font-black">
+                            Status
+                        </th>
+
+                        <th class="text-left px-4 py-3 font-black">
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody
+                    id="staffStatusTableBody"
+                    class="divide-y"
+                ></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
             <!-- =================================================
                  SECURITY NOTICE
             ================================================== -->
@@ -2209,7 +2309,543 @@ changeAdminPasswordForm.addEventListener(
 
 
         initializeAdministration();
+// ============================================================
+// STAFF STATUS MANAGEMENT
+// ============================================================
 
+const staffStatusTableContainer =
+    document.getElementById(
+        "staffStatusTableContainer"
+    );
+
+const staffStatusTableBody =
+    document.getElementById(
+        "staffStatusTableBody"
+    );
+
+const staffStatusLoading =
+    document.getElementById(
+        "staffStatusLoading"
+    );
+
+const staffStatusEmpty =
+    document.getElementById(
+        "staffStatusEmpty"
+    );
+
+const activeStaffCount =
+    document.getElementById(
+        "activeStaffCount"
+    );
+
+const inactiveStaffCount =
+    document.getElementById(
+        "inactiveStaffCount"
+    );
+
+const staffStatusMessage =
+    document.getElementById(
+        "staffStatusMessage"
+    );
+
+
+function showStaffStatusMessage(
+    message,
+    type
+) {
+
+    staffStatusMessage.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+
+    if (type === "error") {
+
+        staffStatusMessage.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+
+    } else if (type === "success") {
+
+        staffStatusMessage.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+
+    } else {
+
+        staffStatusMessage.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+
+    }
+
+    staffStatusMessage.textContent =
+        message;
+}
+
+
+// ============================================================
+// LOAD ALL STAFF STATUS
+// ============================================================
+
+async function loadStaffStatus() {
+
+    staffStatusLoading.classList.remove(
+        "hidden"
+    );
+
+    staffStatusEmpty.classList.add(
+        "hidden"
+    );
+
+    staffStatusTableContainer.classList.add(
+        "hidden"
+    );
+
+    staffStatusTableBody.innerHTML = "";
+
+    try {
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await window.CHA_SUPABASE
+                .auth.getSession();
+
+        if (sessionError) {
+            throw sessionError;
+        }
+
+        const session =
+            sessionData?.session;
+
+        if (!session) {
+
+            window.location.href =
+                "staff-login.html";
+
+            return;
+
+        }
+
+        const response =
+            await fetch(
+                "/.netlify/functions/list-staff-status",
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " +
+                            session.access_token
+                    }
+                }
+            );
+
+        let result;
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (error) {
+
+            throw new Error(
+                "The staff status server returned an invalid response."
+            );
+
+        }
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Unable to load staff accounts."
+            );
+
+        }
+
+        const staff =
+            result.staff || [];
+
+        const active =
+            staff.filter(
+                function(member) {
+                    return member.is_active === true;
+                }
+            );
+
+        const inactive =
+            staff.filter(
+                function(member) {
+                    return member.is_active !== true;
+                }
+            );
+
+        activeStaffCount.textContent =
+            active.length +
+            " Active";
+
+        inactiveStaffCount.textContent =
+            inactive.length +
+            " Inactive";
+
+        staffStatusLoading.classList.add(
+            "hidden"
+        );
+
+        if (staff.length === 0) {
+
+            staffStatusEmpty.classList.remove(
+                "hidden"
+            );
+
+            return;
+
+        }
+
+        staffStatusTableContainer.classList.remove(
+            "hidden"
+        );
+
+        staff.forEach(
+            function(member) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+                row.className =
+                    "hover:bg-slate-50";
+
+                const statusClass =
+                    member.is_active
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800";
+
+                const statusText =
+                    member.is_active
+                        ? "ACTIVE"
+                        : "INACTIVE";
+
+                const actionClass =
+                    member.is_active
+                        ? "bg-red-600 hover:bg-red-700"
+                        : "bg-green-600 hover:bg-green-700";
+
+                const actionText =
+                    member.is_active
+                        ? "Deactivate"
+                        : "Activate";
+
+                row.innerHTML = `
+
+                    <td class="px-6 py-5">
+
+                        <div class="font-black text-slate-900">
+                            ${escapeHTML(
+                                member.full_name
+                            )}
+                        </div>
+
+                        <div class="text-xs text-slate-500 mt-1">
+                            ${escapeHTML(
+                                member.phone || ""
+                            )}
+                        </div>
+
+                    </td>
+
+                    <td class="px-6 py-5">
+
+                        <span
+                            class="font-mono text-xs
+                                   bg-slate-100
+                                   px-2 py-1 rounded"
+                        >
+                            ${escapeHTML(
+                                member.staff_id
+                            )}
+                        </span>
+
+                    </td>
+
+                    <td class="px-6 py-5">
+
+                        ${escapeHTML(
+                            formatRole(
+                                member.role
+                            )
+                        )}
+
+                    </td>
+
+                    <td class="px-6 py-5">
+
+                        ${escapeHTML(
+                            member.department
+                        )}
+
+                    </td>
+
+                    <td class="px-6 py-5">
+
+                        <span
+                            class="
+                                inline-flex
+                                px-3 py-1
+                                rounded-full
+                                text-xs
+                                font-black
+                                ${statusClass}
+                            "
+                        >
+                            ${statusText}
+                        </span>
+
+                    </td>
+
+                    <td class="px-6 py-5">
+
+                        <button
+                            type="button"
+                            class="
+                                staff-status-button
+                                ${actionClass}
+                                text-white
+                                px-4 py-2
+                                rounded-lg
+                                font-bold
+                            "
+                            data-id="${escapeHTML(
+                                member.id
+                            )}"
+                            data-active="${member.is_active}"
+                            data-name="${escapeHTML(
+                                member.full_name
+                            )}"
+                        >
+                            ${actionText}
+                        </button>
+
+                    </td>
+
+                `;
+
+                staffStatusTableBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+        document
+            .querySelectorAll(
+                ".staff-status-button"
+            )
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function() {
+
+                            changeStaffStatus(
+                                this.dataset.id,
+                                this.dataset.active === "true",
+                                this.dataset.name
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Staff Status Error:",
+            error
+        );
+
+        staffStatusLoading.classList.add(
+            "hidden"
+        );
+
+        showStaffStatusMessage(
+            error.message ||
+            "Unable to load staff accounts.",
+            "error"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// CHANGE STAFF STATUS
+// ============================================================
+
+async function changeStaffStatus(
+    staffId,
+    currentlyActive,
+    staffName
+) {
+
+    const action =
+        currentlyActive
+            ? "deactivate"
+            : "activate";
+
+    const actionText =
+        currentlyActive
+            ? "deactivate"
+            : "activate";
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to " +
+            actionText +
+            " " +
+            staffName +
+            "'s staff portal access?"
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    showStaffStatusMessage(
+        currentlyActive
+            ? "Deactivating staff account..."
+            : "Activating staff account...",
+        "info"
+    );
+
+    try {
+
+        const {
+            data: sessionData,
+            error: sessionError
+        } =
+            await window.CHA_SUPABASE
+                .auth.getSession();
+
+        if (sessionError) {
+            throw sessionError;
+        }
+
+        const session =
+            sessionData?.session;
+
+        if (!session) {
+
+            window.location.href =
+                "staff-login.html";
+
+            return;
+
+        }
+
+        const response =
+            await fetch(
+                "/.netlify/functions/manage-staff-status",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            "Bearer " +
+                            session.access_token
+                    },
+
+                    body: JSON.stringify({
+
+                        staffProfileId:
+                            staffId,
+
+                        action:
+                            action
+
+                    })
+                }
+            );
+
+        let result;
+
+        try {
+
+            result =
+                await response.json();
+
+        } catch (error) {
+
+            throw new Error(
+                "The status server returned an invalid response."
+            );
+
+        }
+
+        if (!response.ok) {
+
+            throw new Error(
+                result.error ||
+                "Unable to change staff account status."
+            );
+
+        }
+
+        showStaffStatusMessage(
+            result.message ||
+            "Staff account status updated successfully.",
+            "success"
+        );
+
+        await loadStaffStatus();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Change Staff Status Error:",
+            error
+        );
+
+        showStaffStatusMessage(
+            error.message ||
+            "Unable to change staff account status.",
+            "error"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// LOAD STAFF STATUS AFTER ADMIN PAGE OPENS
+// ============================================================
+
+loadStaffStatus();
     </script>
 
 </body>
