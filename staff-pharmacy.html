@@ -28,6 +28,7 @@
                 transform 0.2s ease,
                 box-shadow 0.2s ease;
             cursor: pointer;
+            width: 100%;
         }
 
         .pharmacy-card:hover {
@@ -37,6 +38,10 @@
 
         .modal-backdrop {
             background: rgba(15, 23, 42, 0.55);
+        }
+
+        .danger-card {
+            border-color: #fecaca;
         }
     </style>
 </head>
@@ -56,9 +61,17 @@
                 <div class="flex items-center gap-3">
 
                     <div
-                        class="w-12 h-12 rounded-full bg-white
-                               text-blue-900 flex items-center
-                               justify-center font-black"
+                        class="
+                            w-12
+                            h-12
+                            rounded-full
+                            bg-white
+                            text-blue-900
+                            flex
+                            items-center
+                            justify-center
+                            font-black
+                        "
                     >
                         CHA
                     </div>
@@ -113,7 +126,13 @@
 
         <div
             id="loading"
-            class="bg-white rounded-2xl shadow p-8 text-center"
+            class="
+                bg-white
+                rounded-2xl
+                shadow
+                p-8
+                text-center
+            "
         >
 
             <div class="text-4xl">
@@ -122,6 +141,10 @@
 
             <p class="font-bold mt-3">
                 Checking staff authentication...
+            </p>
+
+            <p class="text-sm text-slate-500 mt-2">
+                Please wait.
             </p>
 
         </div>
@@ -142,7 +165,13 @@
             ================================================== -->
 
             <section
-                class="bg-white rounded-2xl shadow p-6 mb-8"
+                class="
+                    bg-white
+                    rounded-2xl
+                    shadow
+                    p-6
+                    mb-8
+                "
             >
 
                 <p class="text-sm text-slate-500">
@@ -191,16 +220,19 @@
 
 
             <!-- =================================================
-                 PHARMACY CARDS
+                 PHARMACY MODULES
             ================================================== -->
 
             <section
-                class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
+                class="
+                    grid
+                    sm:grid-cols-2
+                    lg:grid-cols-3
+                    gap-5
+                "
             >
 
-                <!-- =================================================
-                     MEDICATION RECORDS
-                ================================================== -->
+                <!-- MEDICATION RECORDS -->
 
                 <button
                     id="medicationRecordsButton"
@@ -225,9 +257,7 @@
 
 
 
-                <!-- =================================================
-                     PRESCRIPTIONS
-                ================================================== -->
+                <!-- PRESCRIPTIONS -->
 
                 <button
                     id="prescriptionsButton"
@@ -251,9 +281,7 @@
 
 
 
-                <!-- =================================================
-                     DISPENSING
-                ================================================== -->
+                <!-- DISPENSING -->
 
                 <button
                     id="dispensingButton"
@@ -277,9 +305,7 @@
 
 
 
-                <!-- =================================================
-                     INVENTORY
-                ================================================== -->
+                <!-- INVENTORY -->
 
                 <button
                     id="inventoryButton"
@@ -303,9 +329,7 @@
 
 
 
-                <!-- =================================================
-                     PATIENT MEDICATION
-                ================================================== -->
+                <!-- PATIENT MEDICATION -->
 
                 <button
                     id="patientMedicationButton"
@@ -330,9 +354,7 @@
 
 
 
-                <!-- =================================================
-                     PHARMACY NOTES
-                ================================================== -->
+                <!-- PHARMACY NOTES -->
 
                 <button
                     id="pharmacyNotesButton"
@@ -363,7 +385,13 @@
             ================================================== -->
 
             <section
-                class="mt-8 bg-white rounded-2xl shadow p-6"
+                class="
+                    mt-8
+                    bg-white
+                    rounded-2xl
+                    shadow
+                    p-6
+                "
             >
 
                 <h2 class="text-xl font-black">
@@ -522,7 +550,7 @@
 
 
     <!-- =====================================================
-         SUPABASE
+         SUPABASE CONFIGURATION
     ====================================================== -->
 
     <script src="js/supabase.js"></script>
@@ -530,7 +558,7 @@
 
 
     <!-- =====================================================
-         JAVASCRIPT
+         PHARMACY JAVASCRIPT
     ====================================================== -->
 
     <script>
@@ -613,7 +641,7 @@
 
 
         // ====================================================
-        // HTML ESCAPING
+        // SECURITY / HTML ESCAPING
         // ====================================================
 
         function escapeHTML(value) {
@@ -624,6 +652,26 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+
+        }
+
+
+
+        // ====================================================
+        // SUPABASE CHECK
+        // ====================================================
+
+        function getSupabase() {
+
+            if (!window.CHA_SUPABASE) {
+
+                throw new Error(
+                    "Supabase is not configured."
+                );
+
+            }
+
+            return window.CHA_SUPABASE;
 
         }
 
@@ -733,6 +781,7 @@
                         <button
                             id="pharmacyModalClose"
                             type="button"
+                            aria-label="Close"
                             class="
                                 text-slate-500
                                 hover:text-slate-900
@@ -763,14 +812,20 @@
             document.body.appendChild(modal);
 
 
-            document
-                .getElementById(
+            const closeButton =
+                document.getElementById(
                     "pharmacyModalClose"
-                )
-                .addEventListener(
+                );
+
+
+            if (closeButton) {
+
+                closeButton.addEventListener(
                     "click",
                     closeModal
                 );
+
+            }
 
 
             modal.addEventListener(
@@ -788,6 +843,27 @@
 
                 }
             );
+
+
+            document.addEventListener(
+                "keydown",
+                handleModalEscape
+            );
+
+        }
+
+
+
+        function handleModalEscape(event) {
+
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                closeModal();
+
+            }
 
         }
 
@@ -843,22 +919,15 @@
 
             try {
 
-                if (
-                    !window.CHA_SUPABASE
-                ) {
-
-                    throw new Error(
-                        "Supabase is not configured."
-                    );
-
-                }
+                const supabase =
+                    getSupabase();
 
 
                 const {
                     data,
                     error
                 } =
-                    await window.CHA_SUPABASE
+                    await supabase
                         .from("medications")
                         .select(`
                             id,
@@ -909,6 +978,7 @@
                                 id="medicationSearch"
                                 type="search"
                                 placeholder="Search medications..."
+                                autocomplete="off"
                                 class="
                                     w-full
                                     sm:max-w-md
@@ -962,61 +1032,71 @@
                     );
 
 
-                searchInput.addEventListener(
-                    "input",
-                    function() {
+                if (searchInput) {
 
-                        const search =
-                            this.value
-                                .trim()
-                                .toLowerCase();
+                    searchInput.addEventListener(
+                        "input",
+                        function() {
+
+                            const search =
+                                this.value
+                                    .trim()
+                                    .toLowerCase();
 
 
-                        const filtered =
-                            medications.filter(
-                                function(item) {
+                            const filtered =
+                                medications.filter(
+                                    function(item) {
 
-                                    return [
-                                        item.name,
-                                        item.generic_name,
-                                        item.strength,
-                                        item.dosage_form,
-                                        item.batch_number
-                                    ]
-                                    .some(
-                                        function(value) {
+                                        return [
+                                            item.name,
+                                            item.generic_name,
+                                            item.strength,
+                                            item.dosage_form,
+                                            item.batch_number
+                                        ]
+                                        .some(
+                                            function(value) {
 
-                                            return String(
-                                                value ?? ""
-                                            )
-                                            .toLowerCase()
-                                            .includes(
-                                                search
-                                            );
+                                                return String(
+                                                    value ?? ""
+                                                )
+                                                .toLowerCase()
+                                                .includes(
+                                                    search
+                                                );
 
-                                        }
-                                    );
+                                            }
+                                        );
 
-                                }
+                                    }
+                                );
+
+
+                            renderMedicationTable(
+                                filtered
                             );
 
+                        }
+                    );
 
-                        renderMedicationTable(
-                            filtered
-                        );
-
-                    }
-                );
+                }
 
 
-                document
-                    .getElementById(
+                const addButton =
+                    document.getElementById(
                         "addMedicationButton"
-                    )
-                    .addEventListener(
+                    );
+
+
+                if (addButton) {
+
+                    addButton.addEventListener(
                         "click",
                         showAddMedicationForm
                     );
+
+                }
 
             }
 
@@ -1328,7 +1408,8 @@
                                                     "
                                                 >
                                                     ${escapeHTML(
-                                                        item.quantity
+                                                        item.quantity ??
+                                                        0
                                                     )}
                                                     ${escapeHTML(
                                                         item.unit ||
@@ -1471,6 +1552,7 @@
                                 name="name"
                                 required
                                 type="text"
+                                autocomplete="off"
                                 class="
                                     w-full
                                     border
@@ -1501,6 +1583,7 @@
                             <input
                                 name="generic_name"
                                 type="text"
+                                autocomplete="off"
                                 class="
                                     w-full
                                     border
@@ -1531,6 +1614,7 @@
                             <input
                                 name="strength"
                                 type="text"
+                                autocomplete="off"
                                 class="
                                     w-full
                                     border
@@ -1561,6 +1645,7 @@
                             <input
                                 name="dosage_form"
                                 type="text"
+                                autocomplete="off"
                                 class="
                                     w-full
                                     border
@@ -1592,6 +1677,7 @@
                                 name="quantity"
                                 required
                                 min="0"
+                                step="1"
                                 type="number"
                                 value="0"
                                 class="
@@ -1624,6 +1710,7 @@
                                 name="unit"
                                 type="text"
                                 value="unit"
+                                autocomplete="off"
                                 class="
                                     w-full
                                     border
@@ -1683,6 +1770,7 @@
                             <input
                                 name="batch_number"
                                 type="text"
+                                autocomplete="off"
                                 class="
                                     w-full
                                     border
@@ -1751,24 +1839,36 @@
             `;
 
 
-            document
-                .getElementById(
+            const cancelButton =
+                document.getElementById(
                     "cancelMedicationForm"
-                )
-                .addEventListener(
+                );
+
+
+            if (cancelButton) {
+
+                cancelButton.addEventListener(
                     "click",
                     loadMedicationRecords
                 );
 
+            }
 
-            document
-                .getElementById(
+
+            const form =
+                document.getElementById(
                     "addMedicationForm"
-                )
-                .addEventListener(
+                );
+
+
+            if (form) {
+
+                form.addEventListener(
                     "submit",
                     saveNewMedication
                 );
+
+            }
 
         }
 
@@ -1791,7 +1891,6 @@
             const formData =
                 new FormData(form);
 
-
             const message =
                 document.getElementById(
                     "medicationFormMessage"
@@ -1799,6 +1898,10 @@
 
 
             try {
+
+                const supabase =
+                    getSupabase();
+
 
                 const quantity =
                     Number(
@@ -1895,7 +1998,7 @@
                 const {
                     error
                 } =
-                    await window.CHA_SUPABASE
+                    await supabase
                         .from("medications")
                         .insert(
                             payload
@@ -1909,22 +2012,26 @@
                 }
 
 
-                message.innerHTML = `
+                if (message) {
 
-                    <div
-                        class="
-                            bg-green-50
-                            border
-                            border-green-200
-                            text-green-700
-                            rounded-xl
-                            p-4
-                        "
-                    >
-                        Medication saved successfully.
-                    </div>
+                    message.innerHTML = `
 
-                `;
+                        <div
+                            class="
+                                bg-green-50
+                                border
+                                border-green-200
+                                text-green-700
+                                rounded-xl
+                                p-4
+                            "
+                        >
+                            Medication saved successfully.
+                        </div>
+
+                    `;
+
+                }
 
 
                 setTimeout(
@@ -1942,25 +2049,29 @@
                 );
 
 
-                message.innerHTML = `
+                if (message) {
 
-                    <div
-                        class="
-                            bg-red-50
-                            border
-                            border-red-200
-                            text-red-700
-                            rounded-xl
-                            p-4
-                        "
-                    >
-                        ${escapeHTML(
-                            error.message ||
-                            "Unable to save medication."
-                        )}
-                    </div>
+                    message.innerHTML = `
 
-                `;
+                        <div
+                            class="
+                                bg-red-50
+                                border
+                                border-red-200
+                                text-red-700
+                                rounded-xl
+                                p-4
+                            "
+                        >
+                            ${escapeHTML(
+                                error.message ||
+                                "Unable to save medication."
+                            )}
+                        </div>
+
+                    `;
+
+                }
 
             }
 
@@ -2008,11 +2119,15 @@
 
             try {
 
+                const supabase =
+                    getSupabase();
+
+
                 const {
                     data,
                     error
                 } =
-                    await window.CHA_SUPABASE
+                    await supabase
                         .from("medications")
                         .select(`
                             id,
@@ -2087,6 +2202,7 @@
                                 <input
                                     name="name"
                                     required
+                                    type="text"
                                     value="${escapeHTML(
                                         data.name
                                     )}"
@@ -2118,6 +2234,7 @@
 
                                 <input
                                     name="generic_name"
+                                    type="text"
                                     value="${escapeHTML(
                                         data.generic_name || ""
                                     )}"
@@ -2149,6 +2266,7 @@
 
                                 <input
                                     name="strength"
+                                    type="text"
                                     value="${escapeHTML(
                                         data.strength || ""
                                     )}"
@@ -2180,6 +2298,7 @@
 
                                 <input
                                     name="dosage_form"
+                                    type="text"
                                     value="${escapeHTML(
                                         data.dosage_form || ""
                                     )}"
@@ -2213,9 +2332,10 @@
                                     name="quantity"
                                     required
                                     min="0"
+                                    step="1"
                                     type="number"
                                     value="${escapeHTML(
-                                        data.quantity
+                                        data.quantity ?? 0
                                     )}"
                                     class="
                                         w-full
@@ -2245,6 +2365,7 @@
 
                                 <input
                                     name="unit"
+                                    type="text"
                                     value="${escapeHTML(
                                         data.unit || "unit"
                                     )}"
@@ -2308,6 +2429,7 @@
 
                                 <input
                                     name="batch_number"
+                                    type="text"
                                     value="${escapeHTML(
                                         data.batch_number || ""
                                     )}"
@@ -2396,21 +2518,31 @@
                 `;
 
 
-                document
-                    .getElementById(
+                const editForm =
+                    document.getElementById(
                         "editMedicationForm"
-                    )
-                    .addEventListener(
+                    );
+
+
+                if (editForm) {
+
+                    editForm.addEventListener(
                         "submit",
                         updateMedication
                     );
 
+                }
 
-                document
-                    .getElementById(
+
+                const deleteButton =
+                    document.getElementById(
                         "deleteMedicationButton"
-                    )
-                    .addEventListener(
+                    );
+
+
+                if (deleteButton) {
+
+                    deleteButton.addEventListener(
                         "click",
                         function() {
 
@@ -2421,15 +2553,23 @@
                         }
                     );
 
+                }
 
-                document
-                    .getElementById(
+
+                const cancelButton =
+                    document.getElementById(
                         "cancelEditMedication"
-                    )
-                    .addEventListener(
+                    );
+
+
+                if (cancelButton) {
+
+                    cancelButton.addEventListener(
                         "click",
                         loadMedicationRecords
                     );
+
+                }
 
             }
 
@@ -2496,14 +2636,20 @@
                 `;
 
 
-                document
-                    .getElementById(
+                const backButtonElement =
+                    document.getElementById(
                         "backToMedicationList"
-                    )
-                    .addEventListener(
+                    );
+
+
+                if (backButtonElement) {
+
+                    backButtonElement.addEventListener(
                         "click",
                         loadMedicationRecords
                     );
+
+                }
 
             }
 
@@ -2535,6 +2681,10 @@
 
 
             try {
+
+                const supabase =
+                    getSupabase();
+
 
                 const quantity =
                     Number(
@@ -2648,7 +2798,7 @@
                 const {
                     error
                 } =
-                    await window.CHA_SUPABASE
+                    await supabase
                         .from("medications")
                         .update(
                             payload
@@ -2666,22 +2816,26 @@
                 }
 
 
-                message.innerHTML = `
+                if (message) {
 
-                    <div
-                        class="
-                            bg-green-50
-                            border
-                            border-green-200
-                            text-green-700
-                            rounded-xl
-                            p-4
-                        "
-                    >
-                        Medication updated successfully.
-                    </div>
+                    message.innerHTML = `
 
-                `;
+                        <div
+                            class="
+                                bg-green-50
+                                border
+                                border-green-200
+                                text-green-700
+                                rounded-xl
+                                p-4
+                            "
+                        >
+                            Medication updated successfully.
+                        </div>
+
+                    `;
+
+                }
 
 
                 setTimeout(
@@ -2699,25 +2853,29 @@
                 );
 
 
-                message.innerHTML = `
+                if (message) {
 
-                    <div
-                        class="
-                            bg-red-50
-                            border
-                            border-red-200
-                            text-red-700
-                            rounded-xl
-                            p-4
-                        "
-                    >
-                        ${escapeHTML(
-                            error.message ||
-                            "Unable to update medication."
-                        )}
-                    </div>
+                    message.innerHTML = `
 
-                `;
+                        <div
+                            class="
+                                bg-red-50
+                                border
+                                border-red-200
+                                text-red-700
+                                rounded-xl
+                                p-4
+                            "
+                        >
+                            ${escapeHTML(
+                                error.message ||
+                                "Unable to update medication."
+                            )}
+                        </div>
+
+                    `;
+
+                }
 
             }
 
@@ -2748,10 +2906,14 @@
 
             try {
 
+                const supabase =
+                    getSupabase();
+
+
                 const {
                     error
                 } =
-                    await window.CHA_SUPABASE
+                    await supabase
                         .from("medications")
                         .delete()
                         .eq(
@@ -2812,963 +2974,1159 @@
 
         }
 
-async function openPrescriptions() {
 
-    createModal(
-        "📋 Prescriptions",
-        `
-            <div id="prescriptionsContent" class="py-4">
 
-                <div class="text-center py-8">
+        // ====================================================
+        // PRESCRIPTIONS
+        // ====================================================
 
-                    <div class="text-4xl">
-                        ⏳
+        async function openPrescriptions() {
+
+            createModal(
+                "📋 Prescriptions",
+                `
+                    <div
+                        id="prescriptionsContent"
+                        class="py-4"
+                    >
+
+                        <div class="text-center py-8">
+
+                            <div class="text-4xl">
+                                ⏳
+                            </div>
+
+                            <p class="font-bold mt-3">
+                                Loading prescriptions...
+                            </p>
+
+                        </div>
+
                     </div>
-
-                    <p class="font-bold mt-3">
-                        Loading prescriptions...
-                    </p>
-
-                </div>
-
-            </div>
-        `
-    );
-
-    await loadPrescriptions();
-
-}
-
-
-async function loadPrescriptions() {
-
-    const container =
-        document.getElementById(
-            "prescriptionsContent"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    try {
-
-        if (!window.CHA_SUPABASE) {
-            throw new Error(
-                "Supabase is not configured."
+                `
             );
+
+
+            await loadPrescriptions();
+
         }
 
-        const {
-            data,
-            error
-        } =
-            await window.CHA_SUPABASE
-                .from("prescriptions")
-                .select(`
-                    id,
-                    patient_id,
-                    patient_name,
-                    medication_id,
-                    medication_name,
-                    dosage,
-                    frequency,
-                    duration,
-                    route,
-                    prescribed_by,
-                    status,
-                    notes,
-                    created_at
-                `)
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
+
+
+        async function loadPrescriptions() {
+
+            const container =
+                document.getElementById(
+                    "prescriptionsContent"
                 );
 
-        if (error) {
-            throw error;
-        }
 
-        const prescriptions =
-            data || [];
+            if (!container) {
 
-        container.innerHTML = `
+                return;
 
-            <div class="space-y-5">
+            }
 
-                <div
-                    class="
-                        flex
-                        flex-col
-                        sm:flex-row
-                        gap-3
-                    "
-                >
 
-                    <input
-                        id="prescriptionSearch"
-                        type="search"
-                        placeholder="Search patient or medication..."
-                        class="
-                            flex-1
-                            border
-                            border-slate-300
-                            rounded-xl
-                            px-4
-                            py-3
-                            outline-none
-                        "
-                    >
+            try {
 
-                    <button
-                        id="newPrescriptionButton"
-                        type="button"
-                        class="
-                            bg-blue-900
-                            hover:bg-blue-800
-                            text-white
-                            px-5
-                            py-3
-                            rounded-xl
-                            font-black
-                        "
-                    >
-                        + New Prescription
-                    </button>
+                const supabase =
+                    getSupabase();
 
-                </div>
 
-                <div id="prescriptionList"></div>
-
-            </div>
-
-        `;
-
-        renderPrescriptionList(
-            prescriptions
-        );
-
-        document
-            .getElementById(
-                "newPrescriptionButton"
-            )
-            .addEventListener(
-                "click",
-                showNewPrescriptionForm
-            );
-
-        document
-            .getElementById(
-                "prescriptionSearch"
-            )
-            .addEventListener(
-                "input",
-                function () {
-
-                    const search =
-                        this.value
-                            .trim()
-                            .toLowerCase();
-
-                    const filtered =
-                        prescriptions.filter(
-                            function (item) {
-
-                                return (
-                                    String(
-                                        item.patient_name || ""
-                                    )
-                                    .toLowerCase()
-                                    .includes(search)
-                                    ||
-                                    String(
-                                        item.medication_name || ""
-                                    )
-                                    .toLowerCase()
-                                    .includes(search)
-                                );
-
+                const {
+                    data,
+                    error
+                } =
+                    await supabase
+                        .from("prescriptions")
+                        .select(`
+                            id,
+                            patient_id,
+                            patient_name,
+                            medication_id,
+                            medication_name,
+                            dosage,
+                            frequency,
+                            duration,
+                            route,
+                            prescribed_by,
+                            status,
+                            notes,
+                            created_at
+                        `)
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
                             }
                         );
 
-                    renderPrescriptionList(
-                        filtered
-                    );
+
+                if (error) {
+
+                    throw error;
 
                 }
-            );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Prescription Error:",
-            error
-        );
-
-        container.innerHTML = `
-
-            <div
-                class="
-                    bg-red-50
-                    border
-                    border-red-200
-                    rounded-xl
-                    p-5
-                "
-            >
-
-                <div class="text-3xl">
-                    ⚠️
-                </div>
-
-                <p
-                    class="
-                        font-black
-                        text-red-700
-                        mt-2
-                    "
-                >
-                    Unable to load prescriptions
-                </p>
-
-                <p
-                    class="
-                        text-sm
-                        text-red-600
-                        mt-2
-                    "
-                >
-                    ${escapeHTML(
-                        error.message ||
-                        "Please try again."
-                    )}
-                </p>
-
-            </div>
-
-        `;
-
-    }
-
-}
 
 
-function renderPrescriptionList(
-    prescriptions
-) {
+                const prescriptions =
+                    data || [];
 
-    const list =
-        document.getElementById(
-            "prescriptionList"
-        );
 
-    if (!list) {
-        return;
-    }
+                container.innerHTML = `
 
-    if (!prescriptions.length) {
-
-        list.innerHTML = `
-
-            <div
-                class="
-                    bg-slate-50
-                    border
-                    border-slate-200
-                    rounded-xl
-                    p-8
-                    text-center
-                "
-            >
-
-                <div class="text-4xl">
-                    📋
-                </div>
-
-                <p class="font-black mt-3">
-                    No prescriptions found
-                </p>
-
-                <p
-                    class="
-                        text-sm
-                        text-slate-500
-                        mt-2
-                    "
-                >
-                    Click "New Prescription" to create one.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-    }
-
-    list.innerHTML = prescriptions
-        .map(
-            function (item) {
-
-                return `
-
-                    <div
-                        class="
-                            border
-                            border-slate-200
-                            rounded-xl
-                            p-5
-                            mb-3
-                            bg-white
-                        "
-                    >
+                    <div class="space-y-5">
 
                         <div
                             class="
                                 flex
                                 flex-col
                                 sm:flex-row
-                                sm:items-center
-                                sm:justify-between
                                 gap-3
                             "
                         >
 
-                            <div>
-
-                                <p
-                                    class="
-                                        font-black
-                                        text-lg
-                                    "
-                                >
-                                    ${escapeHTML(
-                                        item.patient_name
-                                    )}
-                                </p>
-
-                                <p
-                                    class="
-                                        font-bold
-                                        text-blue-900
-                                        mt-1
-                                    "
-                                >
-                                    ${escapeHTML(
-                                        item.medication_name
-                                    )}
-                                </p>
-
-                            </div>
-
-                            <span
+                            <input
+                                id="prescriptionSearch"
+                                type="search"
+                                placeholder="Search patient or medication..."
+                                autocomplete="off"
                                 class="
-                                    inline-block
-                                    bg-green-100
-                                    text-green-800
-                                    px-3
-                                    py-1
-                                    rounded-full
-                                    text-xs
-                                    font-bold
+                                    flex-1
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                    outline-none
+                                    focus:ring-2
+                                    focus:ring-blue-500
                                 "
                             >
-                                ${escapeHTML(
-                                    item.status || "active"
-                                )}
-                            </span>
+
+                            <button
+                                id="newPrescriptionButton"
+                                type="button"
+                                class="
+                                    bg-blue-900
+                                    hover:bg-blue-800
+                                    text-white
+                                    px-5
+                                    py-3
+                                    rounded-xl
+                                    font-black
+                                "
+                            >
+                                + New Prescription
+                            </button>
 
                         </div>
 
-                        <div
+                        <div id="prescriptionList"></div>
+
+                    </div>
+
+                `;
+
+
+                renderPrescriptionList(
+                    prescriptions
+                );
+
+
+                const newButton =
+                    document.getElementById(
+                        "newPrescriptionButton"
+                    );
+
+
+                if (newButton) {
+
+                    newButton.addEventListener(
+                        "click",
+                        showNewPrescriptionForm
+                    );
+
+                }
+
+
+                const searchInput =
+                    document.getElementById(
+                        "prescriptionSearch"
+                    );
+
+
+                if (searchInput) {
+
+                    searchInput.addEventListener(
+                        "input",
+                        function() {
+
+                            const search =
+                                this.value
+                                    .trim()
+                                    .toLowerCase();
+
+
+                            const filtered =
+                                prescriptions.filter(
+                                    function(item) {
+
+                                        return (
+                                            String(
+                                                item.patient_name ||
+                                                ""
+                                            )
+                                            .toLowerCase()
+                                            .includes(search)
+                                            ||
+                                            String(
+                                                item.medication_name ||
+                                                ""
+                                            )
+                                            .toLowerCase()
+                                            .includes(search)
+                                        );
+
+                                    }
+                                );
+
+
+                            renderPrescriptionList(
+                                filtered
+                            );
+
+                        }
+                    );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Prescription Error:",
+                    error
+                );
+
+
+                container.innerHTML = `
+
+                    <div
+                        class="
+                            bg-red-50
+                            border
+                            border-red-200
+                            rounded-xl
+                            p-5
+                        "
+                    >
+
+                        <div class="text-3xl">
+                            ⚠️
+                        </div>
+
+                        <p
                             class="
-                                grid
-                                grid-cols-1
-                                sm:grid-cols-2
-                                gap-3
-                                mt-4
-                                text-sm
+                                font-black
+                                text-red-700
+                                mt-2
                             "
                         >
+                            Unable to load prescriptions
+                        </p>
 
-                            <div>
-                                <strong>Dosage:</strong>
-                                ${escapeHTML(
-                                    item.dosage || "—"
-                                )}
-                            </div>
-
-                            <div>
-                                <strong>Frequency:</strong>
-                                ${escapeHTML(
-                                    item.frequency || "—"
-                                )}
-                            </div>
-
-                            <div>
-                                <strong>Duration:</strong>
-                                ${escapeHTML(
-                                    item.duration || "—"
-                                )}
-                            </div>
-
-                            <div>
-                                <strong>Route:</strong>
-                                ${escapeHTML(
-                                    item.route || "—"
-                                )}
-                            </div>
-
-                        </div>
-
-                        ${
-                            item.notes
-                            ?
-                            `
-                                <div
-                                    class="
-                                        mt-4
-                                        bg-slate-50
-                                        rounded-xl
-                                        p-3
-                                        text-sm
-                                    "
-                                >
-                                    <strong>Notes:</strong>
-                                    ${escapeHTML(
-                                        item.notes
-                                    )}
-                                </div>
-                            `
-                            :
-                            ""
-                        }
+                        <p
+                            class="
+                                text-sm
+                                text-red-600
+                                mt-2
+                            "
+                        >
+                            ${escapeHTML(
+                                error.message ||
+                                "Please try again."
+                            )}
+                        </p>
 
                     </div>
 
                 `;
 
             }
-        )
-        .join("");
 
-}
-
-
-function showNewPrescriptionForm() {
-
-    const container =
-        document.getElementById(
-            "prescriptionsContent"
-        );
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML = `
-
-        <form
-            id="newPrescriptionForm"
-            class="space-y-5"
-        >
-
-            <div>
-
-                <label
-                    class="
-                        block
-                        font-bold
-                        mb-2
-                    "
-                >
-                    Patient Name *
-                </label>
-
-                <input
-                    name="patient_name"
-                    required
-                    type="text"
-                    class="
-                        w-full
-                        border
-                        border-slate-300
-                        rounded-xl
-                        px-4
-                        py-3
-                    "
-                    placeholder="Enter patient name"
-                >
-
-            </div>
-
-
-            <div>
-
-                <label
-                    class="
-                        block
-                        font-bold
-                        mb-2
-                    "
-                >
-                    Medication Name *
-                </label>
-
-                <input
-                    name="medication_name"
-                    required
-                    type="text"
-                    class="
-                        w-full
-                        border
-                        border-slate-300
-                        rounded-xl
-                        px-4
-                        py-3
-                    "
-                    placeholder="Enter medication"
-                >
-
-            </div>
-
-
-            <div
-                class="
-                    grid
-                    sm:grid-cols-2
-                    gap-4
-                "
-            >
-
-                <div>
-
-                    <label
-                        class="
-                            block
-                            font-bold
-                            mb-2
-                        "
-                    >
-                        Dosage
-                    </label>
-
-                    <input
-                        name="dosage"
-                        type="text"
-                        class="
-                            w-full
-                            border
-                            border-slate-300
-                            rounded-xl
-                            px-4
-                            py-3
-                        "
-                        placeholder="e.g. 500 mg"
-                    >
-
-                </div>
-
-
-                <div>
-
-                    <label
-                        class="
-                            block
-                            font-bold
-                            mb-2
-                        "
-                    >
-                        Frequency
-                    </label>
-
-                    <input
-                        name="frequency"
-                        type="text"
-                        class="
-                            w-full
-                            border
-                            border-slate-300
-                            rounded-xl
-                            px-4
-                            py-3
-                        "
-                        placeholder="e.g. Twice daily"
-                    >
-
-                </div>
-
-
-                <div>
-
-                    <label
-                        class="
-                            block
-                            font-bold
-                            mb-2
-                        "
-                    >
-                        Duration
-                    </label>
-
-                    <input
-                        name="duration"
-                        type="text"
-                        class="
-                            w-full
-                            border
-                            border-slate-300
-                            rounded-xl
-                            px-4
-                            py-3
-                        "
-                        placeholder="e.g. 5 days"
-                    >
-
-                </div>
-
-
-                <div>
-
-                    <label
-                        class="
-                            block
-                            font-bold
-                            mb-2
-                        "
-                    >
-                        Route
-                    </label>
-
-                    <input
-                        name="route"
-                        type="text"
-                        class="
-                            w-full
-                            border
-                            border-slate-300
-                            rounded-xl
-                            px-4
-                            py-3
-                        "
-                        placeholder="Oral, IV, IM..."
-                    >
-
-                </div>
-
-            </div>
-
-
-            <div>
-
-                <label
-                    class="
-                        block
-                        font-bold
-                        mb-2
-                    "
-                >
-                    Notes
-                </label>
-
-                <textarea
-                    name="notes"
-                    rows="3"
-                    class="
-                        w-full
-                        border
-                        border-slate-300
-                        rounded-xl
-                        px-4
-                        py-3
-                    "
-                    placeholder="Additional notes"
-                ></textarea>
-
-            </div>
-
-
-            <div
-                id="prescriptionMessage"
-            ></div>
-
-
-            <div
-                class="
-                    flex
-                    gap-3
-                    flex-wrap
-                "
-            >
-
-                <button
-                    type="submit"
-                    class="
-                        bg-blue-900
-                        hover:bg-blue-800
-                        text-white
-                        px-5
-                        py-3
-                        rounded-xl
-                        font-black
-                    "
-                >
-                    Save Prescription
-                </button>
-
-                <button
-                    id="cancelNewPrescription"
-                    type="button"
-                    class="
-                        bg-slate-200
-                        hover:bg-slate-300
-                        text-slate-800
-                        px-5
-                        py-3
-                        rounded-xl
-                        font-black
-                    "
-                >
-                    Cancel
-                </button>
-
-            </div>
-
-        </form>
-
-    `;
-
-
-    document
-        .getElementById(
-            "cancelNewPrescription"
-        )
-        .addEventListener(
-            "click",
-            loadPrescriptions
-        );
-
-
-    document
-        .getElementById(
-            "newPrescriptionForm"
-        )
-        .addEventListener(
-            "submit",
-            saveNewPrescription
-        );
-
-}
-
-
-async function saveNewPrescription(
-    event
-) {
-
-    event.preventDefault();
-
-    const form =
-        event.target;
-
-    const formData =
-        new FormData(form);
-
-    const message =
-        document.getElementById(
-            "prescriptionMessage"
-        );
-
-    try {
-
-        if (!window.CHA_SUPABASE) {
-            throw new Error(
-                "Supabase is not configured."
-            );
         }
 
 
-        const {
-            data: authData,
-            error: authError
-        } =
-            await window.CHA_SUPABASE
-                .auth
-                .getUser();
 
+        // ====================================================
+        // PRESCRIPTION LIST
+        // ====================================================
 
-        if (
-            authError ||
-            !authData ||
-            !authData.user
+        function renderPrescriptionList(
+            prescriptions
         ) {
 
-            throw new Error(
-                "Your staff session has expired."
-            );
-
-        }
-
-
-        const payload = {
-
-            patient_name:
-                String(
-                    formData.get(
-                        "patient_name"
-                    ) || ""
-                ).trim(),
-
-            medication_name:
-                String(
-                    formData.get(
-                        "medication_name"
-                    ) || ""
-                ).trim(),
-
-            dosage:
-                String(
-                    formData.get(
-                        "dosage"
-                    ) || ""
-                ).trim() ||
-                null,
-
-            frequency:
-                String(
-                    formData.get(
-                        "frequency"
-                    ) || ""
-                ).trim() ||
-                null,
-
-            duration:
-                String(
-                    formData.get(
-                        "duration"
-                    ) || ""
-                ).trim() ||
-                null,
-
-            route:
-                String(
-                    formData.get(
-                        "route"
-                    ) || ""
-                ).trim() ||
-                null,
-
-            prescribed_by:
-                authData.user.id,
-
-            status:
-                "active",
-
-            notes:
-                String(
-                    formData.get(
-                        "notes"
-                    ) || ""
-                ).trim() ||
-                null
-
-        };
-
-
-        if (!payload.patient_name) {
-            throw new Error(
-                "Patient name is required."
-            );
-        }
-
-
-        if (!payload.medication_name) {
-            throw new Error(
-                "Medication name is required."
-            );
-        }
-
-
-        const {
-            error
-        } =
-            await window.CHA_SUPABASE
-                .from("prescriptions")
-                .insert(
-                    payload
+            const list =
+                document.getElementById(
+                    "prescriptionList"
                 );
 
 
-        if (error) {
-            throw error;
+            if (!list) {
+
+                return;
+
+            }
+
+
+            if (!prescriptions.length) {
+
+                list.innerHTML = `
+
+                    <div
+                        class="
+                            bg-slate-50
+                            border
+                            border-slate-200
+                            rounded-xl
+                            p-8
+                            text-center
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            📋
+                        </div>
+
+                        <p class="font-black mt-3">
+                            No prescriptions found
+                        </p>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Click "New Prescription" to create one.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            list.innerHTML = prescriptions
+                .map(
+                    function(item) {
+
+                        return `
+
+                            <div
+                                class="
+                                    border
+                                    border-slate-200
+                                    rounded-xl
+                                    p-5
+                                    mb-3
+                                    bg-white
+                                "
+                            >
+
+                                <div
+                                    class="
+                                        flex
+                                        flex-col
+                                        sm:flex-row
+                                        sm:items-center
+                                        sm:justify-between
+                                        gap-3
+                                    "
+                                >
+
+                                    <div>
+
+                                        <p
+                                            class="
+                                                font-black
+                                                text-lg
+                                            "
+                                        >
+                                            ${escapeHTML(
+                                                item.patient_name ||
+                                                "Unknown patient"
+                                            )}
+                                        </p>
+
+                                        <p
+                                            class="
+                                                font-bold
+                                                text-blue-900
+                                                mt-1
+                                            "
+                                        >
+                                            ${escapeHTML(
+                                                item.medication_name ||
+                                                "Unknown medication"
+                                            )}
+                                        </p>
+
+                                    </div>
+
+                                    <span
+                                        class="
+                                            inline-block
+                                            bg-green-100
+                                            text-green-800
+                                            px-3
+                                            py-1
+                                            rounded-full
+                                            text-xs
+                                            font-bold
+                                        "
+                                    >
+                                        ${escapeHTML(
+                                            item.status ||
+                                            "active"
+                                        )}
+                                    </span>
+
+                                </div>
+
+                                <div
+                                    class="
+                                        grid
+                                        grid-cols-1
+                                        sm:grid-cols-2
+                                        gap-3
+                                        mt-4
+                                        text-sm
+                                    "
+                                >
+
+                                    <div>
+                                        <strong>Dosage:</strong>
+                                        ${escapeHTML(
+                                            item.dosage || "—"
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <strong>Frequency:</strong>
+                                        ${escapeHTML(
+                                            item.frequency || "—"
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <strong>Duration:</strong>
+                                        ${escapeHTML(
+                                            item.duration || "—"
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <strong>Route:</strong>
+                                        ${escapeHTML(
+                                            item.route || "—"
+                                        )}
+                                    </div>
+
+                                </div>
+
+                                ${
+                                    item.notes
+                                    ?
+                                    `
+                                        <div
+                                            class="
+                                                mt-4
+                                                bg-slate-50
+                                                rounded-xl
+                                                p-3
+                                                text-sm
+                                            "
+                                        >
+                                            <strong>Notes:</strong>
+                                            ${escapeHTML(
+                                                item.notes
+                                            )}
+                                        </div>
+                                    `
+                                    :
+                                    ""
+                                }
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
         }
 
 
-        message.innerHTML = `
 
-            <div
-                class="
-                    bg-green-50
-                    border
-                    border-green-200
-                    text-green-700
-                    rounded-xl
-                    p-4
-                "
-            >
-                Prescription saved successfully.
-            </div>
+        // ====================================================
+        // NEW PRESCRIPTION FORM
+        // ====================================================
 
-        `;
+        function showNewPrescriptionForm() {
+
+            const container =
+                document.getElementById(
+                    "prescriptionsContent"
+                );
 
 
-        setTimeout(
-            loadPrescriptions,
-            700
-        );
+            if (!container) {
 
-    }
+                return;
 
-    catch (error) {
+            }
 
-        console.error(
-            "Save Prescription Error:",
-            error
-        );
 
-        message.innerHTML = `
+            container.innerHTML = `
 
-            <div
-                class="
-                    bg-red-50
-                    border
-                    border-red-200
-                    text-red-700
-                    rounded-xl
-                    p-4
-                "
-            >
-                ${escapeHTML(
-                    error.message ||
-                    "Unable to save prescription."
-                )}
-            </div>
+                <form
+                    id="newPrescriptionForm"
+                    class="space-y-5"
+                >
 
-        `;
+                    <div>
 
-    }
+                        <label
+                            class="
+                                block
+                                font-bold
+                                mb-2
+                            "
+                        >
+                            Patient Name *
+                        </label>
 
-}
+                        <input
+                            name="patient_name"
+                            required
+                            type="text"
+                            autocomplete="off"
+                            class="
+                                w-full
+                                border
+                                border-slate-300
+                                rounded-xl
+                                px-4
+                                py-3
+                            "
+                            placeholder="Enter patient name"
+                        >
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="
+                                block
+                                font-bold
+                                mb-2
+                            "
+                        >
+                            Medication Name *
+                        </label>
+
+                        <input
+                            name="medication_name"
+                            required
+                            type="text"
+                            autocomplete="off"
+                            class="
+                                w-full
+                                border
+                                border-slate-300
+                                rounded-xl
+                                px-4
+                                py-3
+                            "
+                            placeholder="Enter medication"
+                        >
+
+                    </div>
+
+
+                    <div
+                        class="
+                            grid
+                            sm:grid-cols-2
+                            gap-4
+                        "
+                    >
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Dosage
+                            </label>
+
+                            <input
+                                name="dosage"
+                                type="text"
+                                autocomplete="off"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="e.g. 500 mg"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Frequency
+                            </label>
+
+                            <input
+                                name="frequency"
+                                type="text"
+                                autocomplete="off"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="e.g. Twice daily"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Duration
+                            </label>
+
+                            <input
+                                name="duration"
+                                type="text"
+                                autocomplete="off"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="e.g. 5 days"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Route
+                            </label>
+
+                            <input
+                                name="route"
+                                type="text"
+                                autocomplete="off"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="Oral, IV, IM..."
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+                            class="
+                                block
+                                font-bold
+                                mb-2
+                            "
+                        >
+                            Notes
+                        </label>
+
+                        <textarea
+                            name="notes"
+                            rows="3"
+                            class="
+                                w-full
+                                border
+                                border-slate-300
+                                rounded-xl
+                                px-4
+                                py-3
+                            "
+                            placeholder="Additional notes"
+                        ></textarea>
+
+                    </div>
+
+
+                    <div
+                        id="prescriptionMessage"
+                    ></div>
+
+
+                    <div
+                        class="
+                            flex
+                            gap-3
+                            flex-wrap
+                        "
+                    >
+
+                        <button
+                            type="submit"
+                            class="
+                                bg-blue-900
+                                hover:bg-blue-800
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-black
+                            "
+                        >
+                            Save Prescription
+                        </button>
+
+                        <button
+                            id="cancelNewPrescription"
+                            type="button"
+                            class="
+                                bg-slate-200
+                                hover:bg-slate-300
+                                text-slate-800
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-black
+                            "
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
+
+                </form>
+
+            `;
+
+
+            const cancelButton =
+                document.getElementById(
+                    "cancelNewPrescription"
+                );
+
+
+            if (cancelButton) {
+
+                cancelButton.addEventListener(
+                    "click",
+                    loadPrescriptions
+                );
+
+            }
+
+
+            const form =
+                document.getElementById(
+                    "newPrescriptionForm"
+                );
+
+
+            if (form) {
+
+                form.addEventListener(
+                    "submit",
+                    saveNewPrescription
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // SAVE PRESCRIPTION
+        // ====================================================
+
+        async function saveNewPrescription(
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            const form =
+                event.target;
+
+            const formData =
+                new FormData(form);
+
+            const message =
+                document.getElementById(
+                    "prescriptionMessage"
+                );
+
+
+            try {
+
+                const supabase =
+                    getSupabase();
+
+
+                const {
+                    data: authData,
+                    error: authError
+                } =
+                    await supabase
+                        .auth
+                        .getUser();
+
+
+                if (
+                    authError ||
+                    !authData ||
+                    !authData.user
+                ) {
+
+                    throw new Error(
+                        "Your staff session has expired. Please sign in again."
+                    );
+
+                }
+
+
+                const payload = {
+
+                    patient_name:
+                        String(
+                            formData.get(
+                                "patient_name"
+                            ) || ""
+                        ).trim(),
+
+                    medication_name:
+                        String(
+                            formData.get(
+                                "medication_name"
+                            ) || ""
+                        ).trim(),
+
+                    dosage:
+                        String(
+                            formData.get(
+                                "dosage"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    frequency:
+                        String(
+                            formData.get(
+                                "frequency"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    duration:
+                        String(
+                            formData.get(
+                                "duration"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    route:
+                        String(
+                            formData.get(
+                                "route"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    prescribed_by:
+                        authData.user.id,
+
+                    status:
+                        "active",
+
+                    notes:
+                        String(
+                            formData.get(
+                                "notes"
+                            ) || ""
+                        ).trim() ||
+                        null
+
+                };
+
+
+                if (!payload.patient_name) {
+
+                    throw new Error(
+                        "Patient name is required."
+                    );
+
+                }
+
+
+                if (!payload.medication_name) {
+
+                    throw new Error(
+                        "Medication name is required."
+                    );
+
+                }
+
+
+                const {
+                    error
+                } =
+                    await supabase
+                        .from("prescriptions")
+                        .insert(
+                            payload
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                if (message) {
+
+                    message.innerHTML = `
+
+                        <div
+                            class="
+                                bg-green-50
+                                border
+                                border-green-200
+                                text-green-700
+                                rounded-xl
+                                p-4
+                            "
+                        >
+                            Prescription saved successfully.
+                        </div>
+
+                    `;
+
+                }
+
+
+                setTimeout(
+                    loadPrescriptions,
+                    700
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Save Prescription Error:",
+                    error
+                );
+
+
+                if (message) {
+
+                    message.innerHTML = `
+
+                        <div
+                            class="
+                                bg-red-50
+                                border
+                                border-red-200
+                                text-red-700
+                                rounded-xl
+                                p-4
+                            "
+                        >
+                            ${escapeHTML(
+                                error.message ||
+                                "Unable to save prescription."
+                            )}
+                        </div>
+
+                    `;
+
+                }
+
+            }
+
+        }
+
+
 
         // ====================================================
         // OTHER PHARMACY MODULES
         // ====================================================
 
-        
-}
+        function showComingSoon(
+            title,
+            description
+        ) {
+
+            createModal(
+                title,
+                `
+                    <div
+                        class="
+                            bg-slate-50
+                            border
+                            border-slate-200
+                            rounded-2xl
+                            p-8
+                            text-center
+                        "
+                    >
+
+                        <div class="text-5xl">
+                            🚧
+                        </div>
+
+                        <h3
+                            class="
+                                text-xl
+                                font-black
+                                mt-4
+                            "
+                        >
+                            Module ready for setup
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                mt-2
+                                max-w-xl
+                                mx-auto
+                            "
+                        >
+                            ${escapeHTML(
+                                description
+                            )}
+                        </p>
+
+                    </div>
+                `
+            );
+
+        }
+
+
+
+        function openDispensing() {
+
+            showComingSoon(
+                "🧾 Dispensing",
+                "The dispensing module is connected to the Pharmacy Portal and is ready for its database workflow to be added."
+            );
+
+        }
+
+
+
+        function openInventory() {
+
+            showComingSoon(
+                "📦 Pharmacy Inventory",
+                "The inventory module is connected to the Pharmacy Portal and is ready for stock-management functionality."
+            );
+
+        }
+
+
+
+        function openPatientMedication() {
+
+            showComingSoon(
+                "🧑‍⚕️ Patient Medication",
+                "The patient medication module is reserved for authorized medication information and can be connected to the appropriate patient records workflow."
+            );
+
+        }
+
+
+
+        function openPharmacyNotes() {
+
+            showComingSoon(
+                "📝 Pharmacy Notes",
+                "The pharmacy notes module is ready for authorized pharmacy documentation."
+            );
+
+        }
 
 
 
@@ -3832,29 +4190,26 @@ async function saveNewPrescription(
 
 
         // ====================================================
-        // LOAD PHARMACY PROFILE
+        // CHECK PHARMACY ACCESS
         // ====================================================
 
         async function loadPharmacyPage() {
 
             try {
 
-                if (
-                    !window.CHA_SUPABASE
-                ) {
+                const supabase =
+                    getSupabase();
 
-                    throw new Error(
-                        "Supabase is not configured."
-                    );
 
-                }
-
+                // --------------------------------------------
+                // Check authentication
+                // --------------------------------------------
 
                 const {
                     data: authData,
                     error: authError
                 } =
-                    await window.CHA_SUPABASE
+                    await supabase
                         .auth
                         .getUser();
 
@@ -3877,11 +4232,16 @@ async function saveNewPrescription(
                     authData.user;
 
 
+
+                // --------------------------------------------
+                // Load staff profile
+                // --------------------------------------------
+
                 const {
                     data: profile,
                     error: profileError
                 } =
-                    await window.CHA_SUPABASE
+                    await supabase
                         .from("staff_profiles")
                         .select(`
                             id,
@@ -3890,6 +4250,7 @@ async function saveNewPrescription(
                             is_active,
                             department_id,
                             departments (
+                                id,
                                 name
                             )
                         `)
@@ -3907,12 +4268,9 @@ async function saveNewPrescription(
                 }
 
 
-                if (
-                    !profile ||
-                    profile.is_active !== true
-                ) {
+                if (!profile) {
 
-                    await window.CHA_SUPABASE
+                    await supabase
                         .auth
                         .signOut();
 
@@ -3923,6 +4281,117 @@ async function saveNewPrescription(
 
                 }
 
+
+                // --------------------------------------------
+                // Check active account
+                // --------------------------------------------
+
+                if (
+                    profile.is_active !== true
+                ) {
+
+                    await supabase
+                        .auth
+                        .signOut();
+
+                    window.location.href =
+                        "staff-login.html";
+
+                    return;
+
+                }
+
+
+
+                // --------------------------------------------
+                // Check department
+                // --------------------------------------------
+
+                const departmentName =
+                    String(
+                        profile.departments?.name ||
+                        ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                if (
+                    departmentName !==
+                    "pharmacy"
+                ) {
+
+                    loading.innerHTML = `
+
+                        <div class="text-4xl">
+                            🚫
+                        </div>
+
+                        <p
+                            class="
+                                font-black
+                                text-red-700
+                                mt-3
+                            "
+                        >
+                            Pharmacy access denied
+                        </p>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Your staff account is not assigned to the Pharmacy Department.
+                        </p>
+
+                        <button
+                            type="button"
+                            id="returnDashboardAccessButton"
+                            class="
+                                mt-5
+                                bg-blue-900
+                                hover:bg-blue-800
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Return to Staff Dashboard
+                        </button>
+
+                    `;
+
+
+                    const returnButton =
+                        document.getElementById(
+                            "returnDashboardAccessButton"
+                        );
+
+
+                    if (returnButton) {
+
+                        returnButton.addEventListener(
+                            "click",
+                            goToDashboard
+                        );
+
+                    }
+
+
+                    return;
+
+                }
+
+
+
+                // --------------------------------------------
+                // Display staff information
+                // --------------------------------------------
 
                 staffName.textContent =
                     profile.full_name ||
@@ -3941,9 +4410,14 @@ async function saveNewPrescription(
                     "Department: " +
                     (
                         profile.departments?.name ||
-                        "Not assigned"
+                        "Pharmacy"
                     );
 
+
+
+                // --------------------------------------------
+                // Show pharmacy page
+                // --------------------------------------------
 
                 loading.classList.add(
                     "hidden"
@@ -3971,7 +4445,7 @@ async function saveNewPrescription(
 
                     <p
                         class="
-                            font-bold
+                            font-black
                             mt-3
                             text-red-700
                         "
@@ -3992,42 +4466,85 @@ async function saveNewPrescription(
                         )}
                     </p>
 
-                    <button
-                        type="button"
-                        id="returnLoginButton"
+                    <div
                         class="
+                            flex
+                            flex-col
+                            sm:flex-row
+                            gap-3
+                            justify-center
                             mt-5
-                            bg-blue-900
-                            hover:bg-blue-800
-                            text-white
-                            px-5
-                            py-3
-                            rounded-xl
-                            font-bold
                         "
                     >
-                        Return to Login
-                    </button>
+
+                        <button
+                            type="button"
+                            id="retryPharmacyButton"
+                            class="
+                                bg-blue-900
+                                hover:bg-blue-800
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Try Again
+                        </button>
+
+                        <button
+                            type="button"
+                            id="errorDashboardButton"
+                            class="
+                                bg-slate-200
+                                hover:bg-slate-300
+                                text-slate-800
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Staff Dashboard
+                        </button>
+
+                    </div>
 
                 `;
 
 
-                const returnLoginButton =
+                const retryButton =
                     document.getElementById(
-                        "returnLoginButton"
+                        "retryPharmacyButton"
                     );
 
 
-                if (returnLoginButton) {
+                if (retryButton) {
 
-                    returnLoginButton.addEventListener(
+                    retryButton.addEventListener(
                         "click",
                         function() {
 
-                            window.location.href =
-                                "staff-login.html";
+                            window.location.reload();
 
                         }
+                    );
+
+                }
+
+
+                const dashboardButton =
+                    document.getElementById(
+                        "errorDashboardButton"
+                    );
+
+
+                if (dashboardButton) {
+
+                    dashboardButton.addEventListener(
+                        "click",
+                        goToDashboard
                     );
 
                 }
@@ -4039,7 +4556,7 @@ async function saveNewPrescription(
 
 
         // ====================================================
-        // INITIALIZE
+        // START
         // ====================================================
 
         loadPharmacyPage();
