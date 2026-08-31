@@ -9,10 +9,8 @@
 
     <title>CHA Nursing Department</title>
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -23,44 +21,54 @@
                 sans-serif;
         }
 
-        .nursing-card {
+        .dashboard-card {
             background: white;
             border: 1px solid #e2e8f0;
             border-radius: 1rem;
             padding: 1.5rem;
+            text-align: left;
             box-shadow:
                 0 4px 10px rgba(0, 0, 0, 0.04);
             transition:
                 transform 0.2s ease,
                 box-shadow 0.2s ease;
+            text-decoration: none;
+            color: inherit;
         }
 
-        .nursing-card:hover {
+        .dashboard-card:hover {
             transform: translateY(-3px);
             box-shadow:
                 0 12px 25px rgba(0, 0, 0, 0.08);
         }
 
-        .stat-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1rem;
-            padding: 1.25rem;
+        .modal-backdrop {
+            background:
+                rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(3px);
+        }
+
+        .modal-box {
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        input,
+        textarea,
+        select {
+            outline: none;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #2563eb;
             box-shadow:
-                0 4px 10px rgba(0, 0, 0, 0.04);
-        }
-
-        .action-button {
-            transition:
-                transform 0.15s ease,
-                box-shadow 0.15s ease;
-        }
-
-        .action-button:active {
-            transform: scale(0.97);
+                0 0 0 3px rgba(37, 99, 235, 0.12);
         }
     </style>
 </head>
+
 
 <body class="bg-slate-100 text-slate-800">
 
@@ -73,16 +81,9 @@
         <div class="max-w-7xl mx-auto px-4">
 
             <div
-                class="
-                    min-h-20
-                    flex
-                    items-center
-                    justify-between
-                    gap-4
-                "
+                class="min-h-20 flex items-center
+                       justify-between gap-4"
             >
-
-                <!-- BRAND -->
 
                 <div class="flex items-center gap-3">
 
@@ -117,43 +118,20 @@
                 </div>
 
 
-                <!-- HEADER ACTIONS -->
-
-                <div class="flex items-center gap-2">
-
-                    <button
-                        id="backButton"
-                        type="button"
-                        class="
-                            hidden
-                            sm:block
-                            bg-blue-800
-                            hover:bg-blue-700
-                            px-4
-                            py-2
-                            rounded-lg
-                            font-bold
-                        "
-                    >
-                        Dashboard
-                    </button>
-
-                    <button
-                        id="logoutButton"
-                        type="button"
-                        class="
-                            bg-red-600
-                            hover:bg-red-700
-                            px-4
-                            py-2
-                            rounded-lg
-                            font-bold
-                        "
-                    >
-                        Logout
-                    </button>
-
-                </div>
+                <button
+                    id="logoutButton"
+                    type="button"
+                    class="
+                        bg-red-600
+                        hover:bg-red-700
+                        px-4
+                        py-2
+                        rounded-lg
+                        font-bold
+                    "
+                >
+                    Logout
+                </button>
 
             </div>
 
@@ -185,7 +163,7 @@
         >
 
             <div class="text-4xl">
-                🔐
+                👩‍⚕️
             </div>
 
             <p class="font-bold mt-3">
@@ -193,7 +171,7 @@
             </p>
 
             <p class="text-sm text-slate-500 mt-2">
-                Please wait.
+                Please wait...
             </p>
 
         </div>
@@ -201,7 +179,7 @@
 
 
         <!-- =================================================
-             PAGE
+             NURSING PAGE
         ================================================== -->
 
         <div
@@ -210,7 +188,7 @@
         >
 
             <!-- =================================================
-                 PAGE TITLE
+                 WELCOME
             ================================================== -->
 
             <section
@@ -227,104 +205,85 @@
                     class="
                         flex
                         flex-col
-                        md:flex-row
-                        md:items-center
-                        md:justify-between
+                        lg:flex-row
+                        lg:items-center
+                        lg:justify-between
                         gap-5
                     "
                 >
 
                     <div>
 
-                        <p
-                            class="
-                                text-sm
-                                text-slate-500
-                            "
-                        >
+                        <p class="text-sm text-slate-500">
                             Nursing Department
                         </p>
 
                         <h1
+                            id="staffName"
                             class="
                                 text-3xl
                                 font-black
                                 mt-1
                             "
                         >
-                            Nursing Dashboard
+                            Staff Member
                         </h1>
 
-                        <p
+                        <div
                             class="
-                                text-slate-500
-                                mt-2
+                                flex
+                                flex-wrap
+                                gap-3
+                                mt-4
                             "
                         >
-                            Manage nursing activities,
-                            patient care and authorized
-                            clinical information.
-                        </p>
+
+                            <span
+                                id="staffRole"
+                                class="
+                                    bg-blue-100
+                                    text-blue-800
+                                    px-3
+                                    py-1
+                                    rounded-full
+                                    text-sm
+                                    font-bold
+                                "
+                            ></span>
+
+                            <span
+                                id="staffDepartment"
+                                class="
+                                    bg-green-100
+                                    text-green-800
+                                    px-3
+                                    py-1
+                                    rounded-full
+                                    text-sm
+                                    font-bold
+                                "
+                            ></span>
+
+                        </div>
 
                     </div>
 
 
-                    <div
+                    <button
+                        id="backButton"
+                        type="button"
                         class="
-                            bg-blue-50
-                            border
-                            border-blue-100
+                            bg-slate-800
+                            hover:bg-slate-900
+                            text-white
+                            px-5
+                            py-3
                             rounded-xl
-                            p-4
-                            min-w-0
-                            md:min-w-64
+                            font-bold
                         "
                     >
-
-                        <p
-                            class="
-                                text-xs
-                                text-slate-500
-                                uppercase
-                                font-bold
-                            "
-                        >
-                            Logged-in Staff
-                        </p>
-
-                        <p
-                            id="staffName"
-                            class="
-                                font-black
-                                text-lg
-                                text-blue-900
-                                mt-1
-                            "
-                        >
-                            Staff Member
-                        </p>
-
-                        <p
-                            id="staffRole"
-                            class="
-                                text-sm
-                                text-slate-600
-                                mt-1
-                            "
-                        >
-                        </p>
-
-                        <p
-                            id="staffDepartment"
-                            class="
-                                text-sm
-                                text-slate-600
-                                mt-1
-                            "
-                        >
-                        </p>
-
-                    </div>
+                        ← Staff Dashboard
+                    </button>
 
                 </div>
 
@@ -333,178 +292,180 @@
 
 
             <!-- =================================================
-                 QUICK STATISTICS
+                 SUMMARY CARDS
             ================================================== -->
 
             <section
                 class="
                     grid
-                    grid-cols-2
+                    sm:grid-cols-2
                     lg:grid-cols-4
-                    gap-4
+                    gap-5
                     mb-8
                 "
             >
 
                 <!-- PATIENTS -->
 
-                <div class="stat-card">
+                <button
+                    id="patientsSummaryButton"
+                    type="button"
+                    class="dashboard-card"
+                >
 
-                    <div class="text-3xl">
+                    <div class="text-4xl">
                         🧑‍⚕️
                     </div>
 
-                    <p
-                        class="
-                            text-sm
-                            text-slate-500
-                            mt-3
-                        "
-                    >
+                    <h2 class="font-black text-xl mt-4">
                         Patients
-                    </p>
+                    </h2>
 
                     <p
                         id="patientCount"
                         class="
-                            text-2xl
+                            text-3xl
                             font-black
-                            mt-1
+                            text-blue-900
+                            mt-3
                         "
                     >
                         —
                     </p>
 
-                </div>
+                    <p class="text-slate-500 text-sm mt-1">
+                        Authorized patient records
+                    </p>
+
+                </button>
 
 
-                <!-- VITALS -->
 
-                <div class="stat-card">
+                <!-- VITAL SIGNS -->
 
-                    <div class="text-3xl">
+                <button
+                    id="vitalsSummaryButton"
+                    type="button"
+                    class="dashboard-card"
+                >
+
+                    <div class="text-4xl">
                         ❤️
                     </div>
 
-                    <p
-                        class="
-                            text-sm
-                            text-slate-500
-                            mt-3
-                        "
-                    >
+                    <h2 class="font-black text-xl mt-4">
                         Vital Signs
-                    </p>
+                    </h2>
 
                     <p
                         id="vitalsCount"
                         class="
-                            text-2xl
+                            text-3xl
                             font-black
-                            mt-1
+                            text-red-600
+                            mt-3
                         "
                     >
                         —
                     </p>
 
-                </div>
+                    <p class="text-slate-500 text-sm mt-1">
+                        Recorded vital observations
+                    </p>
+
+                </button>
+
 
 
                 <!-- CARE -->
 
-                <div class="stat-card">
+                <button
+                    id="careSummaryButton"
+                    type="button"
+                    class="dashboard-card"
+                >
 
-                    <div class="text-3xl">
+                    <div class="text-4xl">
                         🩹
                     </div>
 
-                    <p
-                        class="
-                            text-sm
-                            text-slate-500
-                            mt-3
-                        "
-                    >
+                    <h2 class="font-black text-xl mt-4">
                         Care Activities
-                    </p>
+                    </h2>
 
                     <p
                         id="careCount"
                         class="
-                            text-2xl
+                            text-3xl
                             font-black
-                            mt-1
+                            text-green-700
+                            mt-3
                         "
                     >
                         —
                     </p>
 
-                </div>
+                    <p class="text-slate-500 text-sm mt-1">
+                        Nursing care activities
+                    </p>
+
+                </button>
+
 
 
                 <!-- ALERTS -->
 
-                <div class="stat-card">
+                <button
+                    id="alertsSummaryButton"
+                    type="button"
+                    class="dashboard-card"
+                >
 
-                    <div class="text-3xl">
+                    <div class="text-4xl">
                         🚨
                     </div>
 
-                    <p
-                        class="
-                            text-sm
-                            text-slate-500
-                            mt-3
-                        "
-                    >
+                    <h2 class="font-black text-xl mt-4">
                         Alerts
-                    </p>
+                    </h2>
 
                     <p
                         id="alertCount"
                         class="
-                            text-2xl
+                            text-3xl
                             font-black
-                            mt-1
+                            text-orange-600
+                            mt-3
                         "
                     >
                         0
                     </p>
 
-                </div>
+                    <p class="text-slate-500 text-sm mt-1">
+                        Nursing alerts
+                    </p>
+
+                </button>
 
             </section>
 
 
 
             <!-- =================================================
-                 NURSING TOOLS
+                 PATIENT CARE
             ================================================== -->
 
             <section class="mb-8">
 
-                <div class="mb-5">
-
-                    <h2
-                        class="
-                            text-2xl
-                            font-black
-                        "
-                    >
-                        Nursing Tools
-                    </h2>
-
-                    <p
-                        class="
-                            text-sm
-                            text-slate-500
-                            mt-1
-                        "
-                    >
-                        Common nursing department activities.
-                    </p>
-
-                </div>
+                <h2
+                    class="
+                        text-2xl
+                        font-black
+                        mb-4
+                    "
+                >
+                    Patient Care
+                </h2>
 
 
                 <div
@@ -518,14 +479,10 @@
 
                     <!-- PATIENTS -->
 
-                    <a
-                        href="staff-patients.html"
-                        class="
-                            nursing-card
-                            block
-                            no-underline
-                            text-inherit
-                        "
+                    <button
+                        id="patientsButton"
+                        type="button"
+                        class="dashboard-card"
                     >
 
                         <div class="text-4xl">
@@ -544,29 +501,24 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
                             Search and access authorized
-                            patient information.
+                            nursing patient information.
                         </p>
 
-                    </a>
+                    </button>
 
 
 
-                    <!-- MEDICAL RECORDS -->
+                    <!-- PATIENT RECORDS -->
 
                     <a
                         href="staff-patient-records.html"
-                        class="
-                            nursing-card
-                            block
-                            no-underline
-                            text-inherit
-                        "
+                        class="dashboard-card block"
                     >
 
                         <div class="text-4xl">
@@ -585,13 +537,13 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
-                            View authorized patient records
-                            and clinical information.
+                            View authorized medical records
+                            for patient care.
                         </p>
 
                     </a>
@@ -603,11 +555,7 @@
                     <button
                         id="vitalsButton"
                         type="button"
-                        class="
-                            nursing-card
-                            text-left
-                            action-button
-                        "
+                        class="dashboard-card"
                     >
 
                         <div class="text-4xl">
@@ -626,14 +574,13 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
-                            Record and review authorized
-                            blood pressure, pulse, temperature
-                            and respiratory rate.
+                            Record blood pressure, pulse,
+                            temperature, respiration and SpO₂.
                         </p>
 
                     </button>
@@ -645,11 +592,7 @@
                     <button
                         id="nursingNotesButton"
                         type="button"
-                        class="
-                            nursing-card
-                            text-left
-                            action-button
-                        "
+                        class="dashboard-card"
                     >
 
                         <div class="text-4xl">
@@ -668,8 +611,8 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
@@ -686,11 +629,7 @@
                     <button
                         id="careButton"
                         type="button"
-                        class="
-                            nursing-card
-                            text-left
-                            action-button
-                        "
+                        class="dashboard-card"
                     >
 
                         <div class="text-4xl">
@@ -709,13 +648,13 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
-                            Manage authorized nursing
-                            care activities and tasks.
+                            Manage nursing care tasks and
+                            patient-care activities.
                         </p>
 
                     </button>
@@ -726,12 +665,7 @@
 
                     <a
                         href="staff-pharmacy.html"
-                        class="
-                            nursing-card
-                            block
-                            no-underline
-                            text-inherit
-                        "
+                        class="dashboard-card block"
                     >
 
                         <div class="text-4xl">
@@ -750,29 +684,54 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
-                            Access authorized medication and
-                            prescription information.
+                            Access authorized medication
+                            and prescription information.
                         </p>
 
                     </a>
 
+                </div>
 
+            </section>
+
+
+
+            <!-- =================================================
+                 DEPARTMENT SERVICES
+            ================================================== -->
+
+            <section class="mb-8">
+
+                <h2
+                    class="
+                        text-2xl
+                        font-black
+                        mb-4
+                    "
+                >
+                    Nursing Department Services
+                </h2>
+
+
+                <div
+                    class="
+                        grid
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                        gap-5
+                    "
+                >
 
                     <!-- LABORATORY -->
 
                     <a
                         href="staff-laboratory.html"
-                        class="
-                            nursing-card
-                            block
-                            no-underline
-                            text-inherit
-                        "
+                        class="dashboard-card block"
                     >
 
                         <div class="text-4xl">
@@ -791,13 +750,13 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
                             Access authorized laboratory
-                            results.
+                            results and investigations.
                         </p>
 
                     </a>
@@ -808,12 +767,7 @@
 
                     <a
                         href="staff-appointments.html"
-                        class="
-                            nursing-card
-                            block
-                            no-underline
-                            text-inherit
-                        "
+                        class="dashboard-card block"
                     >
 
                         <div class="text-4xl">
@@ -832,29 +786,24 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
                             Review authorized patient
-                            appointments and requests.
+                            appointments.
                         </p>
 
                     </a>
 
 
 
-                    <!-- DEPARTMENT MESSAGES -->
+                    <!-- DEPARTMENT INBOX -->
 
                     <a
                         href="staff-messages.html"
-                        class="
-                            nursing-card
-                            block
-                            no-underline
-                            text-inherit
-                        "
+                        class="dashboard-card block"
                     >
 
                         <div class="text-4xl">
@@ -873,8 +822,8 @@
 
                         <p
                             class="
-                                text-sm
                                 text-slate-500
+                                text-sm
                                 mt-2
                             "
                         >
@@ -884,6 +833,114 @@
 
                     </a>
 
+
+
+                    <!-- EMERGENCY -->
+
+                    <a
+                        href="staff-emergency.html"
+                        class="dashboard-card block"
+                    >
+
+                        <div class="text-4xl">
+                            🚨
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Emergency
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                text-sm
+                                mt-2
+                            "
+                        >
+                            Access authorized emergency
+                            department activities.
+                        </p>
+
+                    </a>
+
+
+
+                    <!-- MATERNITY -->
+
+                    <a
+                        href="staff-maternity.html"
+                        class="dashboard-card block"
+                    >
+
+                        <div class="text-4xl">
+                            🤰
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Maternity
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                text-sm
+                                mt-2
+                            "
+                        >
+                            Access authorized maternity
+                            care information.
+                        </p>
+
+                    </a>
+
+
+
+                    <!-- RADIOLOGY -->
+
+                    <a
+                        href="staff-radiology.html"
+                        class="dashboard-card block"
+                    >
+
+                        <div class="text-4xl">
+                            🩻
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            X-ray & Ultrasound
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                text-sm
+                                mt-2
+                            "
+                        >
+                            Access authorized imaging
+                            requests and reports.
+                        </p>
+
+                    </a>
+
                 </div>
 
             </section>
@@ -891,217 +948,236 @@
 
 
             <!-- =================================================
-                 QUICK ACTIONS
+                 NURSING TOOLS
             ================================================== -->
 
-            <section
-                class="
-                    bg-white
-                    rounded-2xl
-                    shadow
-                    p-6
-                    mb-8
-                "
-            >
+            <section class="mb-8">
 
                 <h2
                     class="
-                        text-xl
+                        text-2xl
                         font-black
+                        mb-4
                     "
                 >
-                    Quick Actions
+                    Nursing Tools
                 </h2>
+
+
+                <div
+                    class="
+                        grid
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                        gap-5
+                    "
+                >
+
+                    <!-- RECORD VITALS -->
+
+                    <button
+                        id="quickVitalsButton"
+                        type="button"
+                        class="dashboard-card"
+                    >
+
+                        <div class="text-4xl">
+                            ❤️
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Record Vitals
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                text-sm
+                                mt-2
+                            "
+                        >
+                            Quickly record a patient's
+                            vital signs.
+                        </p>
+
+                    </button>
+
+
+
+                    <!-- NURSING NOTES -->
+
+                    <button
+                        id="quickNotesButton"
+                        type="button"
+                        class="dashboard-card"
+                    >
+
+                        <div class="text-4xl">
+                            📝
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Nursing Notes
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                text-sm
+                                mt-2
+                            "
+                        >
+                            Quickly document a nursing
+                            observation.
+                        </p>
+
+                    </button>
+
+
+
+                    <!-- CLINICAL TOOLS -->
+
+                    <a
+                        href="clinical-tools.html"
+                        class="dashboard-card block"
+                    >
+
+                        <div class="text-4xl">
+                            🩺
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Clinical Tools
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                text-sm
+                                mt-2
+                            "
+                        >
+                            Use BMI, blood pressure, pulse
+                            and other clinical tools.
+                        </p>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 QUICK NAVIGATION
+            ================================================== -->
+
+            <section class="mb-8">
+
+                <h2
+                    class="
+                        text-2xl
+                        font-black
+                        mb-4
+                    "
+                >
+                    Quick Navigation
+                </h2>
+
 
                 <div
                     class="
                         grid
                         sm:grid-cols-2
                         lg:grid-cols-4
-                        gap-3
-                        mt-5
+                        gap-4
                     "
                 >
 
-                    <button
-                        id="quickVitalsButton"
-                        type="button"
+                    <a
+                        href="staff-dashboard.html"
                         class="
                             bg-blue-900
                             hover:bg-blue-800
                             text-white
                             rounded-xl
-                            px-4
-                            py-3
+                            p-4
                             font-bold
+                            text-center
                         "
                     >
-                        ❤️ Record Vitals
-                    </button>
+                        🏠 Staff Dashboard
+                    </a>
 
 
-                    <button
-                        id="quickNotesButton"
-                        type="button"
+                    <a
+                        href="staff-patient-records.html"
                         class="
-                            bg-green-700
-                            hover:bg-green-800
-                            text-white
+                            bg-white
+                            hover:bg-slate-50
+                            border
+                            border-slate-200
                             rounded-xl
-                            px-4
-                            py-3
+                            p-4
                             font-bold
+                            text-center
                         "
                     >
-                        📝 Nursing Note
-                    </button>
+                        📋 Patient Records
+                    </a>
+
+
+                    <a
+                        href="staff-messages.html"
+                        class="
+                            bg-white
+                            hover:bg-slate-50
+                            border
+                            border-slate-200
+                            rounded-xl
+                            p-4
+                            font-bold
+                            text-center
+                        "
+                    >
+                        💬 Department Inbox
+                    </a>
 
 
                     <a
                         href="clinical-tools.html"
                         class="
-                            bg-purple-700
-                            hover:bg-purple-800
-                            text-white
+                            bg-white
+                            hover:bg-slate-50
+                            border
+                            border-slate-200
                             rounded-xl
-                            px-4
-                            py-3
+                            p-4
                             font-bold
                             text-center
                         "
                     >
                         🩺 Clinical Tools
                     </a>
-
-
-                    <button
-                        id="backDashboardButton"
-                        type="button"
-                        class="
-                            bg-slate-700
-                            hover:bg-slate-800
-                            text-white
-                            rounded-xl
-                            px-4
-                            py-3
-                            font-bold
-                        "
-                    >
-                        ← Staff Dashboard
-                    </button>
-
-                </div>
-
-            </section>
-
-
-
-            <!-- =================================================
-                 RECENT NURSING ACTIVITY
-            ================================================== -->
-
-            <section
-                class="
-                    bg-white
-                    rounded-2xl
-                    shadow
-                    p-6
-                    mb-8
-                "
-            >
-
-                <div
-                    class="
-                        flex
-                        flex-col
-                        sm:flex-row
-                        sm:items-center
-                        sm:justify-between
-                        gap-3
-                    "
-                >
-
-                    <div>
-
-                        <h2
-                            class="
-                                text-xl
-                                font-black
-                            "
-                        >
-                            Recent Nursing Activity
-                        </h2>
-
-                        <p
-                            class="
-                                text-sm
-                                text-slate-500
-                                mt-1
-                            "
-                        >
-                            Nursing activity will appear here
-                            when connected to the hospital records.
-                        </p>
-
-                    </div>
-
-                    <span
-                        class="
-                            bg-blue-100
-                            text-blue-800
-                            px-3
-                            py-1
-                            rounded-full
-                            text-xs
-                            font-bold
-                        "
-                    >
-                        Nursing
-                    </span>
-
-                </div>
-
-
-                <div
-                    id="activityList"
-                    class="mt-5"
-                >
-
-                    <div
-                        class="
-                            border
-                            border-slate-200
-                            rounded-xl
-                            p-5
-                            text-center
-                        "
-                    >
-
-                        <div class="text-3xl">
-                            🩺
-                        </div>
-
-                        <p
-                            class="
-                                font-bold
-                                mt-2
-                            "
-                        >
-                            No recent activity
-                        </p>
-
-                        <p
-                            class="
-                                text-sm
-                                text-slate-500
-                                mt-1
-                            "
-                        >
-                            Nursing activities will appear
-                            here once records are available.
-                        </p>
-
-                    </div>
 
                 </div>
 
@@ -1123,12 +1199,7 @@
                 "
             >
 
-                <h2
-                    class="
-                        font-black
-                        text-lg
-                    "
-                >
+                <h2 class="font-black text-lg">
                     🔐 Nursing Security Notice
                 </h2>
 
@@ -1141,9 +1212,9 @@
                 >
                     This nursing portal is restricted to
                     authorized Community Hospital Afari staff.
-                    Patient information must only be accessed,
-                    documented or shared when required for
-                    legitimate hospital duties.
+                    Patient information must only be accessed
+                    when required for legitimate nursing and
+                    hospital duties.
                 </p>
 
             </section>
@@ -1161,77 +1232,105 @@
     <div
         id="messageModal"
         class="
-            hidden
             fixed
             inset-0
-            bg-black/50
-            z-50
+            hidden
             items-center
             justify-center
             p-4
+            modal-backdrop
+            z-50
         "
     >
 
         <div
             class="
+                modal-box
                 bg-white
                 rounded-2xl
                 shadow-2xl
-                max-w-md
                 w-full
-                p-6
+                max-w-2xl
             "
         >
 
+            <!-- MODAL HEADER -->
+
             <div
-                id="modalIcon"
                 class="
-                    text-4xl
+                    flex
+                    items-center
+                    justify-between
+                    gap-4
+                    p-6
+                    border-b
+                    border-slate-200
                 "
             >
-                🩺
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        id="modalIcon"
+                        class="text-4xl"
+                    >
+                        ℹ️
+                    </div>
+
+                    <div>
+
+                        <h2
+                            id="modalTitle"
+                            class="
+                                text-2xl
+                                font-black
+                            "
+                        >
+                            Nursing Module
+                        </h2>
+
+                        <p
+                            id="modalSubtitle"
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-1
+                            "
+                        >
+                            Nursing Department
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="closeModalButton"
+                    type="button"
+                    class="
+                        w-10
+                        h-10
+                        rounded-full
+                        bg-slate-100
+                        hover:bg-slate-200
+                        font-black
+                        text-xl
+                    "
+                >
+                    ×
+                </button>
+
             </div>
 
-            <h2
-                id="modalTitle"
-                class="
-                    text-xl
-                    font-black
-                    mt-3
-                "
-            >
-                Nursing Tool
-            </h2>
 
-            <p
-                id="modalMessage"
-                class="
-                    text-sm
-                    text-slate-600
-                    mt-2
-                "
-            >
-                This nursing tool is ready to be connected
-                to the hospital database.
-            </p>
 
-            <button
-                id="closeModalButton"
-                type="button"
-                class="
-                    mt-5
-                    w-full
-                    bg-blue-900
-                    hover:bg-blue-800
-                    text-white
-                    px-5
-                    py-3
-                    rounded-xl
-                    font-bold
-                "
-            >
-                Close
-            </button>
+            <!-- MODAL CONTENT -->
+
+            <div
+                id="modalContent"
+                class="p-6"
+            ></div>
 
         </div>
 
@@ -1261,66 +1360,58 @@
         // ====================================================
 
         const loading =
-            document.getElementById("loading");
+            document.getElementById(
+                "loading"
+            );
 
         const nursingPage =
-            document.getElementById("nursingPage");
+            document.getElementById(
+                "nursingPage"
+            );
 
         const staffName =
-            document.getElementById("staffName");
+            document.getElementById(
+                "staffName"
+            );
 
         const staffRole =
-            document.getElementById("staffRole");
+            document.getElementById(
+                "staffRole"
+            );
 
         const staffDepartment =
-            document.getElementById("staffDepartment");
-
-        const logoutButton =
-            document.getElementById("logoutButton");
-
-        const backButton =
-            document.getElementById("backButton");
-
-        const backDashboardButton =
             document.getElementById(
-                "backDashboardButton"
+                "staffDepartment"
             );
 
         const patientCount =
-            document.getElementById("patientCount");
+            document.getElementById(
+                "patientCount"
+            );
 
         const vitalsCount =
-            document.getElementById("vitalsCount");
+            document.getElementById(
+                "vitalsCount"
+            );
 
         const careCount =
-            document.getElementById("careCount");
+            document.getElementById(
+                "careCount"
+            );
 
         const alertCount =
-            document.getElementById("alertCount");
-
-        const vitalsButton =
             document.getElementById(
-                "vitalsButton"
+                "alertCount"
             );
 
-        const nursingNotesButton =
+        const logoutButton =
             document.getElementById(
-                "nursingNotesButton"
+                "logoutButton"
             );
 
-        const careButton =
+        const backButton =
             document.getElementById(
-                "careButton"
-            );
-
-        const quickVitalsButton =
-            document.getElementById(
-                "quickVitalsButton"
-            );
-
-        const quickNotesButton =
-            document.getElementById(
-                "quickNotesButton"
+                "backButton"
             );
 
         const messageModal =
@@ -1338,15 +1429,112 @@
                 "modalTitle"
             );
 
-        const modalMessage =
+        const modalSubtitle =
             document.getElementById(
-                "modalMessage"
+                "modalSubtitle"
+            );
+
+        const modalContent =
+            document.getElementById(
+                "modalContent"
             );
 
         const closeModalButton =
             document.getElementById(
                 "closeModalButton"
             );
+
+
+        const patientsButton =
+            document.getElementById(
+                "patientsButton"
+            );
+
+        const patientsSummaryButton =
+            document.getElementById(
+                "patientsSummaryButton"
+            );
+
+        const vitalsButton =
+            document.getElementById(
+                "vitalsButton"
+            );
+
+        const vitalsSummaryButton =
+            document.getElementById(
+                "vitalsSummaryButton"
+            );
+
+        const quickVitalsButton =
+            document.getElementById(
+                "quickVitalsButton"
+            );
+
+        const nursingNotesButton =
+            document.getElementById(
+                "nursingNotesButton"
+            );
+
+        const quickNotesButton =
+            document.getElementById(
+                "quickNotesButton"
+            );
+
+        const careButton =
+            document.getElementById(
+                "careButton"
+            );
+
+        const careSummaryButton =
+            document.getElementById(
+                "careSummaryButton"
+            );
+
+        const alertsSummaryButton =
+            document.getElementById(
+                "alertsSummaryButton"
+            );
+
+
+
+        // ====================================================
+        // STATE
+        // ====================================================
+
+        let currentUser = null;
+        let currentProfile = null;
+
+
+
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+
+        function escapeHTML(value) {
+
+            return String(value || "")
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
 
 
 
@@ -1357,17 +1545,22 @@
         function showModal(
             icon,
             title,
-            message
+            subtitle,
+            content
         ) {
 
             modalIcon.textContent =
-                icon;
+                icon || "ℹ️";
 
             modalTitle.textContent =
-                title;
+                title || "Nursing Module";
 
-            modalMessage.textContent =
-                message;
+            modalSubtitle.textContent =
+                subtitle ||
+                "Nursing Department";
+
+            modalContent.innerHTML =
+                content || "";
 
             messageModal.classList.remove(
                 "hidden"
@@ -1375,6 +1568,10 @@
 
             messageModal.classList.add(
                 "flex"
+            );
+
+            document.body.classList.add(
+                "overflow-hidden"
             );
 
         }
@@ -1393,6 +1590,10 @@
 
             messageModal.classList.remove(
                 "flex"
+            );
+
+            document.body.classList.remove(
+                "overflow-hidden"
             );
 
         }
@@ -1422,6 +1623,23 @@
         );
 
 
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
 
         // ====================================================
         // DASHBOARD NAVIGATION
@@ -1435,45 +1653,15 @@
         }
 
 
-
         backButton.addEventListener(
             "click",
             goToDashboard
         );
 
 
-        backDashboardButton.addEventListener(
-            "click",
-            goToDashboard
-        );
-
-
 
         // ====================================================
-        // ESCAPE HTML
-        // ====================================================
-
-        function escapeHTML(value) {
-
-            return String(value || "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(
-                    /"/g,
-                    "&quot;"
-                )
-                .replace(
-                    /'/g,
-                    "&#039;"
-                );
-
-        }
-
-
-
-        // ====================================================
-        // LOAD STAFF PROFILE
+        // LOAD STAFF PAGE
         // ====================================================
 
         async function loadNursingPage() {
@@ -1525,7 +1713,7 @@
 
 
 
-                const user =
+                currentUser =
                     authData.user;
 
 
@@ -1539,7 +1727,9 @@
                     error: profileError
                 } =
                     await window.CHA_SUPABASE
-                        .from("staff_profiles")
+                        .from(
+                            "staff_profiles"
+                        )
                         .select(`
                             id,
                             full_name,
@@ -1552,7 +1742,7 @@
                         `)
                         .eq(
                             "id",
-                            user.id
+                            currentUser.id
                         )
                         .single();
 
@@ -1566,8 +1756,13 @@
 
 
 
+                currentProfile =
+                    profile;
+
+
+
                 // --------------------------------------------
-                // CHECK STAFF
+                // CHECK ACTIVE STAFF
                 // --------------------------------------------
 
                 if (
@@ -1589,7 +1784,7 @@
 
 
                 // --------------------------------------------
-                // DISPLAY STAFF
+                // DISPLAY PROFILE
                 // --------------------------------------------
 
                 staffName.textContent =
@@ -1615,6 +1810,24 @@
 
 
                 // --------------------------------------------
+                // INITIAL COUNTERS
+                // --------------------------------------------
+
+                patientCount.textContent =
+                    "—";
+
+                vitalsCount.textContent =
+                    "—";
+
+                careCount.textContent =
+                    "—";
+
+                alertCount.textContent =
+                    "0";
+
+
+
+                // --------------------------------------------
                 // SHOW PAGE
                 // --------------------------------------------
 
@@ -1629,20 +1842,10 @@
 
 
                 // --------------------------------------------
-                // INITIAL STATISTICS
+                // LOAD OPTIONAL STATISTICS
                 // --------------------------------------------
 
-                patientCount.textContent =
-                    "—";
-
-                vitalsCount.textContent =
-                    "—";
-
-                careCount.textContent =
-                    "—";
-
-                alertCount.textContent =
-                    "0";
+                await loadStatistics();
 
             }
 
@@ -1709,7 +1912,9 @@
                     );
 
 
-                if (returnLoginButton) {
+                if (
+                    returnLoginButton
+                ) {
 
                     returnLoginButton.addEventListener(
                         "click",
@@ -1730,6 +1935,465 @@
 
 
         // ====================================================
+        // OPTIONAL STATISTICS
+        // ====================================================
+
+        async function loadStatistics() {
+
+            /*
+             * These queries are intentionally defensive.
+             *
+             * If one of the optional tables does not exist yet,
+             * the nursing dashboard will continue working instead
+             * of breaking the entire page.
+             */
+
+
+            // ------------------------------------------------
+            // PATIENTS
+            // ------------------------------------------------
+
+            try {
+
+                const {
+                    count,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from(
+                            "patients"
+                        )
+                        .select(
+                            "*",
+                            {
+                                count: "exact",
+                                head: true
+                            }
+                        );
+
+
+                if (!error) {
+
+                    patientCount.textContent =
+                        String(
+                            count ?? 0
+                        );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Patient count unavailable:",
+                    error
+                );
+
+            }
+
+
+
+            // ------------------------------------------------
+            // VITAL SIGNS
+            // ------------------------------------------------
+
+            try {
+
+                const {
+                    count,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from(
+                            "vital_signs"
+                        )
+                        .select(
+                            "*",
+                            {
+                                count: "exact",
+                                head: true
+                            }
+                        );
+
+
+                if (!error) {
+
+                    vitalsCount.textContent =
+                        String(
+                            count ?? 0
+                        );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Vital-sign count unavailable:",
+                    error
+                );
+
+            }
+
+
+
+            // ------------------------------------------------
+            // CARE ACTIVITIES
+            // ------------------------------------------------
+
+            try {
+
+                const {
+                    count,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from(
+                            "care_activities"
+                        )
+                        .select(
+                            "*",
+                            {
+                                count: "exact",
+                                head: true
+                            }
+                        );
+
+
+                if (!error) {
+
+                    careCount.textContent =
+                        String(
+                            count ?? 0
+                        );
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.warn(
+                    "Care activity count unavailable:",
+                    error
+                );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // PATIENTS
+        // ====================================================
+
+        function openPatients() {
+
+            showModal(
+                "🧑‍⚕️",
+                "Patients",
+                "Authorized nursing patient access",
+                `
+
+                    <div class="space-y-5">
+
+                        <div
+                            class="
+                                bg-blue-50
+                                border
+                                border-blue-100
+                                rounded-xl
+                                p-4
+                            "
+                        >
+
+                            <p
+                                class="
+                                    text-sm
+                                    text-blue-900
+                                "
+                            >
+                                Search for a patient before
+                                accessing clinical information.
+                                Only information authorized by
+                                the hospital's security policies
+                                should be viewed.
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Patient search
+                            </label>
+
+                            <input
+                                id="patientSearchInput"
+                                type="search"
+                                placeholder="
+                                    Search by patient name or ID
+                                "
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                        </div>
+
+
+                        <div
+                            id="patientSearchResults"
+                            class="
+                                text-sm
+                                text-slate-500
+                                bg-slate-50
+                                rounded-xl
+                                p-4
+                            "
+                        >
+                            Enter a patient name or ID to
+                            search authorized records.
+                        </div>
+
+
+                        <a
+                            href="staff-patients.html"
+                            class="
+                                block
+                                text-center
+                                bg-blue-900
+                                hover:bg-blue-800
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Open Patient Directory
+                        </a>
+
+                    </div>
+
+                `
+            );
+
+
+            const input =
+                document.getElementById(
+                    "patientSearchInput"
+                );
+
+            const results =
+                document.getElementById(
+                    "patientSearchResults"
+                );
+
+
+            if (input) {
+
+                input.addEventListener(
+                    "input",
+                    async function() {
+
+                        const query =
+                            this.value.trim();
+
+
+                        if (!query) {
+
+                            results.textContent =
+                                "Enter a patient name or ID to search authorized records.";
+
+                            return;
+
+                        }
+
+
+                        results.textContent =
+                            "Searching...";
+
+
+                        try {
+
+                            /*
+                             * Patient search is attempted only
+                             * if the patients table exists and
+                             * permits the current authenticated
+                             * user to read it.
+                             */
+
+                            const {
+                                data,
+                                error
+                            } =
+                                await window.CHA_SUPABASE
+                                    .from(
+                                        "patients"
+                                    )
+                                    .select(
+                                        "*"
+                                    )
+                                    .or(
+                                        "full_name.ilike.%" +
+                                        query +
+                                        "%,patient_id.ilike.%" +
+                                        query +
+                                        "%"
+                                    )
+                                    .limit(
+                                        10
+                                    );
+
+
+                            if (error) {
+
+                                results.innerHTML = `
+
+                                    <p class="text-slate-600">
+                                        Patient directory is available
+                                        from the Patient Directory button.
+                                    </p>
+
+                                `;
+
+                                return;
+
+                            }
+
+
+                            if (
+                                !data ||
+                                data.length === 0
+                            ) {
+
+                                results.textContent =
+                                    "No authorized patient records found.";
+
+                                return;
+
+                            }
+
+
+                            results.innerHTML =
+                                data
+                                    .map(
+                                        function(patient) {
+
+                                            const name =
+                                                patient.full_name ||
+                                                patient.name ||
+                                                "Patient";
+
+                                            const id =
+                                                patient.patient_id ||
+                                                patient.id ||
+                                                "";
+
+                                            return `
+
+                                                <div
+                                                    class="
+                                                        bg-white
+                                                        border
+                                                        border-slate-200
+                                                        rounded-xl
+                                                        p-4
+                                                        mb-3
+                                                    "
+                                                >
+
+                                                    <div
+                                                        class="
+                                                            font-black
+                                                            text-slate-800
+                                                        "
+                                                    >
+                                                        ${escapeHTML(
+                                                            name
+                                                        )}
+                                                    </div>
+
+                                                    ${
+                                                        id
+                                                            ? `
+                                                                <div
+                                                                    class="
+                                                                        text-xs
+                                                                        text-slate-500
+                                                                        mt-1
+                                                                    "
+                                                                >
+                                                                    ID:
+                                                                    ${escapeHTML(
+                                                                        id
+                                                                    )}
+                                                                </div>
+                                                            `
+                                                            : ""
+                                                    }
+
+                                                </div>
+
+                                            `;
+
+                                        }
+                                    )
+                                    .join("");
+
+                        }
+
+                        catch (error) {
+
+                            console.error(
+                                "Patient search error:",
+                                error
+                            );
+
+                            results.textContent =
+                                "Patient search is currently unavailable.";
+
+                        }
+
+                    }
+                );
+
+            }
+
+        }
+
+
+
+        patientsButton.addEventListener(
+            "click",
+            openPatients
+        );
+
+        patientsSummaryButton.addEventListener(
+            "click",
+            openPatients
+        );
+
+
+
+        // ====================================================
         // VITAL SIGNS
         // ====================================================
 
@@ -1737,8 +2401,468 @@
 
             showModal(
                 "❤️",
-                "Vital Signs",
-                "The Vital Signs module is ready to be connected to the hospital patient-record system. It can be used for authorized blood pressure, pulse, temperature, respiratory rate and oxygen saturation records."
+                "Record Vital Signs",
+                "Authorized patient observation",
+                `
+
+                    <form
+                        id="vitalsForm"
+                        class="space-y-5"
+                    >
+
+                        <div
+                            class="
+                                bg-red-50
+                                border
+                                border-red-100
+                                rounded-xl
+                                p-4
+                            "
+                        >
+
+                            <p
+                                class="
+                                    text-sm
+                                    text-red-900
+                                "
+                            >
+                                Record vital signs carefully and
+                                verify the patient identity before
+                                saving clinical observations.
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Patient ID
+                            </label>
+
+                            <input
+                                id="vitalsPatientId"
+                                type="text"
+                                required
+                                placeholder="Enter patient ID"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="
+                                grid
+                                sm:grid-cols-2
+                                gap-4
+                            "
+                        >
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        text-sm
+                                        font-bold
+                                        mb-2
+                                    "
+                                >
+                                    Blood Pressure
+                                </label>
+
+                                <input
+                                    id="bloodPressure"
+                                    type="text"
+                                    placeholder="120/80"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        text-sm
+                                        font-bold
+                                        mb-2
+                                    "
+                                >
+                                    Pulse (bpm)
+                                </label>
+
+                                <input
+                                    id="pulse"
+                                    type="number"
+                                    min="0"
+                                    placeholder="72"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        text-sm
+                                        font-bold
+                                        mb-2
+                                    "
+                                >
+                                    Temperature (°C)
+                                </label>
+
+                                <input
+                                    id="temperature"
+                                    type="number"
+                                    step="0.1"
+                                    placeholder="36.7"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        text-sm
+                                        font-bold
+                                        mb-2
+                                    "
+                                >
+                                    Respiratory Rate
+                                </label>
+
+                                <input
+                                    id="respiratoryRate"
+                                    type="number"
+                                    min="0"
+                                    placeholder="18"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        text-sm
+                                        font-bold
+                                        mb-2
+                                    "
+                                >
+                                    SpO₂ (%)
+                                </label>
+
+                                <input
+                                    id="oxygenSaturation"
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    placeholder="98"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        text-sm
+                                        font-bold
+                                        mb-2
+                                    "
+                                >
+                                    Weight (kg)
+                                </label>
+
+                                <input
+                                    id="weight"
+                                    type="number"
+                                    min="0"
+                                    step="0.1"
+                                    placeholder="70"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Notes
+                            </label>
+
+                            <textarea
+                                id="vitalsNotes"
+                                rows="3"
+                                placeholder="
+                                    Additional observation...
+                                "
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            ></textarea>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="
+                                w-full
+                                bg-red-600
+                                hover:bg-red-700
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Save Vital Signs
+                        </button>
+
+
+                        <p
+                            id="vitalsStatus"
+                            class="
+                                text-sm
+                                text-center
+                            "
+                        ></p>
+
+                    </form>
+
+                `
+            );
+
+
+            const form =
+                document.getElementById(
+                    "vitalsForm"
+                );
+
+
+            if (!form) {
+                return;
+            }
+
+
+            form.addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const status =
+                        document.getElementById(
+                            "vitalsStatus"
+                        );
+
+
+                    status.textContent =
+                        "Saving...";
+
+
+                    status.className =
+                        "text-sm text-center text-slate-500";
+
+
+                    const record = {
+
+                        patient_id:
+                            document.getElementById(
+                                "vitalsPatientId"
+                            ).value.trim(),
+
+                        blood_pressure:
+                            document.getElementById(
+                                "bloodPressure"
+                            ).value.trim() || null,
+
+                        pulse:
+                            document.getElementById(
+                                "pulse"
+                            ).value || null,
+
+                        temperature:
+                            document.getElementById(
+                                "temperature"
+                            ).value || null,
+
+                        respiratory_rate:
+                            document.getElementById(
+                                "respiratoryRate"
+                            ).value || null,
+
+                        oxygen_saturation:
+                            document.getElementById(
+                                "oxygenSaturation"
+                            ).value || null,
+
+                        weight:
+                            document.getElementById(
+                                "weight"
+                            ).value || null,
+
+                        notes:
+                            document.getElementById(
+                                "vitalsNotes"
+                            ).value.trim() || null,
+
+                        recorded_by:
+                            currentUser
+                                ? currentUser.id
+                                : null
+
+                    };
+
+
+                    try {
+
+                        const {
+                            error
+                        } =
+                            await window.CHA_SUPABASE
+                                .from(
+                                    "vital_signs"
+                                )
+                                .insert(
+                                    record
+                                );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        status.textContent =
+                            "Vital signs saved successfully.";
+
+                        status.className =
+                            "text-sm text-center text-green-700 font-bold";
+
+
+                        vitalsCount.textContent =
+                            vitalsCount.textContent === "—"
+                                ? "1"
+                                : String(
+                                    Number(
+                                        vitalsCount.textContent
+                                    ) + 1
+                                );
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Save vital signs error:",
+                            error
+                        );
+
+
+                        status.textContent =
+                            "The vital-sign table is not yet connected or the database rejected this record. Check the Supabase table and column names.";
+
+                        status.className =
+                            "text-sm text-center text-red-700 font-bold";
+
+                    }
+
+                }
             );
 
         }
@@ -1750,6 +2874,10 @@
             openVitals
         );
 
+        vitalsSummaryButton.addEventListener(
+            "click",
+            openVitals
+        );
 
         quickVitalsButton.addEventListener(
             "click",
@@ -1767,7 +2895,282 @@
             showModal(
                 "📝",
                 "Nursing Notes",
-                "The Nursing Notes module is ready to be connected to the hospital database for authorized nursing observations, assessments and patient-care documentation."
+                "Authorized nursing documentation",
+                `
+
+                    <form
+                        id="nursingNotesForm"
+                        class="space-y-5"
+                    >
+
+                        <div
+                            class="
+                                bg-blue-50
+                                border
+                                border-blue-100
+                                rounded-xl
+                                p-4
+                            "
+                        >
+
+                            <p
+                                class="
+                                    text-sm
+                                    text-blue-900
+                                "
+                            >
+                                Document objective nursing
+                                observations and patient-care
+                                information accurately.
+                            </p>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Patient ID
+                            </label>
+
+                            <input
+                                id="notesPatientId"
+                                type="text"
+                                required
+                                placeholder="Enter patient ID"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Note Type
+                            </label>
+
+                            <select
+                                id="noteType"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                                <option value="observation">
+                                    Nursing Observation
+                                </option>
+
+                                <option value="assessment">
+                                    Nursing Assessment
+                                </option>
+
+                                <option value="progress">
+                                    Progress Note
+                                </option>
+
+                                <option value="care">
+                                    Patient Care
+                                </option>
+
+                                <option value="handover">
+                                    Handover
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Nursing Note
+                            </label>
+
+                            <textarea
+                                id="nursingNoteText"
+                                rows="7"
+                                required
+                                placeholder="
+                                    Enter nursing observation or documentation...
+                                "
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            ></textarea>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="
+                                w-full
+                                bg-blue-900
+                                hover:bg-blue-800
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Save Nursing Note
+                        </button>
+
+
+                        <p
+                            id="notesStatus"
+                            class="
+                                text-sm
+                                text-center
+                            "
+                        ></p>
+
+                    </form>
+
+                `
+            );
+
+
+            const form =
+                document.getElementById(
+                    "nursingNotesForm"
+                );
+
+
+            if (!form) {
+                return;
+            }
+
+
+            form.addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const status =
+                        document.getElementById(
+                            "notesStatus"
+                        );
+
+
+                    status.textContent =
+                        "Saving...";
+
+
+                    const record = {
+
+                        patient_id:
+                            document.getElementById(
+                                "notesPatientId"
+                            ).value.trim(),
+
+                        note_type:
+                            document.getElementById(
+                                "noteType"
+                            ).value,
+
+                        note:
+                            document.getElementById(
+                                "nursingNoteText"
+                            ).value.trim(),
+
+                        created_by:
+                            currentUser
+                                ? currentUser.id
+                                : null
+
+                    };
+
+
+                    try {
+
+                        const {
+                            error
+                        } =
+                            await window.CHA_SUPABASE
+                                .from(
+                                    "nursing_notes"
+                                )
+                                .insert(
+                                    record
+                                );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        status.textContent =
+                            "Nursing note saved successfully.";
+
+                        status.className =
+                            "text-sm text-center text-green-700 font-bold";
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Save nursing note error:",
+                            error
+                        );
+
+
+                        status.textContent =
+                            "The nursing-notes table is not yet connected or the database rejected this record. Check the Supabase table and column names.";
+
+                        status.className =
+                            "text-sm text-center text-red-700 font-bold";
+
+                    }
+
+                }
             );
 
         }
@@ -1778,7 +3181,6 @@
             "click",
             openNursingNotes
         );
-
 
         quickNotesButton.addEventListener(
             "click",
@@ -1796,7 +3198,322 @@
             showModal(
                 "🩹",
                 "Care Activities",
-                "The Care Activities module is ready to be connected to authorized nursing care records and tasks."
+                "Authorized nursing care",
+                `
+
+                    <form
+                        id="careActivitiesForm"
+                        class="space-y-5"
+                    >
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Patient ID
+                            </label>
+
+                            <input
+                                id="carePatientId"
+                                type="text"
+                                required
+                                placeholder="Enter patient ID"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Care Activity
+                            </label>
+
+                            <select
+                                id="careActivityType"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                                <option value="bed_bath">
+                                    Bed Bath
+                                </option>
+
+                                <option value="wound_care">
+                                    Wound Care
+                                </option>
+
+                                <option value="feeding">
+                                    Feeding
+                                </option>
+
+                                <option value="mobility">
+                                    Mobility / Positioning
+                                </option>
+
+                                <option value="hygiene">
+                                    Hygiene
+                                </option>
+
+                                <option value="monitoring">
+                                    Patient Monitoring
+                                </option>
+
+                                <option value="other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Status
+                            </label>
+
+                            <select
+                                id="careStatus"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                                <option value="completed">
+                                    Completed
+                                </option>
+
+                                <option value="pending">
+                                    Pending
+                                </option>
+
+                                <option value="in_progress">
+                                    In Progress
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    text-sm
+                                    font-bold
+                                    mb-2
+                                "
+                            >
+                                Notes
+                            </label>
+
+                            <textarea
+                                id="careNotes"
+                                rows="4"
+                                placeholder="
+                                    Add details about the care activity...
+                                "
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            ></textarea>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="
+                                w-full
+                                bg-green-700
+                                hover:bg-green-800
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Save Care Activity
+                        </button>
+
+
+                        <p
+                            id="careStatusMessage"
+                            class="
+                                text-sm
+                                text-center
+                            "
+                        ></p>
+
+                    </form>
+
+                `
+            );
+
+
+            const form =
+                document.getElementById(
+                    "careActivitiesForm"
+                );
+
+
+            if (!form) {
+                return;
+            }
+
+
+            form.addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const status =
+                        document.getElementById(
+                            "careStatusMessage"
+                        );
+
+
+                    status.textContent =
+                        "Saving...";
+
+
+                    const record = {
+
+                        patient_id:
+                            document.getElementById(
+                                "carePatientId"
+                            ).value.trim(),
+
+                        activity_type:
+                            document.getElementById(
+                                "careActivityType"
+                            ).value,
+
+                        status:
+                            document.getElementById(
+                                "careStatus"
+                            ).value,
+
+                        notes:
+                            document.getElementById(
+                                "careNotes"
+                            ).value.trim() || null,
+
+                        created_by:
+                            currentUser
+                                ? currentUser.id
+                                : null
+
+                    };
+
+
+                    try {
+
+                        const {
+                            error
+                        } =
+                            await window.CHA_SUPABASE
+                                .from(
+                                    "care_activities"
+                                )
+                                .insert(
+                                    record
+                                );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        status.textContent =
+                            "Care activity saved successfully.";
+
+                        status.className =
+                            "text-sm text-center text-green-700 font-bold";
+
+
+                        careCount.textContent =
+                            careCount.textContent === "—"
+                                ? "1"
+                                : String(
+                                    Number(
+                                        careCount.textContent
+                                    ) + 1
+                                );
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Save care activity error:",
+                            error
+                        );
+
+
+                        status.textContent =
+                            "The care-activities table is not yet connected or the database rejected this record. Check the Supabase table and column names.";
+
+                        status.className =
+                            "text-sm text-center text-red-700 font-bold";
+
+                    }
+
+                }
             );
 
         }
@@ -1806,6 +3523,97 @@
         careButton.addEventListener(
             "click",
             openCareActivities
+        );
+
+        careSummaryButton.addEventListener(
+            "click",
+            openCareActivities
+        );
+
+
+
+        // ====================================================
+        // ALERTS
+        // ====================================================
+
+        function openAlerts() {
+
+            showModal(
+                "🚨",
+                "Nursing Alerts",
+                "Patient-care alerts",
+                `
+
+                    <div class="space-y-5">
+
+                        <div
+                            class="
+                                bg-orange-50
+                                border
+                                border-orange-100
+                                rounded-xl
+                                p-5
+                            "
+                        >
+
+                            <h3
+                                class="
+                                    font-black
+                                    text-orange-900
+                                "
+                            >
+                                No active alerts
+                            </h3>
+
+                            <p
+                                class="
+                                    text-sm
+                                    text-orange-800
+                                    mt-2
+                                "
+                            >
+                                There are currently no nursing
+                                alerts displayed by this dashboard.
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                bg-slate-50
+                                rounded-xl
+                                p-5
+                            "
+                        >
+
+                            <p
+                                class="
+                                    text-sm
+                                    text-slate-600
+                                "
+                            >
+                                Alerts can later be connected
+                                to abnormal vital signs,
+                                medication warnings, critical
+                                laboratory results and other
+                                hospital notification systems.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                `
+            );
+
+        }
+
+
+
+        alertsSummaryButton.addEventListener(
+            "click",
+            openAlerts
         );
 
 
