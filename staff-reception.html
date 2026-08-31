@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CHA Reception / Front Desk</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .action-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(0,0,0,.07);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+<header class="bg-blue-900 text-white shadow-lg">
+
+    <div class="max-w-7xl mx-auto px-4">
+
+        <div class="min-h-20 flex items-center justify-between gap-4">
+
+            <div class="flex items-center gap-3">
+
+                <div
+                    class="w-12 h-12 rounded-full bg-white
+                           text-blue-900 flex items-center
+                           justify-center font-black"
+                >
+                    CHA
+                </div>
+
+                <div>
+
+                    <div class="font-black">
+                        COMMUNITY HOSPITAL AFARI
+                    </div>
+
+                    <div class="text-blue-200 text-sm">
+                        Reception / Front Desk
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button
+                id="backButton"
+                type="button"
+                class="bg-white text-blue-900
+                       hover:bg-blue-50
+                       px-4 py-2
+                       rounded-lg
+                       font-bold"
+            >
+                ← Dashboard
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- AUTHENTICATION LOADING -->
+
+    <div
+        id="loading"
+        class="bg-white rounded-2xl shadow p-8 text-center"
+    >
+
+        <div class="text-3xl">
+            🔐
+        </div>
+
+        <p class="font-bold mt-3">
+            Checking staff authentication...
+        </p>
+
+    </div>
+
+
+    <!-- RECEPTION PAGE -->
+
+    <div id="receptionPage" class="hidden">
+
+        <!-- WELCOME -->
+
+        <section
+            class="bg-white rounded-2xl shadow p-6 mb-8"
+        >
+
+            <p class="text-sm text-slate-500">
+                Reception / Front Desk
+            </p>
+
+            <h1
+                id="staffName"
+                class="text-3xl font-black text-slate-900 mt-1"
+            >
+                Reception Staff
+            </h1>
+
+            <div class="flex flex-wrap gap-3 mt-4">
+
+                <span
+                    id="staffRole"
+                    class="bg-blue-100 text-blue-800
+                           px-3 py-1 rounded-full
+                           text-sm font-bold"
+                ></span>
+
+                <span
+                    id="staffDepartment"
+                    class="bg-green-100 text-green-800
+                           px-3 py-1 rounded-full
+                           text-sm font-bold"
+                ></span>
+
+            </div>
+
+        </section>
+
+
+        <!-- QUICK ACTIONS -->
+
+        <section
+            class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8"
+        >
+
+            <button
+                id="findPatientButton"
+                type="button"
+                class="action-card text-left"
+            >
+
+                <div class="text-4xl">
+                    🔎
+                </div>
+
+                <h2 class="font-black text-xl mt-4">
+                    Find Patient
+                </h2>
+
+                <p class="text-slate-500 text-sm mt-2">
+                    Search authorized patient information.
+                </p>
+
+            </button>
+
+
+            <button
+                id="appointmentsButton"
+                type="button"
+                class="action-card text-left"
+            >
+
+                <div class="text-4xl">
+                    📅
+                </div>
+
+                <h2 class="font-black text-xl mt-4">
+                    Appointments
+                </h2>
+
+                <p class="text-slate-500 text-sm mt-2">
+                    View today's appointment requests.
+                </p>
+
+            </button>
+
+
+            <button
+                id="registrationButton"
+                type="button"
+                class="action-card text-left"
+            >
+
+                <div class="text-4xl">
+                    📝
+                </div>
+
+                <h2 class="font-black text-xl mt-4">
+                    Patient Registration
+                </h2>
+
+                <p class="text-slate-500 text-sm mt-2">
+                    Register a new patient at the front desk.
+                </p>
+
+            </button>
+
+        </section>
+
+
+        <!-- PATIENT SEARCH -->
+
+        <section
+            id="patientSearchSection"
+            class="bg-white rounded-2xl shadow p-6 mb-8"
+        >
+
+            <div class="flex flex-col sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                        gap-4">
+
+                <div>
+
+                    <h2 class="text-xl font-black">
+                        🔎 Patient Search
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Search using patient name, patient ID or phone number.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form
+                id="patientSearchForm"
+                class="mt-6 flex flex-col sm:flex-row gap-3"
+            >
+
+                <input
+                    id="patientSearchInput"
+                    type="search"
+                    class="flex-1 px-4 py-3
+                           border border-slate-300
+                           rounded-xl outline-none
+                           focus:ring-2 focus:ring-blue-600"
+                    placeholder="Enter patient name, ID or phone"
+                    autocomplete="off"
+                >
+
+                <button
+                    id="patientSearchButton"
+                    type="submit"
+                    class="bg-blue-900
+                           hover:bg-blue-800
+                           text-white
+                           px-6 py-3
+                           rounded-xl
+                           font-black"
+                >
+                    Search
+                </button>
+
+            </form>
+
+
+            <div
+                id="patientSearchStatus"
+                class="hidden mt-5 p-4 rounded-xl text-sm"
+            ></div>
+
+
+            <div
+                id="patientResults"
+                class="hidden mt-6 overflow-x-auto"
+            >
+
+                <table class="w-full text-sm">
+
+                    <thead class="bg-slate-50 border-b">
+
+                        <tr>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Patient
+                            </th>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Patient ID
+                            </th>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Phone
+                            </th>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody
+                        id="patientResultsBody"
+                        class="divide-y"
+                    ></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- APPOINTMENTS -->
+
+        <section
+            id="appointmentsSection"
+            class="bg-white rounded-2xl shadow p-6 mb-8"
+        >
+
+            <div class="flex flex-col sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                        gap-4">
+
+                <div>
+
+                    <h2 class="text-xl font-black">
+                        📅 Appointments
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Appointment information available to reception staff.
+                    </p>
+
+                </div>
+
+                <button
+                    id="loadAppointmentsButton"
+                    type="button"
+                    class="bg-blue-900
+                           hover:bg-blue-800
+                           text-white
+                           px-5 py-3
+                           rounded-xl
+                           font-bold"
+                >
+                    Load Appointments
+                </button>
+
+            </div>
+
+
+            <div
+                id="appointmentsStatus"
+                class="hidden mt-5 p-4 rounded-xl text-sm"
+            ></div>
+
+
+            <div
+                id="appointmentsResults"
+                class="hidden mt-6 overflow-x-auto"
+            >
+
+                <table class="w-full text-sm">
+
+                    <thead class="bg-slate-50 border-b">
+
+                        <tr>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Patient
+                            </th>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Date
+                            </th>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Time
+                            </th>
+
+                            <th class="text-left px-4 py-3 font-black">
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody
+                        id="appointmentsResultsBody"
+                        class="divide-y"
+                    ></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- PATIENT REGISTRATION -->
+
+        <section
+            id="registrationSection"
+            class="bg-white rounded-2xl shadow p-6 mb-8"
+        >
+
+            <h2 class="text-xl font-black">
+                📝 Patient Registration
+            </h2>
+
+            <p class="text-sm text-slate-500 mt-1">
+                Register a new patient at the hospital front desk.
+            </p>
+
+
+            <form
+                id="registrationForm"
+                class="mt-6 grid sm:grid-cols-2 gap-5"
+            >
+
+                <div>
+
+                    <label
+                        for="patientFullName"
+                        class="block text-sm font-bold"
+                    >
+                        Full Name
+                    </label>
+
+                    <input
+                        id="patientFullName"
+                        type="text"
+                        required
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="Patient full name"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label
+                        for="patientPhone"
+                        class="block text-sm font-bold"
+                    >
+                        Phone Number
+                    </label>
+
+                    <input
+                        id="patientPhone"
+                        type="tel"
+                        required
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="Patient phone number"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label
+                        for="patientDateOfBirth"
+                        class="block text-sm font-bold"
+                    >
+                        Date of Birth
+                    </label>
+
+                    <input
+                        id="patientDateOfBirth"
+                        type="date"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label
+                        for="patientGender"
+                        class="block text-sm font-bold"
+                    >
+                        Gender
+                    </label>
+
+                    <select
+                        id="patientGender"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                    >
+
+                        <option value="">
+                            Select gender
+                        </option>
+
+                        <option value="male">
+                            Male
+                        </option>
+
+                        <option value="female">
+                            Female
+                        </option>
+
+                        <option value="other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="sm:col-span-2">
+
+                    <label
+                        for="patientAddress"
+                        class="block text-sm font-bold"
+                    >
+                        Address
+                    </label>
+
+                    <textarea
+                        id="patientAddress"
+                        rows="3"
+                        class="w-full mt-2 px-4 py-3
+                               border border-slate-300
+                               rounded-xl outline-none
+                               focus:ring-2 focus:ring-blue-600"
+                        placeholder="Patient address"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="sm:col-span-2">
+
+                    <button
+                        type="submit"
+                        id="registerPatientButton"
+                        class="bg-green-600
+                               hover:bg-green-700
+                               text-white
+                               px-6 py-3
+                               rounded-xl
+                               font-black"
+                    >
+                        Register Patient
+                    </button>
+
+                </div>
+
+            </form>
+
+
+            <div
+                id="registrationStatus"
+                class="hidden mt-5 p-4 rounded-xl text-sm"
+            ></div>
+
+        </section>
+
+
+        <!-- SECURITY NOTICE -->
+
+        <section
+            class="bg-blue-50
+                   border border-blue-100
+                   rounded-2xl
+                   p-6"
+        >
+
+            <h2 class="font-black text-lg">
+                🔐 Reception Security
+            </h2>
+
+            <p class="text-sm text-blue-900 mt-2">
+                Patient information is confidential. Only access
+                information required for legitimate hospital duties.
+                Do not share patient information with unauthorized persons.
+            </p>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<script src="js/supabase.js"></script>
+
+
+<script>
+
+"use strict";
+
+
+// ============================================================
+// ELEMENTS
+// ============================================================
+
+const loading =
+    document.getElementById("loading");
+
+const receptionPage =
+    document.getElementById("receptionPage");
+
+const staffName =
+    document.getElementById("staffName");
+
+const staffRole =
+    document.getElementById("staffRole");
+
+const staffDepartment =
+    document.getElementById("staffDepartment");
+
+const backButton =
+    document.getElementById("backButton");
+
+const findPatientButton =
+    document.getElementById("findPatientButton");
+
+const appointmentsButton =
+    document.getElementById("appointmentsButton");
+
+const registrationButton =
+    document.getElementById("registrationButton");
+
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeHTML(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ============================================================
+// ROLE FORMAT
+// ============================================================
+
+function formatRole(role) {
+
+    const roles = {
+
+        admin: "Administrator",
+        staff: "Staff",
+        doctor: "Doctor",
+        nurse: "Nurse",
+        midwife: "Midwife",
+        receptionist: "Receptionist",
+        pharmacist: "Pharmacist",
+        laboratory_staff: "Laboratory Staff",
+        medical_records: "Medical Records Staff",
+        accounts: "Accounts Staff",
+        ambulance: "Ambulance Staff",
+        theatre: "Theatre Staff",
+        stores: "Stores Staff"
+
+    };
+
+    return roles[role] || role || "Staff";
+
+}
+
+
+// ============================================================
+// STATUS HELPERS
+// ============================================================
+
+function showMessage(element, message, type) {
+
+    element.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+
+    if (type === "error") {
+
+        element.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+
+    }
+
+    else if (type === "success") {
+
+        element.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+
+    }
+
+    else {
+
+        element.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+
+    }
+
+    element.textContent = message;
+
+}
+
+
+// ============================================================
+// CHECK AUTHENTICATION
+// ============================================================
+
+async function checkAuthentication() {
+
+    if (!window.CHA_SUPABASE) {
+
+        throw new Error(
+            "Supabase is not configured."
+        );
+
+    }
+
+    const {
+        data: authData,
+        error: authError
+    } =
+        await window.CHA_SUPABASE
+            .auth
+            .getUser();
+
+    if (
+        authError ||
+        !authData ||
+        !authData.user
+    ) {
+
+        window.location.href =
+            "staff-login.html";
+
+        return null;
+
+    }
+
+    const user =
+        authData.user;
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await window.CHA_SUPABASE
+            .from("staff_profiles")
+            .select(`
+                id,
+                full_name,
+                role,
+                is_active,
+                department_id,
+                departments (
+                    name
+                )
+            `)
+            .eq(
+                "id",
+                user.id
+            )
+            .single();
+
+    if (profileError) {
+
+        throw profileError;
+
+    }
+
+    if (
+        !profile ||
+        profile.is_active !== true
+    ) {
+
+        await window.CHA_SUPABASE
+            .auth
+            .signOut();
+
+        window.location.href =
+            "staff-login.html";
+
+        return null;
+
+    }
+
+    return {
+        user: user,
+        profile: profile
+    };
+
+}
+
+
+// ============================================================
+// PATIENT SEARCH
+// ============================================================
+
+const patientSearchForm =
+    document.getElementById(
+        "patientSearchForm"
+    );
+
+const patientSearchInput =
+    document.getElementById(
+        "patientSearchInput"
+    );
+
+const patientSearchButton =
+    document.getElementById(
+        "patientSearchButton"
+    );
+
+const patientSearchStatus =
+    document.getElementById(
+        "patientSearchStatus"
+    );
+
+const patientResults =
+    document.getElementById(
+        "patientResults"
+    );
+
+const patientResultsBody =
+    document.getElementById(
+        "patientResultsBody"
+    );
+
+
+patientSearchForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        const search =
+            patientSearchInput.value.trim();
+
+        if (!search) {
+
+            showMessage(
+                patientSearchStatus,
+                "Enter a patient name, ID or phone number.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        patientSearchButton.disabled =
+            true;
+
+        patientSearchButton.textContent =
+            "Searching...";
+
+        patientResults.classList.add(
+            "hidden"
+        );
+
+        patientResultsBody.innerHTML = "";
+
+        showMessage(
+            patientSearchStatus,
+            "Searching authorized patient records...",
+            "info"
+        );
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await window.CHA_SUPABASE
+                    .from("patients")
+                    .select(`
+                        id,
+                        full_name,
+                        patient_id,
+                        phone
+                    `)
+                    .or(
+                        "full_name.ilike.%" +
+                        search +
+                        "%,patient_id.ilike.%" +
+                        search +
+                        "%,phone.ilike.%" +
+                        search +
+                        "%"
+                    )
+                    .limit(20);
+
+            if (error) {
+
+                throw error;
+
+            }
+
+            const patients =
+                data || [];
+
+            if (patients.length === 0) {
+
+                showMessage(
+                    patientSearchStatus,
+                    "No matching patient records were found.",
+                    "info"
+                );
+
+                return;
+
+            }
+
+            patientSearchStatus.classList.add(
+                "hidden"
+            );
+
+            patientResults.classList.remove(
+                "hidden"
+            );
+
+            patients.forEach(
+                function(patient) {
+
+                    const row =
+                        document.createElement("tr");
+
+                    row.className =
+                        "hover:bg-slate-50";
+
+                    row.innerHTML = `
+
+                        <td class="px-4 py-4 font-bold">
+                            ${escapeHTML(
+                                patient.full_name
+                            )}
+                        </td>
+
+                        <td class="px-4 py-4 font-mono text-xs">
+                            ${escapeHTML(
+                                patient.patient_id
+                            )}
+                        </td>
+
+                        <td class="px-4 py-4">
+                            ${escapeHTML(
+                                patient.phone
+                            )}
+                        </td>
+
+                        <td class="px-4 py-4">
+
+                            <button
+                                type="button"
+                                class="
+                                    view-patient-button
+                                    bg-blue-900
+                                    hover:bg-blue-800
+                                    text-white
+                                    px-4 py-2
+                                    rounded-lg
+                                    font-bold
+                                "
+                                data-id="${escapeHTML(
+                                    patient.id
+                                )}"
+                            >
+                                View
+                            </button>
+
+                        </td>
+
+                    `;
+
+                    patientResultsBody.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+            document
+                .querySelectorAll(
+                    ".view-patient-button"
+                )
+                .forEach(
+                    function(button) {
+
+                        button.addEventListener(
+                            "click",
+                            function() {
+
+                                const patientId =
+                                    this.dataset.id;
+
+                                window.location.href =
+                                    "staff-patient-records.html?id=" +
+                                    encodeURIComponent(
+                                        patientId
+                                    );
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "CHA Reception Patient Search Error:",
+                error
+            );
+
+            showMessage(
+                patientSearchStatus,
+                error.message ||
+                "Unable to search patient records.",
+                "error"
+            );
+
+        }
+
+        finally {
+
+            patientSearchButton.disabled =
+                false;
+
+            patientSearchButton.textContent =
+                "Search";
+
+        }
+
+    }
+);
+
+
+// ============================================================
+// APPOINTMENTS
+// ============================================================
+
+const appointmentsSection =
+    document.getElementById(
+        "appointmentsSection"
+    );
+
+const appointmentsStatus =
+    document.getElementById(
+        "appointmentsStatus"
+    );
+
+const appointmentsResults =
+    document.getElementById(
+        "appointmentsResults"
+    );
+
+const appointmentsResultsBody =
+    document.getElementById(
+        "appointmentsResultsBody"
+    );
+
+const loadAppointmentsButton =
+    document.getElementById(
+        "loadAppointmentsButton"
+    );
+
+
+async function loadAppointments() {
+
+    loadAppointmentsButton.disabled =
+        true;
+
+    loadAppointmentsButton.textContent =
+        "Loading...";
+
+    appointmentsResults.classList.add(
+        "hidden"
+    );
+
+    appointmentsResultsBody.innerHTML = "";
+
+    showMessage(
+        appointmentsStatus,
+        "Loading appointment records...",
+        "info"
+    );
+
+    try {
+
+        /*
+         * This query expects an appointments table.
+         * If your project uses different column names,
+         * we will connect it to your exact table next.
+         */
+
+        const {
+            data,
+            error
+        } =
+            await window.CHA_SUPABASE
+                .from("appointments")
+                .select("*")
+                .order(
+                    "appointment_date",
+                    {
+                        ascending: true
+                    }
+                )
+                .limit(50);
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        const appointments =
+            data || [];
+
+        if (appointments.length === 0) {
+
+            showMessage(
+                appointmentsStatus,
+                "No appointment records were found.",
+                "info"
+            );
+
+            return;
+
+        }
+
+        appointmentsStatus.classList.add(
+            "hidden"
+        );
+
+        appointmentsResults.classList.remove(
+            "hidden"
+        );
+
+        appointments.forEach(
+            function(appointment) {
+
+                const row =
+                    document.createElement("tr");
+
+                row.className =
+                    "hover:bg-slate-50";
+
+                const appointmentDate =
+                    appointment.appointment_date ||
+                    appointment.date ||
+                    "";
+
+                const appointmentTime =
+                    appointment.appointment_time ||
+                    appointment.time ||
+                    "";
+
+                const status =
+                    appointment.status ||
+                    "Pending";
+
+                const patient =
+                    appointment.patient_name ||
+                    appointment.full_name ||
+                    appointment.patient_id ||
+                    "Patient";
+
+                row.innerHTML = `
+
+                    <td class="px-4 py-4 font-bold">
+                        ${escapeHTML(patient)}
+                    </td>
+
+                    <td class="px-4 py-4">
+                        ${escapeHTML(appointmentDate)}
+                    </td>
+
+                    <td class="px-4 py-4">
+                        ${escapeHTML(appointmentTime)}
+                    </td>
+
+                    <td class="px-4 py-4">
+
+                        <span
+                            class="
+                                inline-flex
+                                px-3 py-1
+                                rounded-full
+                                text-xs
+                                font-black
+                                bg-blue-100
+                                text-blue-800
+                            "
+                        >
+                            ${escapeHTML(status)}
+                        </span>
+
+                    </td>
+
+                `;
+
+                appointmentsResultsBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Reception Appointments Error:",
+            error
+        );
+
+        showMessage(
+            appointmentsStatus,
+            error.message ||
+            "Unable to load appointments.",
+            "error"
+        );
+
+    }
+
+    finally {
+
+        loadAppointmentsButton.disabled =
+            false;
+
+        loadAppointmentsButton.textContent =
+            "Load Appointments";
+
+    }
+
+}
+
+
+loadAppointmentsButton.addEventListener(
+    "click",
+    loadAppointments
+);
+
+
+// ============================================================
+// PATIENT REGISTRATION
+// ============================================================
+
+const registrationForm =
+    document.getElementById(
+        "registrationForm"
+    );
+
+const registerPatientButton =
+    document.getElementById(
+        "registerPatientButton"
+    );
+
+const registrationStatus =
+    document.getElementById(
+        "registrationStatus"
+    );
+
+
+registrationForm.addEventListener(
+    "submit",
+    async function(event) {
+
+        event.preventDefault();
+
+        const fullName =
+            document
+                .getElementById(
+                    "patientFullName"
+                )
+                .value
+                .trim();
+
+        const phone =
+            document
+                .getElementById(
+                    "patientPhone"
+                )
+                .value
+                .trim();
+
+        const dateOfBirth =
+            document
+                .getElementById(
+                    "patientDateOfBirth"
+                )
+                .value;
+
+        const gender =
+            document
+                .getElementById(
+                    "patientGender"
+                )
+                .value;
+
+        const address =
+            document
+                .getElementById(
+                    "patientAddress"
+                )
+                .value
+                .trim();
+
+        if (!fullName || !phone) {
+
+            showMessage(
+                registrationStatus,
+                "Patient full name and phone number are required.",
+                "error"
+            );
+
+            return;
+
+        }
+
+        registerPatientButton.disabled =
+            true;
+
+        registerPatientButton.textContent =
+            "Registering...";
+
+        showMessage(
+            registrationStatus,
+            "Registering patient...",
+            "info"
+        );
+
+        try {
+
+            /*
+             * We deliberately generate the patient ID
+             * here instead of relying on a hard-coded value.
+             */
+
+            const patientId =
+                "CHA-" +
+                Date.now()
+                    .toString()
+                    .slice(-8);
+
+            const {
+                data,
+                error
+            } =
+                await window.CHA_SUPABASE
+                    .from("patients")
+                    .insert({
+                        full_name:
+                            fullName,
+
+                        patient_id:
+                            patientId,
+
+                        phone:
+                            phone,
+
+                        date_of_birth:
+                            dateOfBirth || null,
+
+                        gender:
+                            gender || null,
+
+                        address:
+                            address || null
+                    })
+                    .select()
+                    .single();
+
+            if (error) {
+
+                throw error;
+
+            }
+
+            registrationForm.reset();
+
+            showMessage(
+                registrationStatus,
+                "Patient registered successfully. Patient ID: " +
+                (
+                    data?.patient_id ||
+                    patientId
+                ),
+                "success"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "CHA Patient Registration Error:",
+                error
+            );
+
+            showMessage(
+                registrationStatus,
+                error.message ||
+                "Unable to register patient.",
+                "error"
+            );
+
+        }
+
+        finally {
+
+            registerPatientButton.disabled =
+                false;
+
+            registerPatientButton.textContent =
+                "Register Patient";
+
+        }
+
+    }
+);
+
+
+// ============================================================
+// QUICK ACTIONS
+// ============================================================
+
+findPatientButton.addEventListener(
+    "click",
+    function() {
+
+        document
+            .getElementById(
+                "patientSearchSection"
+            )
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+        setTimeout(
+            function() {
+
+                patientSearchInput.focus();
+
+            },
+            400
+        );
+
+    }
+);
+
+
+appointmentsButton.addEventListener(
+    "click",
+    function() {
+
+        appointmentsSection.scrollIntoView({
+            behavior: "smooth"
+        });
+
+        setTimeout(
+            function() {
+
+                loadAppointments();
+
+            },
+            400
+        );
+
+    }
+);
+
+
+registrationButton.addEventListener(
+    "click",
+    function() {
+
+        document
+            .getElementById(
+                "registrationSection"
+            )
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+
+        setTimeout(
+            function() {
+
+                document
+                    .getElementById(
+                        "patientFullName"
+                    )
+                    .focus();
+
+            },
+            400
+        );
+
+    }
+);
+
+
+// ============================================================
+// BACK TO DASHBOARD
+// ============================================================
+
+backButton.addEventListener(
+    "click",
+    function() {
+
+        window.location.href =
+            "staff-dashboard.html";
+
+    }
+);
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+async function initializeReception() {
+
+    try {
+
+        const result =
+            await checkAuthentication();
+
+        if (!result) {
+
+            return;
+
+        }
+
+        const profile =
+            result.profile;
+
+        staffName.textContent =
+            profile.full_name ||
+            "Staff Member";
+
+        staffRole.textContent =
+            "Role: " +
+            formatRole(
+                profile.role
+            );
+
+        staffDepartment.textContent =
+            "Department: " +
+            (
+                profile.departments?.name ||
+                "Not assigned"
+            );
+
+        loading.classList.add(
+            "hidden"
+        );
+
+        receptionPage.classList.remove(
+            "hidden"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Reception Initialization Error:",
+            error
+        );
+
+        loading.innerHTML = `
+
+            <div class="text-3xl">
+                ⚠️
+            </div>
+
+            <p class="
+                font-bold
+                mt-3
+                text-red-700
+            ">
+                Unable to load Reception
+            </p>
+
+            <p class="
+                text-sm
+                text-slate-500
+                mt-2
+            ">
+                ${escapeHTML(
+                    error.message ||
+                    "Please try again."
+                )}
+            </p>
+
+            <button
+                type="button"
+                id="returnDashboardButton"
+                class="
+                    mt-5
+                    bg-blue-900
+                    hover:bg-blue-800
+                    text-white
+                    px-5
+                    py-3
+                    rounded-xl
+                    font-bold
+                "
+            >
+                Return to Dashboard
+            </button>
+
+        `;
+
+        const returnDashboardButton =
+            document.getElementById(
+                "returnDashboardButton"
+            );
+
+        if (returnDashboardButton) {
+
+            returnDashboardButton.addEventListener(
+                "click",
+                function() {
+
+                    window.location.href =
+                        "staff-dashboard.html";
+
+                }
+            );
+
+        }
+
+    }
+
+}
+
+
+initializeReception();
+
+</script>
+
+</body>
+</html>
