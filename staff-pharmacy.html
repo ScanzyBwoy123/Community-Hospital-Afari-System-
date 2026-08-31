@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>CHA Pharmacy Department</title>
 
@@ -30,6 +33,10 @@
         .pharmacy-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .modal-backdrop {
+            background: rgba(15, 23, 42, 0.55);
         }
     </style>
 </head>
@@ -73,11 +80,15 @@
                 <button
                     id="backButton"
                     type="button"
-                    class="bg-white text-blue-900
-                           hover:bg-blue-50
-                           px-4 py-2
-                           rounded-lg
-                           font-bold"
+                    class="
+                        bg-white
+                        text-blue-900
+                        hover:bg-blue-50
+                        px-4
+                        py-2
+                        rounded-lg
+                        font-bold
+                    "
                 >
                     ← Dashboard
                 </button>
@@ -149,20 +160,28 @@
 
                     <span
                         id="staffRole"
-                        class="bg-blue-100 text-blue-800
-                               px-3 py-1
-                               rounded-full
-                               text-sm
-                               font-bold"
+                        class="
+                            bg-blue-100
+                            text-blue-800
+                            px-3
+                            py-1
+                            rounded-full
+                            text-sm
+                            font-bold
+                        "
                     ></span>
 
                     <span
                         id="staffDepartment"
-                        class="bg-green-100 text-green-800
-                               px-3 py-1
-                               rounded-full
-                               text-sm
-                               font-bold"
+                        class="
+                            bg-green-100
+                            text-green-800
+                            px-3
+                            py-1
+                            rounded-full
+                            text-sm
+                            font-bold
+                        "
                     ></span>
 
                 </div>
@@ -172,14 +191,16 @@
 
 
             <!-- =================================================
-                 PHARMACY ACTIONS
+                 PHARMACY CARDS
             ================================================== -->
 
             <section
                 class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"
             >
 
-                <!-- MEDICATION RECORDS -->
+                <!-- =================================================
+                     MEDICATION RECORDS
+                ================================================== -->
 
                 <button
                     id="medicationRecordsButton"
@@ -196,15 +217,17 @@
                     </h2>
 
                     <p class="text-slate-500 text-sm mt-2">
-                        Access authorized medication records
-                        and pharmacy information.
+                        Add, search, edit and manage authorized
+                        medication records.
                     </p>
 
                 </button>
 
 
 
-                <!-- PRESCRIPTIONS -->
+                <!-- =================================================
+                     PRESCRIPTIONS
+                ================================================== -->
 
                 <button
                     id="prescriptionsButton"
@@ -221,15 +244,16 @@
                     </h2>
 
                     <p class="text-slate-500 text-sm mt-2">
-                        Review authorized prescriptions and
-                        medication requests.
+                        Manage authorized prescriptions.
                     </p>
 
                 </button>
 
 
 
-                <!-- DISPENSING -->
+                <!-- =================================================
+                     DISPENSING
+                ================================================== -->
 
                 <button
                     id="dispensingButton"
@@ -246,15 +270,16 @@
                     </h2>
 
                     <p class="text-slate-500 text-sm mt-2">
-                        Manage authorized medication dispensing
-                        activities.
+                        Record authorized medication dispensing.
                     </p>
 
                 </button>
 
 
 
-                <!-- INVENTORY -->
+                <!-- =================================================
+                     INVENTORY
+                ================================================== -->
 
                 <button
                     id="inventoryButton"
@@ -271,15 +296,16 @@
                     </h2>
 
                     <p class="text-slate-500 text-sm mt-2">
-                        Monitor authorized medication stock
-                        and inventory information.
+                        Monitor medication stock and inventory.
                     </p>
 
                 </button>
 
 
 
-                <!-- PATIENT MEDICATION -->
+                <!-- =================================================
+                     PATIENT MEDICATION
+                ================================================== -->
 
                 <button
                     id="patientMedicationButton"
@@ -296,15 +322,17 @@
                     </h2>
 
                     <p class="text-slate-500 text-sm mt-2">
-                        Access medication information for
-                        authorized patients.
+                        Access authorized patient medication
+                        information.
                     </p>
 
                 </button>
 
 
 
-                <!-- PHARMACY NOTES -->
+                <!-- =================================================
+                     PHARMACY NOTES
+                ================================================== -->
 
                 <button
                     id="pharmacyNotesButton"
@@ -321,8 +349,7 @@
                     </h2>
 
                     <p class="text-slate-500 text-sm mt-2">
-                        Record or review authorized pharmacy
-                        notes and activities.
+                        Record authorized pharmacy documentation.
                     </p>
 
                 </button>
@@ -344,18 +371,53 @@
                 </h2>
 
                 <div
-                    class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5"
+                    class="
+                        grid
+                        sm:grid-cols-2
+                        lg:grid-cols-4
+                        gap-4
+                        mt-5
+                    "
                 >
+
+                    <button
+                        id="quickMedicationButton"
+                        type="button"
+                        class="
+                            bg-blue-50
+                            border
+                            border-blue-100
+                            rounded-xl
+                            p-4
+                            text-left
+                            hover:bg-blue-100
+                        "
+                    >
+
+                        <div class="text-2xl">
+                            💊
+                        </div>
+
+                        <div class="font-black mt-2">
+                            Medication Records
+                        </div>
+
+                    </button>
+
+
 
                     <button
                         id="quickPrescriptionsButton"
                         type="button"
-                        class="bg-blue-50
-                               border border-blue-100
-                               rounded-xl
-                               p-4
-                               text-left
-                               hover:bg-blue-100"
+                        class="
+                            bg-purple-50
+                            border
+                            border-purple-100
+                            rounded-xl
+                            p-4
+                            text-left
+                            hover:bg-purple-100
+                        "
                     >
 
                         <div class="text-2xl">
@@ -373,12 +435,15 @@
                     <button
                         id="quickInventoryButton"
                         type="button"
-                        class="bg-green-50
-                               border border-green-100
-                               rounded-xl
-                               p-4
-                               text-left
-                               hover:bg-green-100"
+                        class="
+                            bg-green-50
+                            border
+                            border-green-100
+                            rounded-xl
+                            p-4
+                            text-left
+                            hover:bg-green-100
+                        "
                     >
 
                         <div class="text-2xl">
@@ -394,37 +459,17 @@
 
 
                     <button
-                        id="quickPatientMedicationButton"
-                        type="button"
-                        class="bg-purple-50
-                               border border-purple-100
-                               rounded-xl
-                               p-4
-                               text-left
-                               hover:bg-purple-100"
-                    >
-
-                        <div class="text-2xl">
-                            🧑‍⚕️
-                        </div>
-
-                        <div class="font-black mt-2">
-                            Patient Medication
-                        </div>
-
-                    </button>
-
-
-
-                    <button
                         id="quickDashboardButton"
                         type="button"
-                        class="bg-slate-50
-                               border border-slate-200
-                               rounded-xl
-                               p-4
-                               text-left
-                               hover:bg-slate-100"
+                        class="
+                            bg-slate-50
+                            border
+                            border-slate-200
+                            rounded-xl
+                            p-4
+                            text-left
+                            hover:bg-slate-100
+                        "
                     >
 
                         <div class="text-2xl">
@@ -448,11 +493,14 @@
             ================================================== -->
 
             <section
-                class="mt-8
-                       bg-blue-50
-                       border border-blue-100
-                       rounded-2xl
-                       p-6"
+                class="
+                    mt-8
+                    bg-blue-50
+                    border
+                    border-blue-100
+                    rounded-2xl
+                    p-6
+                "
             >
 
                 <h2 class="font-black text-lg">
@@ -460,9 +508,9 @@
                 </h2>
 
                 <p class="text-sm text-blue-900 mt-2">
-                    Pharmacy information is confidential.
-                    Only access medication and patient information
-                    required for legitimate hospital duties.
+                    Pharmacy and patient information is confidential.
+                    Only access information required for legitimate
+                    hospital duties.
                 </p>
 
             </section>
@@ -482,7 +530,7 @@
 
 
     <!-- =====================================================
-         PHARMACY LOGIC
+         JAVASCRIPT
     ====================================================== -->
 
     <script>
@@ -511,8 +559,6 @@
 
         const backButton =
             document.getElementById("backButton");
-
-
 
         const medicationRecordsButton =
             document.getElementById(
@@ -544,7 +590,10 @@
                 "pharmacyNotesButton"
             );
 
-
+        const quickMedicationButton =
+            document.getElementById(
+                "quickMedicationButton"
+            );
 
         const quickPrescriptionsButton =
             document.getElementById(
@@ -556,11 +605,6 @@
                 "quickInventoryButton"
             );
 
-        const quickPatientMedicationButton =
-            document.getElementById(
-                "quickPatientMedicationButton"
-            );
-
         const quickDashboardButton =
             document.getElementById(
                 "quickDashboardButton"
@@ -569,12 +613,12 @@
 
 
         // ====================================================
-        // ESCAPE HTML
+        // HTML ESCAPING
         // ====================================================
 
         function escapeHTML(value) {
 
-            return String(value || "")
+            return String(value ?? "")
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
@@ -586,7 +630,7 @@
 
 
         // ====================================================
-        // DASHBOARD NAVIGATION
+        // DASHBOARD
         // ====================================================
 
         function goToDashboard() {
@@ -614,32 +658,38 @@
         // MODAL
         // ====================================================
 
-        function showModuleMessage(
-            icon,
-            title,
-            message
-        ) {
+        function closeModal() {
 
-            const existing =
+            const modal =
                 document.getElementById(
-                    "pharmacyModuleModal"
+                    "pharmacyModal"
                 );
 
-            if (existing) {
+            if (modal) {
 
-                existing.remove();
+                modal.remove();
 
             }
 
+        }
+
+
+
+        function createModal(
+            title,
+            content
+        ) {
+
+            closeModal();
 
             const modal =
                 document.createElement("div");
 
             modal.id =
-                "pharmacyModuleModal";
+                "pharmacyModal";
 
             modal.className =
-                "fixed inset-0 z-50 bg-black/50 " +
+                "fixed inset-0 z-50 modal-backdrop " +
                 "flex items-center justify-center p-4";
 
 
@@ -650,53 +700,60 @@
                         bg-white
                         rounded-2xl
                         shadow-2xl
-                        max-w-lg
                         w-full
-                        p-6
+                        max-w-6xl
+                        max-h-[90vh]
+                        overflow-hidden
+                        flex
+                        flex-col
                     "
                 >
 
-                    <div class="text-4xl">
-                        ${icon}
+                    <div
+                        class="
+                            flex
+                            items-center
+                            justify-between
+                            gap-4
+                            p-5
+                            border-b
+                            border-slate-200
+                        "
+                    >
+
+                        <h2
+                            class="
+                                text-2xl
+                                font-black
+                            "
+                        >
+                            ${escapeHTML(title)}
+                        </h2>
+
+                        <button
+                            id="pharmacyModalClose"
+                            type="button"
+                            class="
+                                text-slate-500
+                                hover:text-slate-900
+                                text-2xl
+                                font-bold
+                                px-2
+                            "
+                        >
+                            ×
+                        </button>
+
                     </div>
 
-                    <h2
+                    <div
                         class="
-                            text-2xl
-                            font-black
-                            mt-3
+                            p-5
+                            overflow-y-auto
                         "
                     >
-                        ${escapeHTML(title)}
-                    </h2>
-
-                    <p
-                        class="
-                            text-slate-600
-                            mt-3
-                            leading-7
-                        "
-                    >
-                        ${escapeHTML(message)}
-                    </p>
-
-                    <button
-                        id="closePharmacyModal"
-                        type="button"
-                        class="
-                            mt-6
-                            w-full
-                            bg-blue-900
-                            hover:bg-blue-800
-                            text-white
-                            px-5
-                            py-3
-                            rounded-xl
-                            font-black
-                        "
-                    >
-                        Close
-                    </button>
+                        ${content}
+                    </div>
 
                 </div>
 
@@ -708,15 +765,11 @@
 
             document
                 .getElementById(
-                    "closePharmacyModal"
+                    "pharmacyModalClose"
                 )
                 .addEventListener(
                     "click",
-                    function() {
-
-                        modal.remove();
-
-                    }
+                    closeModal
                 );
 
 
@@ -729,7 +782,7 @@
                         modal
                     ) {
 
-                        modal.remove();
+                        closeModal();
 
                     }
 
@@ -741,27 +794,2065 @@
 
 
         // ====================================================
-        // PHARMACY MODULES
+        // MEDICATION RECORDS
         // ====================================================
 
-        function openMedicationRecords() {
+        async function openMedicationRecords() {
 
-            showModuleMessage(
-                "💊",
-                "Medication Records",
-                "The Medication Records module is connected to the Pharmacy dashboard and is ready to be connected to the authorized hospital medication database."
+            createModal(
+                "💊 Medication Records",
+                `
+                    <div
+                        id="medicationRecordsContent"
+                        class="text-center py-8"
+                    >
+
+                        <div class="text-3xl">
+                            ⏳
+                        </div>
+
+                        <p class="font-bold mt-3">
+                            Loading medication records...
+                        </p>
+
+                    </div>
+                `
             );
+
+
+            await loadMedicationRecords();
 
         }
 
 
 
+        async function loadMedicationRecords() {
+
+            const container =
+                document.getElementById(
+                    "medicationRecordsContent"
+                );
+
+
+            if (!container) {
+
+                return;
+
+            }
+
+
+            try {
+
+                if (
+                    !window.CHA_SUPABASE
+                ) {
+
+                    throw new Error(
+                        "Supabase is not configured."
+                    );
+
+                }
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("medications")
+                        .select(`
+                            id,
+                            name,
+                            generic_name,
+                            strength,
+                            dosage_form,
+                            quantity,
+                            unit,
+                            expiry_date,
+                            batch_number,
+                            created_at
+                        `)
+                        .order(
+                            "name",
+                            {
+                                ascending: true
+                            }
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                const medications =
+                    data || [];
+
+
+                container.innerHTML = `
+
+                    <div class="space-y-5">
+
+                        <div
+                            class="
+                                flex
+                                flex-col
+                                sm:flex-row
+                                gap-3
+                                justify-between
+                            "
+                        >
+
+                            <input
+                                id="medicationSearch"
+                                type="search"
+                                placeholder="Search medications..."
+                                class="
+                                    w-full
+                                    sm:max-w-md
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                    outline-none
+                                    focus:ring-2
+                                    focus:ring-blue-500
+                                "
+                            >
+
+                            <button
+                                id="addMedicationButton"
+                                type="button"
+                                class="
+                                    bg-blue-900
+                                    hover:bg-blue-800
+                                    text-white
+                                    px-5
+                                    py-3
+                                    rounded-xl
+                                    font-black
+                                "
+                            >
+                                + Add Medication
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            id="medicationTableArea"
+                        ></div>
+
+                    </div>
+
+                `;
+
+
+                renderMedicationTable(
+                    medications
+                );
+
+
+                const searchInput =
+                    document.getElementById(
+                        "medicationSearch"
+                    );
+
+
+                searchInput.addEventListener(
+                    "input",
+                    function() {
+
+                        const search =
+                            this.value
+                                .trim()
+                                .toLowerCase();
+
+
+                        const filtered =
+                            medications.filter(
+                                function(item) {
+
+                                    return [
+                                        item.name,
+                                        item.generic_name,
+                                        item.strength,
+                                        item.dosage_form,
+                                        item.batch_number
+                                    ]
+                                    .some(
+                                        function(value) {
+
+                                            return String(
+                                                value ?? ""
+                                            )
+                                            .toLowerCase()
+                                            .includes(
+                                                search
+                                            );
+
+                                        }
+                                    );
+
+                                }
+                            );
+
+
+                        renderMedicationTable(
+                            filtered
+                        );
+
+                    }
+                );
+
+
+                document
+                    .getElementById(
+                        "addMedicationButton"
+                    )
+                    .addEventListener(
+                        "click",
+                        showAddMedicationForm
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Medication Records Error:",
+                    error
+                );
+
+
+                container.innerHTML = `
+
+                    <div
+                        class="
+                            bg-red-50
+                            border
+                            border-red-200
+                            rounded-xl
+                            p-5
+                        "
+                    >
+
+                        <div class="text-3xl">
+                            ⚠️
+                        </div>
+
+                        <p
+                            class="
+                                font-black
+                                text-red-700
+                                mt-2
+                            "
+                        >
+                            Unable to load medications
+                        </p>
+
+                        <p
+                            class="
+                                text-sm
+                                text-red-600
+                                mt-2
+                            "
+                        >
+                            ${escapeHTML(
+                                error.message ||
+                                "Please try again."
+                            )}
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // MEDICATION TABLE
+        // ====================================================
+
+        function renderMedicationTable(
+            medications
+        ) {
+
+            const area =
+                document.getElementById(
+                    "medicationTableArea"
+                );
+
+
+            if (!area) {
+
+                return;
+
+            }
+
+
+            if (!medications.length) {
+
+                area.innerHTML = `
+
+                    <div
+                        class="
+                            bg-slate-50
+                            border
+                            border-slate-200
+                            rounded-xl
+                            p-8
+                            text-center
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            💊
+                        </div>
+
+                        <p class="font-black mt-3">
+                            No medication records found
+                        </p>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Add your first medication record.
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            area.innerHTML = `
+
+                <div
+                    class="
+                        overflow-x-auto
+                        border
+                        border-slate-200
+                        rounded-xl
+                    "
+                >
+
+                    <table
+                        class="
+                            min-w-full
+                            text-sm
+                        "
+                    >
+
+                        <thead
+                            class="
+                                bg-slate-100
+                                border-b
+                                border-slate-200
+                            "
+                        >
+
+                            <tr>
+
+                                <th
+                                    class="
+                                        text-left
+                                        px-4
+                                        py-3
+                                        font-black
+                                    "
+                                >
+                                    Medication
+                                </th>
+
+                                <th
+                                    class="
+                                        text-left
+                                        px-4
+                                        py-3
+                                        font-black
+                                    "
+                                >
+                                    Strength
+                                </th>
+
+                                <th
+                                    class="
+                                        text-left
+                                        px-4
+                                        py-3
+                                        font-black
+                                    "
+                                >
+                                    Form
+                                </th>
+
+                                <th
+                                    class="
+                                        text-left
+                                        px-4
+                                        py-3
+                                        font-black
+                                    "
+                                >
+                                    Quantity
+                                </th>
+
+                                <th
+                                    class="
+                                        text-left
+                                        px-4
+                                        py-3
+                                        font-black
+                                    "
+                                >
+                                    Expiry
+                                </th>
+
+                                <th
+                                    class="
+                                        text-left
+                                        px-4
+                                        py-3
+                                        font-black
+                                    "
+                                >
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            ${medications
+                                .map(
+                                    function(item) {
+
+                                        return `
+
+                                            <tr
+                                                class="
+                                                    border-b
+                                                    border-slate-100
+                                                    hover:bg-slate-50
+                                                "
+                                            >
+
+                                                <td
+                                                    class="
+                                                        px-4
+                                                        py-4
+                                                    "
+                                                >
+
+                                                    <div
+                                                        class="
+                                                            font-black
+                                                        "
+                                                    >
+                                                        ${escapeHTML(
+                                                            item.name
+                                                        )}
+                                                    </div>
+
+                                                    ${
+                                                        item.generic_name
+                                                        ?
+                                                        `
+                                                            <div
+                                                                class="
+                                                                    text-xs
+                                                                    text-slate-500
+                                                                    mt-1
+                                                                "
+                                                            >
+                                                                ${escapeHTML(
+                                                                    item.generic_name
+                                                                )}
+                                                            </div>
+                                                        `
+                                                        :
+                                                        ""
+                                                    }
+
+                                                </td>
+
+
+                                                <td
+                                                    class="
+                                                        px-4
+                                                        py-4
+                                                    "
+                                                >
+                                                    ${escapeHTML(
+                                                        item.strength ||
+                                                        "—"
+                                                    )}
+                                                </td>
+
+
+                                                <td
+                                                    class="
+                                                        px-4
+                                                        py-4
+                                                    "
+                                                >
+                                                    ${escapeHTML(
+                                                        item.dosage_form ||
+                                                        "—"
+                                                    )}
+                                                </td>
+
+
+                                                <td
+                                                    class="
+                                                        px-4
+                                                        py-4
+                                                        font-bold
+                                                    "
+                                                >
+                                                    ${escapeHTML(
+                                                        item.quantity
+                                                    )}
+                                                    ${escapeHTML(
+                                                        item.unit ||
+                                                        "unit"
+                                                    )}
+                                                </td>
+
+
+                                                <td
+                                                    class="
+                                                        px-4
+                                                        py-4
+                                                    "
+                                                >
+                                                    ${escapeHTML(
+                                                        item.expiry_date ||
+                                                        "—"
+                                                    )}
+                                                </td>
+
+
+                                                <td
+                                                    class="
+                                                        px-4
+                                                        py-4
+                                                    "
+                                                >
+
+                                                    <button
+                                                        type="button"
+                                                        class="
+                                                            edit-medication-button
+                                                            bg-blue-100
+                                                            text-blue-800
+                                                            hover:bg-blue-200
+                                                            px-3
+                                                            py-2
+                                                            rounded-lg
+                                                            font-bold
+                                                        "
+                                                        data-id="${escapeHTML(
+                                                            item.id
+                                                        )}"
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                </td>
+
+                                            </tr>
+
+                                        `;
+
+                                    }
+                                )
+                                .join("")}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            `;
+
+
+            area
+                .querySelectorAll(
+                    ".edit-medication-button"
+                )
+                .forEach(
+                    function(button) {
+
+                        button.addEventListener(
+                            "click",
+                            function() {
+
+                                openEditMedicationForm(
+                                    this.dataset.id
+                                );
+
+                            }
+                        );
+
+                    }
+                );
+
+        }
+
+
+
+        // ====================================================
+        // ADD MEDICATION FORM
+        // ====================================================
+
+        function showAddMedicationForm() {
+
+            const content =
+                document.getElementById(
+                    "medicationRecordsContent"
+                );
+
+
+            if (!content) {
+
+                return;
+
+            }
+
+
+            content.innerHTML = `
+
+                <form
+                    id="addMedicationForm"
+                    class="space-y-5"
+                >
+
+                    <div
+                        class="
+                            grid
+                            md:grid-cols-2
+                            gap-4
+                        "
+                    >
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Medication Name *
+                            </label>
+
+                            <input
+                                name="name"
+                                required
+                                type="text"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="e.g. Paracetamol"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Generic Name
+                            </label>
+
+                            <input
+                                name="generic_name"
+                                type="text"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="Generic name"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Strength
+                            </label>
+
+                            <input
+                                name="strength"
+                                type="text"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="e.g. 500 mg"
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Dosage Form
+                            </label>
+
+                            <input
+                                name="dosage_form"
+                                type="text"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="Tablet, capsule, syrup..."
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Quantity *
+                            </label>
+
+                            <input
+                                name="quantity"
+                                required
+                                min="0"
+                                type="number"
+                                value="0"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Unit
+                            </label>
+
+                            <input
+                                name="unit"
+                                type="text"
+                                value="unit"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                                placeholder="unit, box, bottle..."
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Expiry Date
+                            </label>
+
+                            <input
+                                name="expiry_date"
+                                type="date"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                class="
+                                    block
+                                    font-bold
+                                    text-sm
+                                    mb-2
+                                "
+                            >
+                                Batch Number
+                            </label>
+
+                            <input
+                                name="batch_number"
+                                type="text"
+                                class="
+                                    w-full
+                                    border
+                                    border-slate-300
+                                    rounded-xl
+                                    px-4
+                                    py-3
+                                "
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="medicationFormMessage"
+                    ></div>
+
+
+                    <div
+                        class="
+                            flex
+                            flex-col
+                            sm:flex-row
+                            gap-3
+                        "
+                    >
+
+                        <button
+                            type="submit"
+                            class="
+                                bg-blue-900
+                                hover:bg-blue-800
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-black
+                            "
+                        >
+                            Save Medication
+                        </button>
+
+
+                        <button
+                            id="cancelMedicationForm"
+                            type="button"
+                            class="
+                                bg-slate-200
+                                hover:bg-slate-300
+                                text-slate-800
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-black
+                            "
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
+
+                </form>
+
+            `;
+
+
+            document
+                .getElementById(
+                    "cancelMedicationForm"
+                )
+                .addEventListener(
+                    "click",
+                    loadMedicationRecords
+                );
+
+
+            document
+                .getElementById(
+                    "addMedicationForm"
+                )
+                .addEventListener(
+                    "submit",
+                    saveNewMedication
+                );
+
+        }
+
+
+
+        // ====================================================
+        // SAVE NEW MEDICATION
+        // ====================================================
+
+        async function saveNewMedication(
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            const form =
+                event.target;
+
+            const formData =
+                new FormData(form);
+
+
+            const message =
+                document.getElementById(
+                    "medicationFormMessage"
+                );
+
+
+            try {
+
+                const quantity =
+                    Number(
+                        formData.get(
+                            "quantity"
+                        )
+                    );
+
+
+                if (
+                    !Number.isInteger(
+                        quantity
+                    ) ||
+                    quantity < 0
+                ) {
+
+                    throw new Error(
+                        "Quantity must be a whole number of 0 or more."
+                    );
+
+                }
+
+
+                const payload = {
+
+                    name:
+                        String(
+                            formData.get(
+                                "name"
+                            ) || ""
+                        ).trim(),
+
+                    generic_name:
+                        String(
+                            formData.get(
+                                "generic_name"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    strength:
+                        String(
+                            formData.get(
+                                "strength"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    dosage_form:
+                        String(
+                            formData.get(
+                                "dosage_form"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    quantity:
+                        quantity,
+
+                    unit:
+                        String(
+                            formData.get(
+                                "unit"
+                            ) || "unit"
+                        ).trim() ||
+                        "unit",
+
+                    expiry_date:
+                        formData.get(
+                            "expiry_date"
+                        ) ||
+                        null,
+
+                    batch_number:
+                        String(
+                            formData.get(
+                                "batch_number"
+                            ) || ""
+                        ).trim() ||
+                        null
+
+                };
+
+
+                if (!payload.name) {
+
+                    throw new Error(
+                        "Medication name is required."
+                    );
+
+                }
+
+
+                const {
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("medications")
+                        .insert(
+                            payload
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                message.innerHTML = `
+
+                    <div
+                        class="
+                            bg-green-50
+                            border
+                            border-green-200
+                            text-green-700
+                            rounded-xl
+                            p-4
+                        "
+                    >
+                        Medication saved successfully.
+                    </div>
+
+                `;
+
+
+                setTimeout(
+                    loadMedicationRecords,
+                    700
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Save Medication Error:",
+                    error
+                );
+
+
+                message.innerHTML = `
+
+                    <div
+                        class="
+                            bg-red-50
+                            border
+                            border-red-200
+                            text-red-700
+                            rounded-xl
+                            p-4
+                        "
+                    >
+                        ${escapeHTML(
+                            error.message ||
+                            "Unable to save medication."
+                        )}
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // EDIT MEDICATION
+        // ====================================================
+
+        async function openEditMedicationForm(
+            id
+        ) {
+
+            const content =
+                document.getElementById(
+                    "medicationRecordsContent"
+                );
+
+
+            if (!content) {
+
+                return;
+
+            }
+
+
+            content.innerHTML = `
+
+                <div class="text-center py-8">
+
+                    <div class="text-3xl">
+                        ⏳
+                    </div>
+
+                    <p class="font-bold mt-3">
+                        Loading medication...
+                    </p>
+
+                </div>
+
+            `;
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("medications")
+                        .select(`
+                            id,
+                            name,
+                            generic_name,
+                            strength,
+                            dosage_form,
+                            quantity,
+                            unit,
+                            expiry_date,
+                            batch_number
+                        `)
+                        .eq(
+                            "id",
+                            id
+                        )
+                        .single();
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                if (!data) {
+
+                    throw new Error(
+                        "Medication record was not found."
+                    );
+
+                }
+
+
+                content.innerHTML = `
+
+                    <form
+                        id="editMedicationForm"
+                        class="space-y-5"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="id"
+                            value="${escapeHTML(
+                                data.id
+                            )}"
+                        >
+
+                        <div
+                            class="
+                                grid
+                                md:grid-cols-2
+                                gap-4
+                            "
+                        >
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Medication Name *
+                                </label>
+
+                                <input
+                                    name="name"
+                                    required
+                                    value="${escapeHTML(
+                                        data.name
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Generic Name
+                                </label>
+
+                                <input
+                                    name="generic_name"
+                                    value="${escapeHTML(
+                                        data.generic_name || ""
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Strength
+                                </label>
+
+                                <input
+                                    name="strength"
+                                    value="${escapeHTML(
+                                        data.strength || ""
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Dosage Form
+                                </label>
+
+                                <input
+                                    name="dosage_form"
+                                    value="${escapeHTML(
+                                        data.dosage_form || ""
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Quantity *
+                                </label>
+
+                                <input
+                                    name="quantity"
+                                    required
+                                    min="0"
+                                    type="number"
+                                    value="${escapeHTML(
+                                        data.quantity
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Unit
+                                </label>
+
+                                <input
+                                    name="unit"
+                                    value="${escapeHTML(
+                                        data.unit || "unit"
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Expiry Date
+                                </label>
+
+                                <input
+                                    name="expiry_date"
+                                    type="date"
+                                    value="${escapeHTML(
+                                        data.expiry_date || ""
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    class="
+                                        block
+                                        font-bold
+                                        text-sm
+                                        mb-2
+                                    "
+                                >
+                                    Batch Number
+                                </label>
+
+                                <input
+                                    name="batch_number"
+                                    value="${escapeHTML(
+                                        data.batch_number || ""
+                                    )}"
+                                    class="
+                                        w-full
+                                        border
+                                        border-slate-300
+                                        rounded-xl
+                                        px-4
+                                        py-3
+                                    "
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="editMedicationMessage"
+                        ></div>
+
+
+                        <div
+                            class="
+                                flex
+                                flex-col
+                                sm:flex-row
+                                gap-3
+                            "
+                        >
+
+                            <button
+                                type="submit"
+                                class="
+                                    bg-blue-900
+                                    hover:bg-blue-800
+                                    text-white
+                                    px-5
+                                    py-3
+                                    rounded-xl
+                                    font-black
+                                "
+                            >
+                                Save Changes
+                            </button>
+
+
+                            <button
+                                id="deleteMedicationButton"
+                                type="button"
+                                class="
+                                    bg-red-600
+                                    hover:bg-red-700
+                                    text-white
+                                    px-5
+                                    py-3
+                                    rounded-xl
+                                    font-black
+                                "
+                            >
+                                Delete
+                            </button>
+
+
+                            <button
+                                id="cancelEditMedication"
+                                type="button"
+                                class="
+                                    bg-slate-200
+                                    hover:bg-slate-300
+                                    text-slate-800
+                                    px-5
+                                    py-3
+                                    rounded-xl
+                                    font-black
+                                "
+                            >
+                                Cancel
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                `;
+
+
+                document
+                    .getElementById(
+                        "editMedicationForm"
+                    )
+                    .addEventListener(
+                        "submit",
+                        updateMedication
+                    );
+
+
+                document
+                    .getElementById(
+                        "deleteMedicationButton"
+                    )
+                    .addEventListener(
+                        "click",
+                        function() {
+
+                            deleteMedication(
+                                data.id
+                            );
+
+                        }
+                    );
+
+
+                document
+                    .getElementById(
+                        "cancelEditMedication"
+                    )
+                    .addEventListener(
+                        "click",
+                        loadMedicationRecords
+                    );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Edit Medication Error:",
+                    error
+                );
+
+
+                content.innerHTML = `
+
+                    <div
+                        class="
+                            bg-red-50
+                            border
+                            border-red-200
+                            rounded-xl
+                            p-5
+                        "
+                    >
+
+                        <p
+                            class="
+                                font-black
+                                text-red-700
+                            "
+                        >
+                            Unable to load medication
+                        </p>
+
+                        <p
+                            class="
+                                text-sm
+                                text-red-600
+                                mt-2
+                            "
+                        >
+                            ${escapeHTML(
+                                error.message ||
+                                "Please try again."
+                            )}
+                        </p>
+
+                        <button
+                            id="backToMedicationList"
+                            type="button"
+                            class="
+                                mt-4
+                                bg-blue-900
+                                text-white
+                                px-5
+                                py-3
+                                rounded-xl
+                                font-bold
+                            "
+                        >
+                            Back
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                document
+                    .getElementById(
+                        "backToMedicationList"
+                    )
+                    .addEventListener(
+                        "click",
+                        loadMedicationRecords
+                    );
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // UPDATE MEDICATION
+        // ====================================================
+
+        async function updateMedication(
+            event
+        ) {
+
+            event.preventDefault();
+
+
+            const form =
+                event.target;
+
+            const formData =
+                new FormData(form);
+
+            const message =
+                document.getElementById(
+                    "editMedicationMessage"
+                );
+
+
+            try {
+
+                const quantity =
+                    Number(
+                        formData.get(
+                            "quantity"
+                        )
+                    );
+
+
+                if (
+                    !Number.isInteger(
+                        quantity
+                    ) ||
+                    quantity < 0
+                ) {
+
+                    throw new Error(
+                        "Quantity must be a whole number of 0 or more."
+                    );
+
+                }
+
+
+                const id =
+                    String(
+                        formData.get(
+                            "id"
+                        ) || ""
+                    );
+
+
+                const payload = {
+
+                    name:
+                        String(
+                            formData.get(
+                                "name"
+                            ) || ""
+                        ).trim(),
+
+                    generic_name:
+                        String(
+                            formData.get(
+                                "generic_name"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    strength:
+                        String(
+                            formData.get(
+                                "strength"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    dosage_form:
+                        String(
+                            formData.get(
+                                "dosage_form"
+                            ) || ""
+                        ).trim() ||
+                        null,
+
+                    quantity:
+                        quantity,
+
+                    unit:
+                        String(
+                            formData.get(
+                                "unit"
+                            ) || "unit"
+                        ).trim() ||
+                        "unit",
+
+                    expiry_date:
+                        formData.get(
+                            "expiry_date"
+                        ) ||
+                        null,
+
+                    batch_number:
+                        String(
+                            formData.get(
+                                "batch_number"
+                            ) || ""
+                        ).trim() ||
+                        null
+
+                };
+
+
+                if (!id) {
+
+                    throw new Error(
+                        "Medication ID is missing."
+                    );
+
+                }
+
+
+                if (!payload.name) {
+
+                    throw new Error(
+                        "Medication name is required."
+                    );
+
+                }
+
+
+                const {
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("medications")
+                        .update(
+                            payload
+                        )
+                        .eq(
+                            "id",
+                            id
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                message.innerHTML = `
+
+                    <div
+                        class="
+                            bg-green-50
+                            border
+                            border-green-200
+                            text-green-700
+                            rounded-xl
+                            p-4
+                        "
+                    >
+                        Medication updated successfully.
+                    </div>
+
+                `;
+
+
+                setTimeout(
+                    loadMedicationRecords,
+                    700
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Update Medication Error:",
+                    error
+                );
+
+
+                message.innerHTML = `
+
+                    <div
+                        class="
+                            bg-red-50
+                            border
+                            border-red-200
+                            text-red-700
+                            rounded-xl
+                            p-4
+                        "
+                    >
+                        ${escapeHTML(
+                            error.message ||
+                            "Unable to update medication."
+                        )}
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // DELETE MEDICATION
+        // ====================================================
+
+        async function deleteMedication(
+            id
+        ) {
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to delete this medication record?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await window.CHA_SUPABASE
+                        .from("medications")
+                        .delete()
+                        .eq(
+                            "id",
+                            id
+                        );
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+                await loadMedicationRecords();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Delete Medication Error:",
+                    error
+                );
+
+
+                const content =
+                    document.getElementById(
+                        "medicationRecordsContent"
+                    );
+
+
+                if (content) {
+
+                    const message =
+                        document.createElement(
+                            "div"
+                        );
+
+                    message.className =
+                        "bg-red-50 border border-red-200 " +
+                        "text-red-700 rounded-xl p-4 mb-4";
+
+
+                    message.textContent =
+                        error.message ||
+                        "Unable to delete medication.";
+
+
+                    content.prepend(
+                        message
+                    );
+
+                }
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // OTHER PHARMACY MODULES
+        // ====================================================
+
         function openPrescriptions() {
 
-            showModuleMessage(
-                "📋",
-                "Prescriptions",
-                "The Prescriptions module is ready to display authorized prescriptions from the hospital system."
+            createModal(
+                "📋 Prescriptions",
+                `
+                    <div class="text-center py-8">
+
+                        <div class="text-4xl">
+                            📋
+                        </div>
+
+                        <h3
+                            class="
+                                text-xl
+                                font-black
+                                mt-3
+                            "
+                        >
+                            Prescriptions
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            The prescriptions database has not
+                            been created yet. We will connect
+                            this module after the medication
+                            records system is complete.
+                        </p>
+
+                    </div>
+                `
             );
 
         }
@@ -770,10 +2861,38 @@
 
         function openDispensing() {
 
-            showModuleMessage(
-                "🧾",
-                "Medication Dispensing",
-                "The Medication Dispensing module is ready to be connected to authorized pharmacy dispensing records."
+            createModal(
+                "🧾 Medication Dispensing",
+                `
+                    <div class="text-center py-8">
+
+                        <div class="text-4xl">
+                            🧾
+                        </div>
+
+                        <h3
+                            class="
+                                text-xl
+                                font-black
+                                mt-3
+                            "
+                        >
+                            Medication Dispensing
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            The dispensing database will be
+                            connected after the prescription
+                            and medication structures are ready.
+                        </p>
+
+                    </div>
+                `
             );
 
         }
@@ -782,11 +2901,7 @@
 
         function openInventory() {
 
-            showModuleMessage(
-                "📦",
-                "Pharmacy Inventory",
-                "The Pharmacy Inventory module is ready to be connected to authorized medication stock records."
-            );
+            openMedicationRecords();
 
         }
 
@@ -794,10 +2909,39 @@
 
         function openPatientMedication() {
 
-            showModuleMessage(
-                "🧑‍⚕️",
-                "Patient Medication",
-                "The Patient Medication module is ready to be connected to authorized patient medication records."
+            createModal(
+                "🧑‍⚕️ Patient Medication",
+                `
+                    <div class="text-center py-8">
+
+                        <div class="text-4xl">
+                            🧑‍⚕️
+                        </div>
+
+                        <h3
+                            class="
+                                text-xl
+                                font-black
+                                mt-3
+                            "
+                        >
+                            Patient Medication
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            This module will be connected to
+                            the existing patient records system
+                            after the pharmacy prescription
+                            structure is created.
+                        </p>
+
+                    </div>
+                `
             );
 
         }
@@ -806,10 +2950,38 @@
 
         function openPharmacyNotes() {
 
-            showModuleMessage(
-                "📝",
-                "Pharmacy Notes",
-                "The Pharmacy Notes module is ready to be connected to authorized pharmacy documentation."
+            createModal(
+                "📝 Pharmacy Notes",
+                `
+                    <div class="text-center py-8">
+
+                        <div class="text-4xl">
+                            📝
+                        </div>
+
+                        <h3
+                            class="
+                                text-xl
+                                font-black
+                                mt-3
+                            "
+                        >
+                            Pharmacy Notes
+                        </h3>
+
+                        <p
+                            class="
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Pharmacy notes will be connected
+                            after the pharmacy documentation
+                            structure is created.
+                        </p>
+
+                    </div>
+                `
             );
 
         }
@@ -826,7 +2998,19 @@
         );
 
 
+        quickMedicationButton.addEventListener(
+            "click",
+            openMedicationRecords
+        );
+
+
         prescriptionsButton.addEventListener(
+            "click",
+            openPrescriptions
+        );
+
+
+        quickPrescriptionsButton.addEventListener(
             "click",
             openPrescriptions
         );
@@ -844,6 +3028,12 @@
         );
 
 
+        quickInventoryButton.addEventListener(
+            "click",
+            openInventory
+        );
+
+
         patientMedicationButton.addEventListener(
             "click",
             openPatientMedication
@@ -856,36 +3046,14 @@
         );
 
 
-        quickPrescriptionsButton.addEventListener(
-            "click",
-            openPrescriptions
-        );
-
-
-        quickInventoryButton.addEventListener(
-            "click",
-            openInventory
-        );
-
-
-        quickPatientMedicationButton.addEventListener(
-            "click",
-            openPatientMedication
-        );
-
-
 
         // ====================================================
-        // LOAD PHARMACY PAGE
+        // LOAD PHARMACY PROFILE
         // ====================================================
 
         async function loadPharmacyPage() {
 
             try {
-
-                // --------------------------------------------
-                // CHECK SUPABASE
-                // --------------------------------------------
 
                 if (
                     !window.CHA_SUPABASE
@@ -898,11 +3066,6 @@
                 }
 
 
-
-                // --------------------------------------------
-                // AUTHENTICATION
-                // --------------------------------------------
-
                 const {
                     data: authData,
                     error: authError
@@ -910,7 +3073,6 @@
                     await window.CHA_SUPABASE
                         .auth
                         .getUser();
-
 
 
                 if (
@@ -927,15 +3089,9 @@
                 }
 
 
-
                 const user =
                     authData.user;
 
-
-
-                // --------------------------------------------
-                // STAFF PROFILE
-                // --------------------------------------------
 
                 const {
                     data: profile,
@@ -960,18 +3116,12 @@
                         .single();
 
 
-
                 if (profileError) {
 
                     throw profileError;
 
                 }
 
-
-
-                // --------------------------------------------
-                // ACTIVE STAFF CHECK
-                // --------------------------------------------
 
                 if (
                     !profile ||
@@ -989,11 +3139,6 @@
 
                 }
 
-
-
-                // --------------------------------------------
-                // DISPLAY STAFF
-                // --------------------------------------------
 
                 staffName.textContent =
                     profile.full_name ||
@@ -1015,11 +3160,6 @@
                         "Not assigned"
                     );
 
-
-
-                // --------------------------------------------
-                // SHOW PAGE
-                // --------------------------------------------
 
                 loading.classList.add(
                     "hidden"
