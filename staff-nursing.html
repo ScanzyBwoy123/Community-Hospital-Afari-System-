@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CHA Nursing Department</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .nursing-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.04);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .nursing-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 12px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .action-button {
+            transition:
+                transform 0.15s ease,
+                box-shadow 0.15s ease;
+        }
+
+        .action-button:active {
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="bg-blue-900 text-white shadow-lg">
+
+        <div class="max-w-7xl mx-auto px-4">
+
+            <div
+                class="
+                    min-h-20
+                    flex
+                    items-center
+                    justify-between
+                    gap-4
+                "
+            >
+
+                <!-- BRAND -->
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="
+                            w-12
+                            h-12
+                            rounded-full
+                            bg-white
+                            text-blue-900
+                            flex
+                            items-center
+                            justify-center
+                            font-black
+                        "
+                    >
+                        CHA
+                    </div>
+
+                    <div>
+
+                        <div class="font-black">
+                            COMMUNITY HOSPITAL AFARI
+                        </div>
+
+                        <div class="text-blue-200 text-sm">
+                            Nursing Department
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- HEADER ACTIONS -->
+
+                <div class="flex items-center gap-2">
+
+                    <button
+                        id="backButton"
+                        type="button"
+                        class="
+                            hidden
+                            sm:block
+                            bg-blue-800
+                            hover:bg-blue-700
+                            px-4
+                            py-2
+                            rounded-lg
+                            font-bold
+                        "
+                    >
+                        Dashboard
+                    </button>
+
+                    <button
+                        id="logoutButton"
+                        type="button"
+                        class="
+                            bg-red-600
+                            hover:bg-red-700
+                            px-4
+                            py-2
+                            rounded-lg
+                            font-bold
+                        "
+                    >
+                        Logout
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        <div
+            id="loading"
+            class="
+                bg-white
+                rounded-2xl
+                shadow
+                p-8
+                text-center
+            "
+        >
+
+            <div class="text-4xl">
+                🔐
+            </div>
+
+            <p class="font-bold mt-3">
+                Checking nursing staff authentication...
+            </p>
+
+            <p class="text-sm text-slate-500 mt-2">
+                Please wait.
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PAGE
+        ================================================== -->
+
+        <div
+            id="nursingPage"
+            class="hidden"
+        >
+
+            <!-- =================================================
+                 PAGE TITLE
+            ================================================== -->
+
+            <section
+                class="
+                    bg-white
+                    rounded-2xl
+                    shadow
+                    p-6
+                    mb-8
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        flex-col
+                        md:flex-row
+                        md:items-center
+                        md:justify-between
+                        gap-5
+                    "
+                >
+
+                    <div>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                            "
+                        >
+                            Nursing Department
+                        </p>
+
+                        <h1
+                            class="
+                                text-3xl
+                                font-black
+                                mt-1
+                            "
+                        >
+                            Nursing Dashboard
+                        </h1>
+
+                        <p
+                            class="
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Manage nursing activities,
+                            patient care and authorized
+                            clinical information.
+                        </p>
+
+                    </div>
+
+
+                    <div
+                        class="
+                            bg-blue-50
+                            border
+                            border-blue-100
+                            rounded-xl
+                            p-4
+                            min-w-0
+                            md:min-w-64
+                        "
+                    >
+
+                        <p
+                            class="
+                                text-xs
+                                text-slate-500
+                                uppercase
+                                font-bold
+                            "
+                        >
+                            Logged-in Staff
+                        </p>
+
+                        <p
+                            id="staffName"
+                            class="
+                                font-black
+                                text-lg
+                                text-blue-900
+                                mt-1
+                            "
+                        >
+                            Staff Member
+                        </p>
+
+                        <p
+                            id="staffRole"
+                            class="
+                                text-sm
+                                text-slate-600
+                                mt-1
+                            "
+                        >
+                        </p>
+
+                        <p
+                            id="staffDepartment"
+                            class="
+                                text-sm
+                                text-slate-600
+                                mt-1
+                            "
+                        >
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 QUICK STATISTICS
+            ================================================== -->
+
+            <section
+                class="
+                    grid
+                    grid-cols-2
+                    lg:grid-cols-4
+                    gap-4
+                    mb-8
+                "
+            >
+
+                <!-- PATIENTS -->
+
+                <div class="stat-card">
+
+                    <div class="text-3xl">
+                        🧑‍⚕️
+                    </div>
+
+                    <p
+                        class="
+                            text-sm
+                            text-slate-500
+                            mt-3
+                        "
+                    >
+                        Patients
+                    </p>
+
+                    <p
+                        id="patientCount"
+                        class="
+                            text-2xl
+                            font-black
+                            mt-1
+                        "
+                    >
+                        —
+                    </p>
+
+                </div>
+
+
+                <!-- VITALS -->
+
+                <div class="stat-card">
+
+                    <div class="text-3xl">
+                        ❤️
+                    </div>
+
+                    <p
+                        class="
+                            text-sm
+                            text-slate-500
+                            mt-3
+                        "
+                    >
+                        Vital Signs
+                    </p>
+
+                    <p
+                        id="vitalsCount"
+                        class="
+                            text-2xl
+                            font-black
+                            mt-1
+                        "
+                    >
+                        —
+                    </p>
+
+                </div>
+
+
+                <!-- CARE -->
+
+                <div class="stat-card">
+
+                    <div class="text-3xl">
+                        🩹
+                    </div>
+
+                    <p
+                        class="
+                            text-sm
+                            text-slate-500
+                            mt-3
+                        "
+                    >
+                        Care Activities
+                    </p>
+
+                    <p
+                        id="careCount"
+                        class="
+                            text-2xl
+                            font-black
+                            mt-1
+                        "
+                    >
+                        —
+                    </p>
+
+                </div>
+
+
+                <!-- ALERTS -->
+
+                <div class="stat-card">
+
+                    <div class="text-3xl">
+                        🚨
+                    </div>
+
+                    <p
+                        class="
+                            text-sm
+                            text-slate-500
+                            mt-3
+                        "
+                    >
+                        Alerts
+                    </p>
+
+                    <p
+                        id="alertCount"
+                        class="
+                            text-2xl
+                            font-black
+                            mt-1
+                        "
+                    >
+                        0
+                    </p>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 NURSING TOOLS
+            ================================================== -->
+
+            <section class="mb-8">
+
+                <div class="mb-5">
+
+                    <h2
+                        class="
+                            text-2xl
+                            font-black
+                        "
+                    >
+                        Nursing Tools
+                    </h2>
+
+                    <p
+                        class="
+                            text-sm
+                            text-slate-500
+                            mt-1
+                        "
+                    >
+                        Common nursing department activities.
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="
+                        grid
+                        sm:grid-cols-2
+                        lg:grid-cols-3
+                        gap-5
+                    "
+                >
+
+                    <!-- PATIENTS -->
+
+                    <a
+                        href="staff-patients.html"
+                        class="
+                            nursing-card
+                            block
+                            no-underline
+                            text-inherit
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            🧑‍⚕️
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Patients
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Search and access authorized
+                            patient information.
+                        </p>
+
+                    </a>
+
+
+
+                    <!-- MEDICAL RECORDS -->
+
+                    <a
+                        href="staff-patient-records.html"
+                        class="
+                            nursing-card
+                            block
+                            no-underline
+                            text-inherit
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            📋
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Patient Records
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            View authorized patient records
+                            and clinical information.
+                        </p>
+
+                    </a>
+
+
+
+                    <!-- VITAL SIGNS -->
+
+                    <button
+                        id="vitalsButton"
+                        type="button"
+                        class="
+                            nursing-card
+                            text-left
+                            action-button
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            ❤️
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Vital Signs
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Record and review authorized
+                            blood pressure, pulse, temperature
+                            and respiratory rate.
+                        </p>
+
+                    </button>
+
+
+
+                    <!-- NURSING NOTES -->
+
+                    <button
+                        id="nursingNotesButton"
+                        type="button"
+                        class="
+                            nursing-card
+                            text-left
+                            action-button
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            📝
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Nursing Notes
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Document authorized nursing
+                            observations and patient care.
+                        </p>
+
+                    </button>
+
+
+
+                    <!-- CARE ACTIVITIES -->
+
+                    <button
+                        id="careButton"
+                        type="button"
+                        class="
+                            nursing-card
+                            text-left
+                            action-button
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            🩹
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Care Activities
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Manage authorized nursing
+                            care activities and tasks.
+                        </p>
+
+                    </button>
+
+
+
+                    <!-- MEDICATION -->
+
+                    <a
+                        href="staff-pharmacy.html"
+                        class="
+                            nursing-card
+                            block
+                            no-underline
+                            text-inherit
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            💊
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Medication
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Access authorized medication and
+                            prescription information.
+                        </p>
+
+                    </a>
+
+
+
+                    <!-- LABORATORY -->
+
+                    <a
+                        href="staff-laboratory.html"
+                        class="
+                            nursing-card
+                            block
+                            no-underline
+                            text-inherit
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            🧪
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Laboratory
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Access authorized laboratory
+                            results.
+                        </p>
+
+                    </a>
+
+
+
+                    <!-- APPOINTMENTS -->
+
+                    <a
+                        href="staff-appointments.html"
+                        class="
+                            nursing-card
+                            block
+                            no-underline
+                            text-inherit
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            📅
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Appointments
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Review authorized patient
+                            appointments and requests.
+                        </p>
+
+                    </a>
+
+
+
+                    <!-- DEPARTMENT MESSAGES -->
+
+                    <a
+                        href="staff-messages.html"
+                        class="
+                            nursing-card
+                            block
+                            no-underline
+                            text-inherit
+                        "
+                    >
+
+                        <div class="text-4xl">
+                            💬
+                        </div>
+
+                        <h3
+                            class="
+                                font-black
+                                text-xl
+                                mt-4
+                            "
+                        >
+                            Department Inbox
+                        </h3>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-2
+                            "
+                        >
+                            Communicate with authorized
+                            hospital departments.
+                        </p>
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 QUICK ACTIONS
+            ================================================== -->
+
+            <section
+                class="
+                    bg-white
+                    rounded-2xl
+                    shadow
+                    p-6
+                    mb-8
+                "
+            >
+
+                <h2
+                    class="
+                        text-xl
+                        font-black
+                    "
+                >
+                    Quick Actions
+                </h2>
+
+                <div
+                    class="
+                        grid
+                        sm:grid-cols-2
+                        lg:grid-cols-4
+                        gap-3
+                        mt-5
+                    "
+                >
+
+                    <button
+                        id="quickVitalsButton"
+                        type="button"
+                        class="
+                            bg-blue-900
+                            hover:bg-blue-800
+                            text-white
+                            rounded-xl
+                            px-4
+                            py-3
+                            font-bold
+                        "
+                    >
+                        ❤️ Record Vitals
+                    </button>
+
+
+                    <button
+                        id="quickNotesButton"
+                        type="button"
+                        class="
+                            bg-green-700
+                            hover:bg-green-800
+                            text-white
+                            rounded-xl
+                            px-4
+                            py-3
+                            font-bold
+                        "
+                    >
+                        📝 Nursing Note
+                    </button>
+
+
+                    <a
+                        href="clinical-tools.html"
+                        class="
+                            bg-purple-700
+                            hover:bg-purple-800
+                            text-white
+                            rounded-xl
+                            px-4
+                            py-3
+                            font-bold
+                            text-center
+                        "
+                    >
+                        🩺 Clinical Tools
+                    </a>
+
+
+                    <button
+                        id="backDashboardButton"
+                        type="button"
+                        class="
+                            bg-slate-700
+                            hover:bg-slate-800
+                            text-white
+                            rounded-xl
+                            px-4
+                            py-3
+                            font-bold
+                        "
+                    >
+                        ← Staff Dashboard
+                    </button>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 RECENT NURSING ACTIVITY
+            ================================================== -->
+
+            <section
+                class="
+                    bg-white
+                    rounded-2xl
+                    shadow
+                    p-6
+                    mb-8
+                "
+            >
+
+                <div
+                    class="
+                        flex
+                        flex-col
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                        gap-3
+                    "
+                >
+
+                    <div>
+
+                        <h2
+                            class="
+                                text-xl
+                                font-black
+                            "
+                        >
+                            Recent Nursing Activity
+                        </h2>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-1
+                            "
+                        >
+                            Nursing activity will appear here
+                            when connected to the hospital records.
+                        </p>
+
+                    </div>
+
+                    <span
+                        class="
+                            bg-blue-100
+                            text-blue-800
+                            px-3
+                            py-1
+                            rounded-full
+                            text-xs
+                            font-bold
+                        "
+                    >
+                        Nursing
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="activityList"
+                    class="mt-5"
+                >
+
+                    <div
+                        class="
+                            border
+                            border-slate-200
+                            rounded-xl
+                            p-5
+                            text-center
+                        "
+                    >
+
+                        <div class="text-3xl">
+                            🩺
+                        </div>
+
+                        <p
+                            class="
+                                font-bold
+                                mt-2
+                            "
+                        >
+                            No recent activity
+                        </p>
+
+                        <p
+                            class="
+                                text-sm
+                                text-slate-500
+                                mt-1
+                            "
+                        >
+                            Nursing activities will appear
+                            here once records are available.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 SECURITY NOTICE
+            ================================================== -->
+
+            <section
+                class="
+                    bg-blue-50
+                    border
+                    border-blue-100
+                    rounded-2xl
+                    p-6
+                "
+            >
+
+                <h2
+                    class="
+                        font-black
+                        text-lg
+                    "
+                >
+                    🔐 Nursing Security Notice
+                </h2>
+
+                <p
+                    class="
+                        text-sm
+                        text-blue-900
+                        mt-2
+                    "
+                >
+                    This nursing portal is restricted to
+                    authorized Community Hospital Afari staff.
+                    Patient information must only be accessed,
+                    documented or shared when required for
+                    legitimate hospital duties.
+                </p>
+
+            </section>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         MODAL
+    ====================================================== -->
+
+    <div
+        id="messageModal"
+        class="
+            hidden
+            fixed
+            inset-0
+            bg-black/50
+            z-50
+            items-center
+            justify-center
+            p-4
+        "
+    >
+
+        <div
+            class="
+                bg-white
+                rounded-2xl
+                shadow-2xl
+                max-w-md
+                w-full
+                p-6
+            "
+        >
+
+            <div
+                id="modalIcon"
+                class="
+                    text-4xl
+                "
+            >
+                🩺
+            </div>
+
+            <h2
+                id="modalTitle"
+                class="
+                    text-xl
+                    font-black
+                    mt-3
+                "
+            >
+                Nursing Tool
+            </h2>
+
+            <p
+                id="modalMessage"
+                class="
+                    text-sm
+                    text-slate-600
+                    mt-2
+                "
+            >
+                This nursing tool is ready to be connected
+                to the hospital database.
+            </p>
+
+            <button
+                id="closeModalButton"
+                type="button"
+                class="
+                    mt-5
+                    w-full
+                    bg-blue-900
+                    hover:bg-blue-800
+                    text-white
+                    px-5
+                    py-3
+                    rounded-xl
+                    font-bold
+                "
+            >
+                Close
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         SUPABASE CONFIGURATION
+    ====================================================== -->
+
+    <script src="js/supabase.js"></script>
+
+
+
+    <!-- =====================================================
+         NURSING PAGE LOGIC
+    ====================================================== -->
+
+    <script>
+
+        "use strict";
+
+
+        // ====================================================
+        // ELEMENTS
+        // ====================================================
+
+        const loading =
+            document.getElementById("loading");
+
+        const nursingPage =
+            document.getElementById("nursingPage");
+
+        const staffName =
+            document.getElementById("staffName");
+
+        const staffRole =
+            document.getElementById("staffRole");
+
+        const staffDepartment =
+            document.getElementById("staffDepartment");
+
+        const logoutButton =
+            document.getElementById("logoutButton");
+
+        const backButton =
+            document.getElementById("backButton");
+
+        const backDashboardButton =
+            document.getElementById(
+                "backDashboardButton"
+            );
+
+        const patientCount =
+            document.getElementById("patientCount");
+
+        const vitalsCount =
+            document.getElementById("vitalsCount");
+
+        const careCount =
+            document.getElementById("careCount");
+
+        const alertCount =
+            document.getElementById("alertCount");
+
+        const vitalsButton =
+            document.getElementById(
+                "vitalsButton"
+            );
+
+        const nursingNotesButton =
+            document.getElementById(
+                "nursingNotesButton"
+            );
+
+        const careButton =
+            document.getElementById(
+                "careButton"
+            );
+
+        const quickVitalsButton =
+            document.getElementById(
+                "quickVitalsButton"
+            );
+
+        const quickNotesButton =
+            document.getElementById(
+                "quickNotesButton"
+            );
+
+        const messageModal =
+            document.getElementById(
+                "messageModal"
+            );
+
+        const modalIcon =
+            document.getElementById(
+                "modalIcon"
+            );
+
+        const modalTitle =
+            document.getElementById(
+                "modalTitle"
+            );
+
+        const modalMessage =
+            document.getElementById(
+                "modalMessage"
+            );
+
+        const closeModalButton =
+            document.getElementById(
+                "closeModalButton"
+            );
+
+
+
+        // ====================================================
+        // SHOW MODAL
+        // ====================================================
+
+        function showModal(
+            icon,
+            title,
+            message
+        ) {
+
+            modalIcon.textContent =
+                icon;
+
+            modalTitle.textContent =
+                title;
+
+            modalMessage.textContent =
+                message;
+
+            messageModal.classList.remove(
+                "hidden"
+            );
+
+            messageModal.classList.add(
+                "flex"
+            );
+
+        }
+
+
+
+        // ====================================================
+        // CLOSE MODAL
+        // ====================================================
+
+        function closeModal() {
+
+            messageModal.classList.add(
+                "hidden"
+            );
+
+            messageModal.classList.remove(
+                "flex"
+            );
+
+        }
+
+
+
+        closeModalButton.addEventListener(
+            "click",
+            closeModal
+        );
+
+
+        messageModal.addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    messageModal
+                ) {
+
+                    closeModal();
+
+                }
+
+            }
+        );
+
+
+
+        // ====================================================
+        // DASHBOARD NAVIGATION
+        // ====================================================
+
+        function goToDashboard() {
+
+            window.location.href =
+                "staff-dashboard.html";
+
+        }
+
+
+
+        backButton.addEventListener(
+            "click",
+            goToDashboard
+        );
+
+
+        backDashboardButton.addEventListener(
+            "click",
+            goToDashboard
+        );
+
+
+
+        // ====================================================
+        // ESCAPE HTML
+        // ====================================================
+
+        function escapeHTML(value) {
+
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+
+        // ====================================================
+        // LOAD STAFF PROFILE
+        // ====================================================
+
+        async function loadNursingPage() {
+
+            try {
+
+                // --------------------------------------------
+                // CHECK SUPABASE
+                // --------------------------------------------
+
+                if (
+                    !window.CHA_SUPABASE
+                ) {
+
+                    throw new Error(
+                        "Supabase is not configured."
+                    );
+
+                }
+
+
+
+                // --------------------------------------------
+                // CHECK AUTHENTICATION
+                // --------------------------------------------
+
+                const {
+                    data: authData,
+                    error: authError
+                } =
+                    await window.CHA_SUPABASE
+                        .auth
+                        .getUser();
+
+
+
+                if (
+                    authError ||
+                    !authData ||
+                    !authData.user
+                ) {
+
+                    window.location.href =
+                        "staff-login.html";
+
+                    return;
+
+                }
+
+
+
+                const user =
+                    authData.user;
+
+
+
+                // --------------------------------------------
+                // LOAD STAFF PROFILE
+                // --------------------------------------------
+
+                const {
+                    data: profile,
+                    error: profileError
+                } =
+                    await window.CHA_SUPABASE
+                        .from("staff_profiles")
+                        .select(`
+                            id,
+                            full_name,
+                            role,
+                            is_active,
+                            department_id,
+                            departments (
+                                name
+                            )
+                        `)
+                        .eq(
+                            "id",
+                            user.id
+                        )
+                        .single();
+
+
+
+                if (profileError) {
+
+                    throw profileError;
+
+                }
+
+
+
+                // --------------------------------------------
+                // CHECK STAFF
+                // --------------------------------------------
+
+                if (
+                    !profile ||
+                    profile.is_active !== true
+                ) {
+
+                    await window.CHA_SUPABASE
+                        .auth
+                        .signOut();
+
+                    window.location.href =
+                        "staff-login.html";
+
+                    return;
+
+                }
+
+
+
+                // --------------------------------------------
+                // DISPLAY STAFF
+                // --------------------------------------------
+
+                staffName.textContent =
+                    profile.full_name ||
+                    "Staff Member";
+
+
+                staffRole.textContent =
+                    "Role: " +
+                    (
+                        profile.role ||
+                        "Staff"
+                    );
+
+
+                staffDepartment.textContent =
+                    "Department: " +
+                    (
+                        profile.departments?.name ||
+                        "Not assigned"
+                    );
+
+
+
+                // --------------------------------------------
+                // SHOW PAGE
+                // --------------------------------------------
+
+                loading.classList.add(
+                    "hidden"
+                );
+
+                nursingPage.classList.remove(
+                    "hidden"
+                );
+
+
+
+                // --------------------------------------------
+                // INITIAL STATISTICS
+                // --------------------------------------------
+
+                patientCount.textContent =
+                    "—";
+
+                vitalsCount.textContent =
+                    "—";
+
+                careCount.textContent =
+                    "—";
+
+                alertCount.textContent =
+                    "0";
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "CHA Nursing Page Error:",
+                    error
+                );
+
+
+                loading.innerHTML = `
+
+                    <div class="text-4xl">
+                        ⚠️
+                    </div>
+
+                    <p
+                        class="
+                            font-bold
+                            mt-3
+                            text-red-700
+                        "
+                    >
+                        Unable to load Nursing Department
+                    </p>
+
+                    <p
+                        class="
+                            text-sm
+                            text-slate-500
+                            mt-2
+                        "
+                    >
+                        ${escapeHTML(
+                            error.message ||
+                            "Please try again."
+                        )}
+                    </p>
+
+                    <button
+                        type="button"
+                        id="returnLoginButton"
+                        class="
+                            mt-5
+                            bg-blue-900
+                            hover:bg-blue-800
+                            text-white
+                            px-5
+                            py-3
+                            rounded-xl
+                            font-bold
+                        "
+                    >
+                        Return to Login
+                    </button>
+
+                `;
+
+
+                const returnLoginButton =
+                    document.getElementById(
+                        "returnLoginButton"
+                    );
+
+
+                if (returnLoginButton) {
+
+                    returnLoginButton.addEventListener(
+                        "click",
+                        function() {
+
+                            window.location.href =
+                                "staff-login.html";
+
+                        }
+                    );
+
+                }
+
+            }
+
+        }
+
+
+
+        // ====================================================
+        // VITAL SIGNS
+        // ====================================================
+
+        function openVitals() {
+
+            showModal(
+                "❤️",
+                "Vital Signs",
+                "The Vital Signs module is ready to be connected to the hospital patient-record system. It can be used for authorized blood pressure, pulse, temperature, respiratory rate and oxygen saturation records."
+            );
+
+        }
+
+
+
+        vitalsButton.addEventListener(
+            "click",
+            openVitals
+        );
+
+
+        quickVitalsButton.addEventListener(
+            "click",
+            openVitals
+        );
+
+
+
+        // ====================================================
+        // NURSING NOTES
+        // ====================================================
+
+        function openNursingNotes() {
+
+            showModal(
+                "📝",
+                "Nursing Notes",
+                "The Nursing Notes module is ready to be connected to the hospital database for authorized nursing observations, assessments and patient-care documentation."
+            );
+
+        }
+
+
+
+        nursingNotesButton.addEventListener(
+            "click",
+            openNursingNotes
+        );
+
+
+        quickNotesButton.addEventListener(
+            "click",
+            openNursingNotes
+        );
+
+
+
+        // ====================================================
+        // CARE ACTIVITIES
+        // ====================================================
+
+        function openCareActivities() {
+
+            showModal(
+                "🩹",
+                "Care Activities",
+                "The Care Activities module is ready to be connected to authorized nursing care records and tasks."
+            );
+
+        }
+
+
+
+        careButton.addEventListener(
+            "click",
+            openCareActivities
+        );
+
+
+
+        // ====================================================
+        // LOGOUT
+        // ====================================================
+
+        logoutButton.addEventListener(
+            "click",
+            async function() {
+
+                logoutButton.disabled =
+                    true;
+
+                logoutButton.textContent =
+                    "Logging out...";
+
+
+                try {
+
+                    if (
+                        window.CHA_SUPABASE
+                    ) {
+
+                        await window.CHA_SUPABASE
+                            .auth
+                            .signOut();
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "CHA Logout Error:",
+                        error
+                    );
+
+                }
+
+                finally {
+
+                    window.location.href =
+                        "staff-login.html";
+
+                }
+
+            }
+        );
+
+
+
+        // ====================================================
+        // INITIALIZE
+        // ====================================================
+
+        loadNursingPage();
+
+    </script>
+
+</body>
+</html>
