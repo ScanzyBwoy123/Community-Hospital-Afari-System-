@@ -4087,13 +4087,298 @@
 
 
         function openDispensing() {
+    const existing = document.getElementById("dispensingPanel");
 
-            showComingSoon(
-                "🧾 Dispensing",
-                "The dispensing module is connected to the Pharmacy Portal and is ready for its database workflow to be added."
+    if (existing) {
+        existing.remove();
+        return;
+    }
+
+    const panel = document.createElement("div");
+
+    panel.id = "dispensingPanel";
+
+    panel.className =
+        "fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4";
+
+    panel.innerHTML = `
+        <div class="bg-white w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl shadow-2xl">
+
+            <div class="p-6 border-b flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-900">
+                        🧾 Dispensing
+                    </h2>
+
+                    <p class="text-sm text-slate-500 mt-1">
+                        Record medication dispensed to a patient.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="closeDispensingPanel"
+                    class="w-10 h-10 rounded-full bg-slate-100
+                           text-slate-600 font-black"
+                >
+                    ×
+                </button>
+            </div>
+
+            <form id="dispensingForm" class="p-6 space-y-5">
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">
+                        Patient ID
+                    </label>
+
+                    <input
+                        id="dispensingPatientId"
+                        type="text"
+                        required
+                        class="w-full mt-2 px-4 py-3 border
+                               border-slate-300 rounded-xl"
+                        placeholder="Enter patient ID"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">
+                        Prescription ID
+                    </label>
+
+                    <input
+                        id="dispensingPrescriptionId"
+                        type="text"
+                        class="w-full mt-2 px-4 py-3 border
+                               border-slate-300 rounded-xl"
+                        placeholder="Enter prescription ID"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">
+                        Medication ID
+                    </label>
+
+                    <input
+                        id="dispensingMedicationId"
+                        type="text"
+                        required
+                        class="w-full mt-2 px-4 py-3 border
+                               border-slate-300 rounded-xl"
+                        placeholder="Enter medication ID"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">
+                        Patient Name
+                    </label>
+
+                    <input
+                        id="dispensingPatientName"
+                        type="text"
+                        required
+                        class="w-full mt-2 px-4 py-3 border
+                               border-slate-300 rounded-xl"
+                        placeholder="Patient name"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">
+                        Medication Name
+                    </label>
+
+                    <input
+                        id="dispensingMedicationName"
+                        type="text"
+                        required
+                        class="w-full mt-2 px-4 py-3 border
+                               border-slate-300 rounded-xl"
+                        placeholder="Medication name"
+                    >
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-slate-700">
+                        Quantity Dispensed
+                    </label>
+
+                    <input
+                        id="dispensingQuantity"
+                        type="number"
+                        min="1"
+                        step="1"
+                        required
+                        class="w-full mt-2 px-4 py-3 border
+                               border-slate-300 rounded-xl"
+                        placeholder="Quantity"
+                    >
+                </div>
+
+                <div
+                    id="dispensingStatus"
+                    class="hidden p-4 rounded-xl text-sm"
+                ></div>
+
+                <button
+                    id="saveDispensingButton"
+                    type="submit"
+                    class="w-full bg-blue-900 hover:bg-blue-800
+                           text-white font-black py-4 rounded-xl"
+                >
+                    Record Dispensing
+                </button>
+
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(panel);
+
+    const closeButton =
+        document.getElementById("closeDispensingPanel");
+
+    const form =
+        document.getElementById("dispensingForm");
+
+    const status =
+        document.getElementById("dispensingStatus");
+
+    const saveButton =
+        document.getElementById("saveDispensingButton");
+
+    closeButton.addEventListener("click", function () {
+        panel.remove();
+    });
+
+    panel.addEventListener("click", function (event) {
+        if (event.target === panel) {
+            panel.remove();
+        }
+    });
+
+    form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        if (!window.CHA_SUPABASE) {
+            status.className =
+                "p-4 rounded-xl text-sm bg-red-50 text-red-700";
+
+            status.textContent =
+                "Supabase is not configured.";
+
+            return;
+        }
+
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+
+        status.className =
+            "p-4 rounded-xl text-sm bg-blue-50 text-blue-700";
+
+        status.textContent =
+            "Saving dispensing record...";
+
+        const patientId =
+            document
+                .getElementById("dispensingPatientId")
+                .value
+                .trim();
+
+        const prescriptionId =
+            document
+                .getElementById("dispensingPrescriptionId")
+                .value
+                .trim();
+
+        const medicationId =
+            document
+                .getElementById("dispensingMedicationId")
+                .value
+                .trim();
+
+        const patientName =
+            document
+                .getElementById("dispensingPatientName")
+                .value
+                .trim();
+
+        const medicationName =
+            document
+                .getElementById("dispensingMedicationName")
+                .value
+                .trim();
+
+        const quantity =
+            Number(
+                document
+                    .getElementById("dispensingQuantity")
+                    .value
             );
 
+        try {
+            const record = {
+                patient_id: patientId,
+                prescription_id:
+                    prescriptionId || null,
+                medication_id: medicationId,
+                patient_name: patientName,
+                medication_name: medicationName,
+                quantity_dispensed: quantity
+            };
+
+            const {
+                data,
+                error
+            } =
+                await window.CHA_SUPABASE
+                    .from("dispensing")
+                    .insert(record)
+                    .select()
+                    .single();
+
+            if (error) {
+                throw error;
+            }
+
+            console.log(
+                "Dispensing record created:",
+                data
+            );
+
+            status.className =
+                "p-4 rounded-xl text-sm bg-green-50 text-green-700";
+
+            status.textContent =
+                "Dispensing record saved successfully.";
+
+            form.reset();
+
+        } catch (error) {
+
+            console.error(
+                "Dispensing Error:",
+                error
+            );
+
+            status.className =
+                "p-4 rounded-xl text-sm bg-red-50 text-red-700";
+
+            status.textContent =
+                error.message ||
+                "Unable to save dispensing record.";
+
+        } finally {
+
+            saveButton.disabled = false;
+            saveButton.textContent =
+                "Record Dispensing";
         }
+    });
+}
 
 
 
