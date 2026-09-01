@@ -2,48 +2,211 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Book an Appointment | Community Hospital Afari</title>
+    <meta
+        name="theme-color"
+        content="#0f4c81"
+    >
+
+    <title>
+        Book an Appointment | Community Hospital Afari
+    </title>
+
+    <meta
+        name="description"
+        content="Book an appointment with Community Hospital Afari."
+    >
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cha: {
+                            blue: "#0f4c81",
+                            dark: "#07345a",
+                            light: "#eef7ff",
+                            green: "#0f8a5f",
+                            red: "#d62828"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+        }
+
+        .cha-logo {
+            width: 56px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+            background: white;
+        }
+    </style>
 </head>
 
-<body class="bg-slate-100">
+<body class="bg-slate-100 text-slate-800">
 
-<header class="bg-blue-900 text-white">
-    <div class="max-w-4xl mx-auto px-4 py-5">
-        <div class="font-black text-xl">
-            COMMUNITY HOSPITAL AFARI
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header class="bg-white shadow-sm sticky top-0 z-50">
+
+    <div class="max-w-5xl mx-auto px-4">
+
+        <div class="min-h-20 py-3 flex items-center justify-between gap-4">
+
+            <!-- OFFICIAL COMMUNITY HOSPITAL AFARI LOGO -->
+
+            <a
+                href="index.html"
+                class="flex items-center gap-3"
+            >
+
+                <img
+                    src="cha-logo.jpeg"
+                    alt="Community Hospital Afari Official Logo"
+                    class="cha-logo shadow"
+                >
+
+                <div>
+
+                    <div
+                        class="font-black text-cha-blue text-lg leading-tight"
+                    >
+                        COMMUNITY HOSPITAL
+                    </div>
+
+                    <div
+                        class="font-bold text-cha-dark"
+                    >
+                        AFARI
+                    </div>
+
+                    <div
+                        class="text-xs text-slate-500"
+                    >
+                        Your Health, Our Priority
+                    </div>
+
+                </div>
+
+            </a>
+
+            <!-- BACK HOME -->
+
+            <a
+                href="index.html"
+                class="hidden sm:inline-block
+                       bg-cha-blue
+                       text-white
+                       font-bold
+                       px-4
+                       py-2
+                       rounded-xl
+                       hover:bg-cha-dark"
+            >
+                ← Home
+            </a>
+
         </div>
 
-        <div class="text-blue-200 text-sm">
-            Your Health, Our Priority
-        </div>
     </div>
+
 </header>
 
 
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
 <main class="max-w-2xl mx-auto px-4 py-8">
 
-    <div class="bg-white rounded-3xl shadow-xl p-6 md:p-8">
+    <!-- PAGE INTRO -->
 
-        <h1 class="text-3xl font-black text-slate-900">
+    <div class="text-center mb-8">
+
+        <p
+            class="text-cha-blue
+                   font-bold
+                   uppercase
+                   text-sm"
+        >
+            Patient Services
+        </p>
+
+        <h1
+            class="text-3xl
+                   sm:text-4xl
+                   font-black
+                   text-slate-900
+                   mt-2"
+        >
             Book an Appointment
         </h1>
 
-        <p class="text-slate-500 mt-2">
+        <p
+            class="text-slate-500
+                   mt-3
+                   max-w-xl
+                   mx-auto"
+        >
             Submit your appointment request and the hospital
             will review and confirm it.
         </p>
 
+    </div>
 
-        <form id="appointmentForm" class="mt-8 space-y-5">
+
+    <!-- =====================================================
+         APPOINTMENT CARD
+    ====================================================== -->
+
+    <div
+        class="bg-white
+               rounded-3xl
+               shadow-xl
+               border
+               border-slate-200
+               p-6
+               md:p-8"
+    >
+
+        <!-- FORM -->
+
+        <form
+            id="appointmentForm"
+            class="space-y-5"
+        >
+
+            <!-- FULL NAME -->
 
             <div>
-                <label class="font-bold text-sm">
+
+                <label
+                    for="patientName"
+                    class="font-bold text-sm"
+                >
                     Full Name
                 </label>
 
@@ -51,14 +214,30 @@
                     id="patientName"
                     type="text"
                     required
-                    class="w-full mt-2 p-3 border rounded-xl"
+                    autocomplete="name"
+                    class="w-full
+                           mt-2
+                           p-3
+                           border
+                           border-slate-300
+                           rounded-xl
+                           focus:outline-none
+                           focus:ring-2
+                           focus:ring-cha-blue"
                     placeholder="Enter your full name"
                 >
+
             </div>
 
 
+            <!-- PHONE -->
+
             <div>
-                <label class="font-bold text-sm">
+
+                <label
+                    for="patientPhone"
+                    class="font-bold text-sm"
+                >
                     Phone Number
                 </label>
 
@@ -66,33 +245,73 @@
                     id="patientPhone"
                     type="tel"
                     required
-                    class="w-full mt-2 p-3 border rounded-xl"
+                    autocomplete="tel"
+                    class="w-full
+                           mt-2
+                           p-3
+                           border
+                           border-slate-300
+                           rounded-xl
+                           focus:outline-none
+                           focus:ring-2
+                           focus:ring-cha-blue"
                     placeholder="+233..."
                 >
+
             </div>
 
 
+            <!-- DEPARTMENT -->
+
             <div>
-                <label class="font-bold text-sm">
+
+                <label
+                    for="department"
+                    class="font-bold text-sm"
+                >
                     Department
                 </label>
 
                 <select
                     id="department"
                     required
-                    class="w-full mt-2 p-3 border rounded-xl bg-white"
+                    class="w-full
+                           mt-2
+                           p-3
+                           border
+                           border-slate-300
+                           rounded-xl
+                           bg-white
+                           focus:outline-none
+                           focus:ring-2
+                           focus:ring-cha-blue"
                 >
+
                     <option value="">
-                        Select department
+                        Loading departments...
                     </option>
+
                 </select>
+
             </div>
 
 
-            <div class="grid md:grid-cols-2 gap-4">
+            <!-- DATE AND TIME -->
+
+            <div
+                class="grid
+                       md:grid-cols-2
+                       gap-4"
+            >
+
+                <!-- DATE -->
 
                 <div>
-                    <label class="font-bold text-sm">
+
+                    <label
+                        for="appointmentDate"
+                        class="font-bold text-sm"
+                    >
                         Preferred Date
                     </label>
 
@@ -100,13 +319,28 @@
                         id="appointmentDate"
                         type="date"
                         required
-                        class="w-full mt-2 p-3 border rounded-xl"
+                        class="w-full
+                               mt-2
+                               p-3
+                               border
+                               border-slate-300
+                               rounded-xl
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-cha-blue"
                     >
+
                 </div>
 
 
+                <!-- TIME -->
+
                 <div>
-                    <label class="font-bold text-sm">
+
+                    <label
+                        for="appointmentTime"
+                        class="font-bold text-sm"
+                    >
                         Preferred Time
                     </label>
 
@@ -114,38 +348,73 @@
                         id="appointmentTime"
                         type="time"
                         required
-                        class="w-full mt-2 p-3 border rounded-xl"
+                        class="w-full
+                               mt-2
+                               p-3
+                               border
+                               border-slate-300
+                               rounded-xl
+                               focus:outline-none
+                               focus:ring-2
+                               focus:ring-cha-blue"
                     >
+
                 </div>
 
             </div>
 
 
+            <!-- REASON -->
+
             <div>
-                <label class="font-bold text-sm">
+
+                <label
+                    for="reason"
+                    class="font-bold text-sm"
+                >
                     Reason for Visit
                 </label>
 
                 <textarea
                     id="reason"
                     rows="4"
-                    class="w-full mt-2 p-3 border rounded-xl"
+                    class="w-full
+                           mt-2
+                           p-3
+                           border
+                           border-slate-300
+                           rounded-xl
+                           focus:outline-none
+                           focus:ring-2
+                           focus:ring-cha-blue"
                     placeholder="Briefly describe your reason for the appointment"
                 ></textarea>
+
             </div>
 
+
+            <!-- SUBMIT -->
 
             <button
                 id="submitButton"
                 type="submit"
-                class="w-full bg-blue-900 hover:bg-blue-800
-                       text-white font-black py-4 rounded-xl"
+                class="w-full
+                       bg-cha-blue
+                       hover:bg-cha-dark
+                       text-white
+                       font-black
+                       py-4
+                       rounded-xl
+                       shadow
+                       transition"
             >
-                Submit Appointment Request
+                📅 Submit Appointment Request
             </button>
 
         </form>
 
+
+        <!-- RESULT -->
 
         <div
             id="result"
@@ -154,38 +423,212 @@
 
     </div>
 
+
+    <!-- EMERGENCY -->
+
+    <div
+        class="mt-6
+               bg-red-50
+               border
+               border-red-100
+               rounded-2xl
+               p-5
+               text-center"
+    >
+
+        <div
+            class="font-black
+                   text-red-700"
+        >
+            🚑 Emergency?
+
+        </div>
+
+        <p
+            class="text-sm
+                   text-red-600
+                   mt-1"
+        >
+            For urgent medical assistance, call the hospital.
+        </p>
+
+        <a
+            href="tel:+233240170502"
+            class="inline-block
+                   mt-3
+                   bg-red-600
+                   hover:bg-red-700
+                   text-white
+                   font-black
+                   px-5
+                   py-3
+                   rounded-xl"
+        >
+            Call +233 240 170 502
+        </a>
+
+    </div>
+
 </main>
 
 
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer
+    class="bg-slate-950
+           text-white
+           mt-10"
+>
+
+    <div
+        class="max-w-5xl
+               mx-auto
+               px-4
+               py-8"
+    >
+
+        <div
+            class="flex
+                   flex-col
+                   sm:flex-row
+                   justify-between
+                   items-center
+                   gap-4"
+        >
+
+            <div>
+
+                <div
+                    class="font-black"
+                >
+                    COMMUNITY HOSPITAL AFARI
+                </div>
+
+                <p
+                    class="text-slate-400
+                           text-sm
+                           mt-1"
+                >
+                    Your Health, Our Priority.
+                </p>
+
+            </div>
+
+            <div
+                class="text-slate-400
+                       text-sm
+                       text-center
+                       sm:text-right"
+            >
+
+                <div>
+                    📞 +233 240 170 502
+                </div>
+
+                <div class="mt-1">
+                    📍 Afari, Ashanti Region, Ghana
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            class="border-t
+                   border-slate-800
+                   mt-6
+                   pt-5
+                   text-center
+                   text-xs
+                   text-slate-500"
+        >
+
+            ©
+            <span id="year"></span>
+            Community Hospital Afari.
+            All rights reserved.
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
 <script src="js/supabase.js"></script>
+
+
+<!-- =========================================================
+     APPOINTMENT SYSTEM
+========================================================= -->
 
 <script>
 
 const form =
-    document.getElementById("appointmentForm");
+    document.getElementById(
+        "appointmentForm"
+    );
 
 const department =
-    document.getElementById("department");
+    document.getElementById(
+        "department"
+    );
 
 const result =
-    document.getElementById("result");
+    document.getElementById(
+        "result"
+    );
 
 const submitButton =
-    document.getElementById("submitButton");
+    document.getElementById(
+        "submitButton"
+    );
 
+
+/* =========================================================
+   LOAD DEPARTMENTS
+========================================================= */
 
 async function loadDepartments() {
+
     try {
+
+        if (!window.CHA_SUPABASE) {
+
+            throw new Error(
+                "Hospital database is temporarily unavailable."
+            );
+
+        }
+
         const {
             data,
             error
         } = await window.CHA_SUPABASE
             .from("departments")
-            .select("id, name, is_active")
+            .select(
+                "id, name, is_active"
+            )
             .order("name");
 
+
         if (error) {
-            console.error("DEPARTMENT ERROR:", error);
+
+            console.error(
+                "DEPARTMENT ERROR:",
+                error
+            );
 
             department.innerHTML = `
                 <option value="">
@@ -194,9 +637,15 @@ async function loadDepartments() {
             `;
 
             return;
+
         }
 
-        console.log("DEPARTMENTS:", data);
+
+        console.log(
+            "DEPARTMENTS:",
+            data
+        );
+
 
         department.innerHTML = `
             <option value="">
@@ -204,28 +653,72 @@ async function loadDepartments() {
             </option>
         `;
 
+
+        if (!data || data.length === 0) {
+
+            department.innerHTML = `
+                <option value="">
+                    No departments available
+                </option>
+            `;
+
+            return;
+
+        }
+
+
         data
-            .filter(item => item.is_active)
-            .forEach(function(item) {
-                const option =
-                    document.createElement("option");
+            .filter(
+                item =>
+                    item.is_active
+            )
+            .forEach(
+                function(item) {
 
-                option.value = item.id;
-                option.textContent = item.name;
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
 
-                department.appendChild(option);
-            });
+                    option.value =
+                        item.id;
+
+                    option.textContent =
+                        item.name;
+
+                    department.appendChild(
+                        option
+                    );
+
+                }
+            );
 
     } catch (error) {
+
         console.error(
             "DEPARTMENT LOAD ERROR:",
             error
         );
+
+        department.innerHTML = `
+            <option value="">
+                Unable to load departments
+            </option>
+        `;
+
     }
+
 }
 
 
-function showResult(message, success) {
+/* =========================================================
+   SHOW RESULT
+========================================================= */
+
+function showResult(
+    message,
+    success
+) {
 
     result.classList.remove(
         "hidden",
@@ -253,10 +746,15 @@ function showResult(message, success) {
     }
 
 
-    result.innerHTML = message;
+    result.innerHTML =
+        message;
 
 }
 
+
+/* =========================================================
+   SUBMIT APPOINTMENT
+========================================================= */
 
 form.addEventListener(
     "submit",
@@ -264,91 +762,179 @@ form.addEventListener(
 
         event.preventDefault();
 
-        submitButton.disabled = true;
-        submitButton.textContent = "Submitting...";
+
+        submitButton.disabled =
+            true;
+
+        submitButton.textContent =
+            "Submitting...";
+
 
         try {
 
+            /* CHECK SUPABASE */
+
+            if (!window.CHA_SUPABASE) {
+
+                throw new Error(
+                    "Hospital appointment system is temporarily unavailable."
+                );
+
+            }
+
+
+            /* GET FORM VALUES */
+
             const patientName =
                 document
-                    .getElementById("patientName")
+                    .getElementById(
+                        "patientName"
+                    )
                     .value
                     .trim();
 
+
             const patientPhone =
                 document
-                    .getElementById("patientPhone")
+                    .getElementById(
+                        "patientPhone"
+                    )
                     .value
                     .trim();
+
 
             const departmentId =
                 department.value;
 
+
             const preferredDate =
                 document
-                    .getElementById("appointmentDate")
+                    .getElementById(
+                        "appointmentDate"
+                    )
                     .value;
+
 
             const preferredTime =
                 document
-                    .getElementById("appointmentTime")
+                    .getElementById(
+                        "appointmentTime"
+                    )
                     .value;
+
 
             const reason =
                 document
-                    .getElementById("reason")
+                    .getElementById(
+                        "reason"
+                    )
                     .value
                     .trim();
 
+
+            /* VALIDATION */
+
             if (!patientName) {
+
                 throw new Error(
                     "Please enter your full name."
                 );
+
             }
 
+
             if (!patientPhone) {
+
                 throw new Error(
                     "Please enter your phone number."
                 );
+
             }
 
+
             if (!departmentId) {
+
                 throw new Error(
                     "Please select a department."
                 );
+
             }
 
+
             if (!preferredDate) {
+
                 throw new Error(
                     "Please select a preferred date."
                 );
+
             }
 
+
             if (!preferredTime) {
+
                 throw new Error(
                     "Please select a preferred time."
                 );
+
             }
 
-            const { error } =
-                await window.CHA_SUPABASE
-                    .from("appointments")
-                    .insert({
-                        patient_name: patientName,
-                        patient_phone: patientPhone,
-                        department_id: departmentId,
-                        preferred_date: preferredDate,
-                        preferred_time: preferredTime,
-                        reason: reason
-                    });
+
+            /* INSERT APPOINTMENT */
+
+            const {
+                data,
+                error
+            } = await window.CHA_SUPABASE
+                .from("appointments")
+                .insert({
+
+                    patient_name:
+                        patientName,
+
+                    patient_phone:
+                        patientPhone,
+
+                    department_id:
+                        departmentId,
+
+                    preferred_date:
+                        preferredDate,
+
+                    preferred_time:
+                        preferredTime,
+
+                    reason:
+                        reason
+
+                })
+                .select(
+                    "appointment_number"
+                )
+                .single();
+
 
             if (error) {
+
                 throw error;
+
             }
 
+
+            /* SUCCESS */
+
+            const reference =
+                data &&
+                data.appointment_number
+                    ? data.appointment_number
+                    : "Submitted";
+
+
             showResult(
+
                 `
-                <h3 class="font-black text-lg">
+                <h3
+                    class="font-black text-lg"
+                >
                     ✅ Appointment Request Submitted
                 </h3>
 
@@ -357,15 +943,59 @@ form.addEventListener(
                     sent to Community Hospital Afari.
                 </p>
 
-                <p class="mt-2 text-sm">
-                    The hospital will review your request and
-                    contact you using the phone number provided.
+                <div
+                    class="mt-4
+                           bg-white
+                           border
+                           border-green-200
+                           rounded-xl
+                           p-4"
+                >
+
+                    <div
+                        class="text-xs
+                               uppercase
+                               font-bold
+                               text-slate-500"
+                    >
+                        Appointment Reference
+                    </div>
+
+                    <div
+                        class="text-2xl
+                               font-black
+                               text-cha-blue
+                               mt-1"
+                    >
+                        ${reference}
+                    </div>
+
+                </div>
+
+                <p
+                    class="mt-3
+                           text-sm"
+                >
+                    Please keep this reference.
+                    Hospital staff will review your
+                    request and contact you.
                 </p>
                 `,
+
                 true
+
             );
 
+
+            /* RESET FORM */
+
             form.reset();
+
+
+            /* RELOAD DEPARTMENTS */
+
+            await loadDepartments();
+
 
         } catch (error) {
 
@@ -374,28 +1004,55 @@ form.addEventListener(
                 error
             );
 
+
             showResult(
+
                 `
                 <strong>
                     ❌ Appointment could not be submitted
                 </strong>
 
                 <p class="mt-2">
-                    ${error.message ||
-                    "Unable to submit appointment request."}
+                    ${
+                        error &&
+                        error.message
+                            ? error.message
+                            : "Unable to submit appointment request."
+                    }
                 </p>
                 `,
+
                 false
+
             );
 
         }
 
-        submitButton.disabled = false;
+
+        submitButton.disabled =
+            false;
+
         submitButton.textContent =
-            "Submit Appointment Request";
+            "📅 Submit Appointment Request";
 
     }
 );
+
+
+/* =========================================================
+   CURRENT YEAR
+========================================================= */
+
+document.getElementById(
+    "year"
+).textContent =
+    new Date().getFullYear();
+
+
+/* =========================================================
+   START
+========================================================= */
+
 loadDepartments();
 
 </script>
