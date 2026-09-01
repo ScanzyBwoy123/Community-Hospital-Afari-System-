@@ -1,1533 +1,801 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>CHA Staff Administration</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    </style>
-</head>
-
-<body class="bg-slate-100 text-slate-800">
-
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
-    <header class="bg-blue-900 text-white shadow-lg">
-
-        <div class="max-w-7xl mx-auto px-4">
-
-            <div class="min-h-20 flex items-center justify-between gap-4">
-
-                <div class="flex items-center gap-3">
-
-                    <div
-                        class="w-12 h-12 rounded-full bg-white
-                               text-blue-900 flex items-center
-                               justify-center font-black"
-                    >
-                        CHA
-                    </div>
-
-                    <div>
-
-                        <div class="font-black">
-                            COMMUNITY HOSPITAL AFARI
-                        </div>
-
-                        <div class="text-blue-200 text-sm">
-                            Staff Administration
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <button
-                    id="backButton"
-                    class="bg-white text-blue-900
-                           hover:bg-blue-50
-                           px-4 py-2
-                           rounded-lg
-                           font-bold"
-                >
-                    ← Dashboard
-                </button>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
-
-    <main class="max-w-7xl mx-auto px-4 py-8">
-
-        <!-- Loading -->
-
-        <div
-            id="loading"
-            class="bg-white rounded-2xl shadow p-8 text-center"
-        >
-
-            <div class="text-3xl">
-                🔐
-            </div>
-
-            <p class="font-bold mt-3">
-                Checking administrator access...
-            </p>
-
-        </div>
-
-
-
-        <!-- =================================================
-             ADMINISTRATION
-        ================================================== -->
-
-        <div
-            id="adminPage"
-            class="hidden"
-        >
-
-            <!-- Page heading -->
-
-            <section
-                class="bg-white rounded-2xl shadow p-6 mb-8"
-            >
-
-                <div class="flex flex-col sm:flex-row
-                            sm:items-center
-                            sm:justify-between
-                            gap-4">
-
-                    <div>
-
-                        <p class="text-sm text-slate-500">
-                            Hospital Administration
-                        </p>
-
-                        <h1
-                            class="text-3xl font-black text-slate-900 mt-1"
-                        >
-                            Staff Management
-                        </h1>
-
-                        <p class="text-sm text-slate-500 mt-2">
-                            Review staff registrations and approve
-                            authorized hospital personnel.
-                        </p>
-
-                    </div>
-
-                    <button
-                        id="refreshButton"
-                        class="bg-blue-900
-                               hover:bg-blue-800
-                               text-white
-                               px-5 py-3
-                               rounded-xl
-                               font-bold"
-                    >
-                        ↻ Refresh
-                    </button>
-
-                </div>
-
-            </section>
-
-
-            <!-- =================================================
-                 PENDING STAFF
-            ================================================== -->
-
-            <section
-                class="bg-white rounded-2xl shadow overflow-hidden"
-            >
-
-                <div
-                    class="p-6 border-b border-slate-200"
-                >
-
-                    <div
-                        class="flex flex-col sm:flex-row
-                               sm:items-center
-                               sm:justify-between
-                               gap-3"
-                    >
-
-                        <div>
-
-                            <h2
-                                class="text-xl font-black"
-                            >
-                                Pending Staff Registrations
-                            </h2>
-
-                            <p
-                                class="text-sm text-slate-500 mt-1"
-                            >
-                                These accounts are waiting for
-                                administrator approval.
-                            </p>
-
-                        </div>
-
-                        <span
-                            id="pendingCount"
-                            class="inline-flex
-                                   items-center
-                                   justify-center
-                                   bg-yellow-100
-                                   text-yellow-800
-                                   px-3 py-1
-                                   rounded-full
-                                   text-sm
-                                   font-black"
-                        >
-                            0 Pending
-                        </span>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- Status -->
-
-                <div
-                    id="adminStatus"
-                    class="hidden m-6 p-4 rounded-xl text-sm"
-                ></div>
-
-
-
-                <!-- Empty -->
-
-                <div
-                    id="emptyState"
-                    class="hidden p-10 text-center"
-                >
-
-                    <div class="text-5xl">
-                        ✅
-                    </div>
-
-                    <h3
-                        class="font-black text-xl mt-4"
-                    >
-                        No Pending Registrations
-                    </h3>
-
-                    <p
-                        class="text-slate-500 text-sm mt-2"
-                    >
-                        There are currently no staff accounts
-                        waiting for approval.
-                    </p>
-
-                </div>
-
-
-
-                <!-- Table -->
-
-                <div
-                    id="tableContainer"
-                    class="hidden overflow-x-auto"
-                >
-
-                    <table class="w-full text-sm">
-
-                        <thead
-                            class="bg-slate-50 border-b"
-                        >
-
-                            <tr>
-
-                                <th
-                                    class="text-left
-                                           px-6 py-4
-                                           font-black"
-                                >
-                                    Staff
-                                </th>
-
-                                <th
-                                    class="text-left
-                                           px-6 py-4
-                                           font-black"
-                                >
-                                    Staff ID
-                                </th>
-
-                                <th
-                                    class="text-left
-                                           px-6 py-4
-                                           font-black"
-                                >
-                                    Position
-                                </th>
-
-                                <th
-                                    class="text-left
-                                           px-6 py-4
-                                           font-black"
-                                >
-                                    Department
-                                </th>
-
-                                <th
-                                    class="text-left
-                                           px-6 py-4
-                                           font-black"
-                                >
-                                    Phone
-                                </th>
-
-                                <th
-                                    class="text-left
-                                           px-6 py-4
-                                           font-black"
-                                >
-                                    Action
-                                </th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody
-                            id="pendingTableBody"
-                            class="divide-y"
-                        ></tbody>
-
-                    </table>
-
-                </div>
-
-            </section>
-
-<!-- =================================================
-     STAFF ACCESS MANAGEMENT
-================================================== -->
-
-<section
-    class="mt-8 bg-white rounded-2xl shadow overflow-hidden"
+<meta charset="UTF-8">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
 >
-
-    <div class="p-6 border-b border-slate-200">
-
-        <div class="flex flex-col sm:flex-row
+<title>CHA Staff Administration</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .cha-logo {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        border-radius: 9999px;
+        background: white;
+        padding: 3px;
+    }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<!-- ============================================================
+     HEADER
+============================================================ -->
+<header class="bg-blue-900 text-white shadow-lg">
+<div class="max-w-7xl mx-auto px-4">
+    <div class="min-h-20 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <!-- REAL COMMUNITY HOSPITAL AFARI LOGO -->
+            <img
+                src="cha-logo.jpeg"
+                alt="Community Hospital Afari Official Logo"
+                class="cha-logo"
+            >
+            <div>
+                <div class="font-black">
+                    COMMUNITY HOSPITAL AFARI
+                </div>
+                <div class="text-blue-200 text-sm">
+                    Staff Administration
+                </div>
+            </div>
+        </div>
+        <button
+            id="backButton"
+            type="button"
+            class="
+                bg-white
+                text-blue-900
+                hover:bg-blue-50
+                px-4
+                py-2
+                rounded-lg
+                font-bold
+            "
+        >
+            ← Dashboard
+        </button>
+    </div>
+</div>
+</header>
+<!-- ============================================================
+     MAIN
+============================================================ -->
+<main class="max-w-7xl mx-auto px-4 py-8">
+<!-- ========================================================
+     LOADING
+======================================================== -->
+<div
+    id="loading"
+    class="
+        bg-white
+        rounded-2xl
+        shadow
+        p-8
+        text-center
+    "
+>
+    <div class="text-3xl">
+        🔐
+    </div>
+    <p class="font-bold mt-3">
+        Checking administrator access...
+    </p>
+</div>
+<!-- ========================================================
+     ADMINISTRATION PAGE
+======================================================== -->
+<div
+    id="adminPage"
+    class="hidden"
+>
+    <!-- ====================================================
+         PAGE HEADING
+    ==================================================== -->
+    <section
+        class="
+            bg-white
+            rounded-2xl
+            shadow
+            p-6
+            mb-8
+        "
+    >
+        <div
+            class="
+                flex
+                flex-col
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+                gap-4
+            "
+        >
+            <div>
+                <p class="text-sm text-slate-500">
+                    Hospital Administration
+                </p>
+                <h1
+                    class="
+                        text-3xl
+                        font-black
+                        text-slate-900
+                        mt-1
+                    "
+                >
+                    Staff Management
+                </h1>
+                <p class="text-sm text-slate-500 mt-2">
+                    Review staff registrations, approve authorized
+                    hospital personnel, and manage staff portal access.
+                </p>
+            </div>
+            <button
+                id="refreshButton"
+                type="button"
+                class="
+                    bg-blue-900
+                    hover:bg-blue-800
+                    text-white
+                    px-5
+                    py-3
+                    rounded-xl
+                    font-bold
+                "
+            >
+                ↻ Refresh
+            </button>
+        </div>
+    </section>
+    <!-- ====================================================
+         PENDING STAFF REGISTRATIONS
+    ==================================================== -->
+    <section
+        class="
+            bg-white
+            rounded-2xl
+            shadow
+            overflow-hidden
+        "
+    >
+        <div
+            class="
+                p-6
+                border-b
+                border-slate-200
+            "
+        >
+            <div
+                class="
+                    flex
+                    flex-col
+                    sm:flex-row
                     sm:items-center
                     sm:justify-between
-                    gap-3">
-
-            <div>
-
-                <h2 class="text-xl font-black">
-                    Staff Access Management
-                </h2>
-
-                <p class="text-sm text-slate-500 mt-1">
-                    Activate or deactivate access for approved
-                    hospital staff.
-                </p>
-
+                    gap-3
+                "
+            >
+                <div>
+                    <h2 class="text-xl font-black">
+                        Pending Staff Registrations
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        These accounts are waiting for administrator
+                        approval.
+                    </p>
+                </div>
+                <span
+                    id="pendingCount"
+                    class="
+                        inline-flex
+                        items-center
+                        justify-center
+                        bg-yellow-100
+                        text-yellow-800
+                        px-3
+                        py-1
+                        rounded-full
+                        text-sm
+                        font-black
+                    "
+                >
+                    0 Pending
+                </span>
             </div>
-
-            <span
-                id="activeStaffCount"
-                class="inline-flex items-center justify-center
-                       bg-green-100 text-green-800
-                       px-3 py-1 rounded-full
-                       text-sm font-black"
-            >
-                0 Active
-            </span>
-
         </div>
-
-    </div>
-
-
-    <div
-        id="staffAccessStatus"
-        class="hidden m-6 p-4 rounded-xl text-sm"
-    ></div>
-
-
-    <div
-        id="staffAccessEmpty"
-        class="hidden p-10 text-center"
-    >
-
-        <div class="text-5xl">
-            👥
-        </div>
-
-        <h3 class="font-black text-xl mt-4">
-            No Approved Staff
-        </h3>
-
-        <p class="text-slate-500 text-sm mt-2">
-            There are currently no approved staff accounts.
-        </p>
-
-    </div>
-
-
-    <div
-        id="staffAccessTableContainer"
-        class="hidden overflow-x-auto"
-    >
-
-        <table class="w-full text-sm">
-
-            <thead class="bg-slate-50 border-b">
-
-                <tr>
-
-                    <th class="text-left px-6 py-4 font-black">
-                        Staff
-                    </th>
-
-                    <th class="text-left px-6 py-4 font-black">
-                        Staff ID
-                    </th>
-
-                    <th class="text-left px-6 py-4 font-black">
-                        Position
-                    </th>
-
-                    <th class="text-left px-6 py-4 font-black">
-                        Status
-                    </th>
-
-                    <th class="text-left px-6 py-4 font-black">
-                        Action
-                    </th>
-
-                </tr>
-
-            </thead>
-
-            <tbody
-                id="staffAccessTableBody"
-                class="divide-y"
-            ></tbody>
-
-        </table>
-
-    </div>
-
-</section>
-
-
-<!-- =================================================
-     CHANGE ADMIN PASSWORD
-================================================== -->
-
-<section
-    class="mt-8 bg-white rounded-2xl shadow p-6"
->
-
-    <h2 class="text-xl font-black">
-        🔑 Change Administrator Password
-    </h2>
-
-    <p class="text-sm text-slate-500 mt-1">
-        Change the password used to access the administrator account.
-    </p>
-
-    <form
-        id="changeAdminPasswordForm"
-        class="mt-6 max-w-xl space-y-5"
-    >
-
-        <div>
-
-            <label
-                for="currentAdminPassword"
-                class="block text-sm font-bold"
-            >
-                Current Password
-            </label>
-
-            <input
-                id="currentAdminPassword"
-                type="password"
-                required
-                autocomplete="current-password"
-                class="w-full mt-2 px-4 py-3
-                       border border-slate-300
-                       rounded-xl outline-none
-                       focus:ring-2 focus:ring-blue-600"
-                placeholder="Enter current password"
-            >
-
-        </div>
-
-
-        <div>
-
-            <label
-                for="newAdminPassword"
-                class="block text-sm font-bold"
-            >
-                New Password
-            </label>
-
-            <input
-                id="newAdminPassword"
-                type="password"
-                required
-                minlength="8"
-                autocomplete="new-password"
-                class="w-full mt-2 px-4 py-3
-                       border border-slate-300
-                       rounded-xl outline-none
-                       focus:ring-2 focus:ring-blue-600"
-                placeholder="Minimum 8 characters"
-            >
-
-        </div>
-
-
-        <div>
-
-            <label
-                for="confirmAdminPassword"
-                class="block text-sm font-bold"
-            >
-                Confirm New Password
-            </label>
-
-            <input
-                id="confirmAdminPassword"
-                type="password"
-                required
-                minlength="8"
-                autocomplete="new-password"
-                class="w-full mt-2 px-4 py-3
-                       border border-slate-300
-                       rounded-xl outline-none
-                       focus:ring-2 focus:ring-blue-600"
-                placeholder="Enter the new password again"
-            >
-
-        </div>
-
-
-        <button
-            id="changeAdminPasswordButton"
-            type="submit"
-            class="bg-blue-900 hover:bg-blue-800
-                   text-white px-6 py-3
-                   rounded-xl font-black"
+        <!-- STATUS -->
+        <div
+            id="adminStatus"
+            class="
+                hidden
+                m-6
+                p-4
+                rounded-xl
+                text-sm
+            "
+        ></div>
+        <!-- EMPTY -->
+        <div
+            id="emptyState"
+            class="
+                hidden
+                p-10
+                text-center
+            "
         >
-            Change Password
-        </button>
-
-    </form>
-
-
-    <div
-        id="passwordChangeStatus"
-        class="hidden mt-5 p-4 rounded-xl text-sm"
-    ></div>
-
-</section>
-<!-- =================================================
-     ACTIVE & INACTIVE STAFF
-================================================== -->
-
-<section
-    class="bg-white rounded-2xl shadow overflow-hidden mt-8"
->
-
-    <div class="p-6 border-b border-slate-200">
-
-        <h2 class="text-xl font-black">
-            👥 Staff Account Status
-        </h2>
-
-        <p class="text-sm text-slate-500 mt-1">
-            Manage staff portal access. Deactivate staff
-            accounts when a staff member leaves the hospital.
-        </p>
-
-    </div>
-
-    <div class="p-6">
-
+            <div class="text-5xl">
+                ✅
+            </div>
+            <h3
+                class="
+                    font-black
+                    text-xl
+                    mt-4
+                "
+            >
+                No Pending Registrations
+            </h3>
+            <p
+                class="
+                    text-slate-500
+                    text-sm
+                    mt-2
+                "
+            >
+                There are currently no staff accounts
+                waiting for approval.
+            </p>
+        </div>
+        <!-- TABLE -->
+        <div
+            id="tableContainer"
+            class="
+                hidden
+                overflow-x-auto
+            "
+        >
+            <table class="w-full text-sm">
+                <thead
+                    class="
+                        bg-slate-50
+                        border-b
+                    "
+                >
+                    <tr>
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
+                            Staff
+                        </th>
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
+                            Staff ID
+                        </th>
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
+                            Position
+                        </th>
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
+                            Department
+                        </th>
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
+                            Phone
+                        </th>
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
+                            Action
+                        </th>
+                    </tr>
+                </thead>
+                <tbody
+                    id="pendingTableBody"
+                    class="divide-y"
+                ></tbody>
+            </table>
+        </div>
+    </section>
+    <!-- ====================================================
+         STAFF ACCESS MANAGEMENT
+    ==================================================== -->
+    <section
+        class="
+            mt-8
+            bg-white
+            rounded-2xl
+            shadow
+            overflow-hidden
+        "
+    >
+        <div
+            class="
+                p-6
+                border-b
+                border-slate-200
+            "
+        >
+            <div
+                class="
+                    flex
+                    flex-col
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                    gap-3
+                "
+            >
+                <div>
+                    <h2 class="text-xl font-black">
+                        👥 Staff Access Management
+                    </h2>
+                    <p
+                        class="
+                            text-sm
+                            text-slate-500
+                            mt-1
+                        "
+                    >
+                        Activate or deactivate access for approved
+                        hospital staff.
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <span
+                        id="activeStaffCount"
+                        class="
+                            inline-flex
+                            items-center
+                            justify-center
+                            bg-green-100
+                            text-green-800
+                            px-3
+                            py-1
+                            rounded-full
+                            text-sm
+                            font-black
+                        "
+                    >
+                        0 Active
+                    </span>
+                    <span
+                        id="inactiveStaffCount"
+                        class="
+                            inline-flex
+                            items-center
+                            justify-center
+                            bg-red-100
+                            text-red-800
+                            px-3
+                            py-1
+                            rounded-full
+                            text-sm
+                            font-black
+                        "
+                    >
+                        0 Inactive
+                    </span>
+                </div>
+            </div>
+        </div>
+        <!-- STATUS -->
         <div
             id="staffStatusMessage"
-            class="hidden mb-5 p-4 rounded-xl text-sm"
+            class="
+                hidden
+                m-6
+                p-4
+                rounded-xl
+                text-sm
+            "
         ></div>
-<div class="flex flex-wrap gap-2 mb-5">
-
-    <span
-        id="activeStaffCount"
-        class="bg-green-100
-               text-green-800
-               px-3 py-1
-               rounded-full
-               text-sm
-               font-black"
-    >
-        0 Active
-    </span>
-
-    <span
-        id="inactiveStaffCount"
-        class="bg-red-100
-               text-red-800
-               px-3 py-1
-               rounded-full
-               text-sm
-               font-black"
-    >
-        0 Inactive
-    </span>
-
-</div>
+        <!-- LOADING -->
         <div
             id="staffStatusLoading"
-            class="text-center py-8"
+            class="
+                text-center
+                py-10
+            "
         >
-            <div class="text-3xl">🔄</div>
-
+            <div class="text-3xl">
+                🔄
+            </div>
             <p class="font-bold mt-3">
                 Loading staff accounts...
             </p>
         </div>
-
+        <!-- EMPTY -->
         <div
             id="staffStatusEmpty"
-            class="hidden text-center py-8"
+            class="
+                hidden
+                text-center
+                py-10
+            "
         >
-            <div class="text-4xl">👥</div>
-
+            <div class="text-4xl">
+                👥
+            </div>
             <p class="font-bold mt-3">
                 No staff accounts found.
             </p>
         </div>
-
+        <!-- TABLE -->
         <div
             id="staffStatusTableContainer"
-            class="hidden overflow-x-auto"
+            class="
+                hidden
+                overflow-x-auto
+            "
         >
-
             <table class="w-full text-sm">
-
-                <thead class="bg-slate-50 border-b">
-
+                <thead
+                    class="
+                        bg-slate-50
+                        border-b
+                    "
+                >
                     <tr>
-
-                        <th class="text-left px-4 py-3 font-black">
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
                             Staff
                         </th>
-
-                        <th class="text-left px-4 py-3 font-black">
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
                             Staff ID
                         </th>
-
-                        <th class="text-left px-4 py-3 font-black">
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
                             Position
                         </th>
-
-                        <th class="text-left px-4 py-3 font-black">
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
                             Department
                         </th>
-
-                        <th class="text-left px-4 py-3 font-black">
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
                             Status
                         </th>
-
-                        <th class="text-left px-4 py-3 font-black">
+                        <th
+                            class="
+                                text-left
+                                px-6
+                                py-4
+                                font-black
+                            "
+                        >
                             Action
                         </th>
-
                     </tr>
-
                 </thead>
-
                 <tbody
                     id="staffStatusTableBody"
                     class="divide-y"
                 ></tbody>
-
             </table>
-
         </div>
-
-    </div>
-
-</section>
-            <!-- =================================================
-                 SECURITY NOTICE
-            ================================================== -->
-
-            <section
-                class="mt-8
-                       bg-blue-50
-                       border border-blue-100
-                       rounded-2xl
-                       p-6"
+    </section>
+    <!-- ====================================================
+         CHANGE ADMINISTRATOR PASSWORD
+    ==================================================== -->
+    <section
+        class="
+            mt-8
+            bg-white
+            rounded-2xl
+            shadow
+            p-6
+        "
+    >
+        <h2 class="text-xl font-black">
+            🔑 Change Administrator Password
+        </h2>
+        <p
+            class="
+                text-sm
+                text-slate-500
+                mt-1
+            "
+        >
+            Change the password used to access the administrator account.
+        </p>
+        <form
+            id="changeAdminPasswordForm"
+            class="
+                mt-6
+                max-w-xl
+                space-y-5
+            "
+        >
+            <div>
+                <label
+                    for="currentAdminPassword"
+                    class="block text-sm font-bold"
+                >
+                    Current Password
+                </label>
+                <input
+                    id="currentAdminPassword"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="Enter current password"
+                >
+            </div>
+            <div>
+                <label
+                    for="newAdminPassword"
+                    class="block text-sm font-bold"
+                >
+                    New Password
+                </label>
+                <input
+                    id="newAdminPassword"
+                    type="password"
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="Minimum 8 characters"
+                >
+            </div>
+            <div>
+                <label
+                    for="confirmAdminPassword"
+                    class="block text-sm font-bold"
+                >
+                    Confirm New Password
+                </label>
+                <input
+                    id="confirmAdminPassword"
+                    type="password"
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="Enter the new password again"
+                >
+            </div>
+            <button
+                id="changeAdminPasswordButton"
+                type="submit"
+                class="
+                    bg-blue-900
+                    hover:bg-blue-800
+                    text-white
+                    px-6
+                    py-3
+                    rounded-xl
+                    font-black
+                "
             >
-
-                <h2 class="font-black text-lg">
-                    🔐 Administrator Security
-                </h2>
-
-                <p
-                    class="text-sm
-                          text-blue-900
-                          mt-2"
-                >
-                    Only authorized hospital administrators should
-                    approve staff accounts. Verify the staff ID,
-                    position, department and other information before
-                    approving an account.
-                </p>
-
-            </section>
-
-        </div>
-
-    </main>
-
-
-
-    <!-- =====================================================
-         SUPABASE CONFIGURATION
-    ====================================================== -->
-
-    <script src="js/supabase.js"></script>
-
-
-
-    <!-- =====================================================
-         ADMINISTRATION LOGIC
-    ====================================================== -->
-
-    <script>
-
-        "use strict";
-
-
-        // ====================================================
-        // ELEMENTS
-        // ====================================================
-
-        const loading =
-            document.getElementById("loading");
-
-        const adminPage =
-            document.getElementById("adminPage");
-
-        const pendingCount =
-            document.getElementById("pendingCount");
-
-        const pendingTableBody =
-            document.getElementById("pendingTableBody");
-
-        const tableContainer =
-            document.getElementById("tableContainer");
-
-        const emptyState =
-            document.getElementById("emptyState");
-
-        const adminStatus =
-            document.getElementById("adminStatus");
-
-        const refreshButton =
-            document.getElementById("refreshButton");
-
-        const backButton =
-            document.getElementById("backButton");
-
-
-
-        // ====================================================
-        // STATUS MESSAGE
-        // ====================================================
-
-        function showStatus(message, type) {
-
-            adminStatus.classList.remove(
-                "hidden",
-                "bg-red-50",
-                "text-red-700",
-                "bg-green-50",
-                "text-green-700",
-                "bg-blue-50",
-                "text-blue-700"
-            );
-
-
-            if (type === "error") {
-
-                adminStatus.classList.add(
-                    "bg-red-50",
-                    "text-red-700"
-                );
-
-            }
-
-            else if (type === "success") {
-
-                adminStatus.classList.add(
-                    "bg-green-50",
-                    "text-green-700"
-                );
-
-            }
-
-            else {
-
-                adminStatus.classList.add(
-                    "bg-blue-50",
-                    "text-blue-700"
-                );
-
-            }
-
-
-            adminStatus.textContent =
-                message;
-
-        }
-
-
-
-        // ====================================================
-        // ESCAPE HTML
-        // ====================================================
-
-        function escapeHTML(value) {
-
-            return String(value || "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-
-        }
-
-
-
-        // ====================================================
-        // CHECK ADMIN
-        // ====================================================
-
-        async function checkAdministrator() {
-
-            if (!window.CHA_SUPABASE) {
-
-                throw new Error(
-                    "Supabase is not configured."
-                );
-
-            }
-
-
-            const {
-                data: authData,
-                error: authError
-            } =
-                await window.CHA_SUPABASE.auth.getUser();
-
-
-            if (
-                authError ||
-                !authData ||
-                !authData.user
-            ) {
-
-                window.location.href =
-                    "staff-login.html";
-
-                return null;
-
-            }
-
-
-            const user =
-                authData.user;
-
-
-            const {
-                data: profile,
-                error: profileError
-            } =
-                await window.CHA_SUPABASE
-                    .from("staff_profiles")
-                    .select(`
-                        id,
-                        role,
-                        is_active
-                    `)
-                    .eq(
-                        "id",
-                        user.id
-                    )
-                    .single();
-
-
-            if (profileError) {
-
-                throw profileError;
-
-            }
-
-
-            if (
-                !profile ||
-                !profile.is_active ||
-                profile.role !== "admin"
-            ) {
-
-                await window.CHA_SUPABASE.auth.signOut();
-
-                window.location.href =
-                    "staff-login.html";
-
-                return null;
-
-            }
-
-
-            return user;
-
-        }
-
-
-
-        // ====================================================
-        // LOAD PENDING STAFF
-        // ====================================================
-
-        async function loadPendingStaff() {
-
-            tableContainer.classList.add(
-                "hidden"
-            );
-
-            emptyState.classList.add(
-                "hidden"
-            );
-
-
-            pendingTableBody.innerHTML = "";
-
-
-            try {
-
-                const {
-                    data,
-                    error
-                } =
-                    await window.CHA_SUPABASE
-                        .from("staff_profiles")
-                        .select(`
-                            id,
-                            full_name,
-                            staff_id,
-                            role,
-                            department_id,
-                            phone,
-                            is_active,
-                            departments (
-                                name
-                            )
-                        `)
-                        .eq(
-                            "is_active",
-                            false
-                        )
-                        .order(
-                            "full_name",
-                            {
-                                ascending: true
-                            }
-                        );
-
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-
-                const pending =
-                    data || [];
-
-
-                pendingCount.textContent =
-                    pending.length +
-                    (
-                        pending.length === 1
-                            ? " Pending"
-                            : " Pending"
-                    );
-
-
-                if (
-                    pending.length === 0
-                ) {
-
-                    emptyState.classList.remove(
-                        "hidden"
-                    );
-
-                    return;
-
-                }
-tableContainer.classList.remove(
-    "hidden"
-);
-
-               pending.forEach(
-    function(staff) {
-
-        const row =
-            document.createElement(
-                "tr"
-            );
-
-        row.className =
-            "hover:bg-slate-50";
-
-        const departmentName =
-            staff.departments?.name ||
-            "Not assigned";
-
-        row.innerHTML = `
-
-            <td class="px-6 py-5">
-
-                <div class="font-black text-slate-900">
-                    ${escapeHTML(
-                        staff.full_name
-                    )}
-                </div>
-
-            </td>
-
-
-            <td class="px-6 py-5">
-
-                <span
-                    class="font-mono
-                           text-xs
-                           bg-slate-100
-                           px-2 py-1
-                           rounded"
-                >
-                    ${escapeHTML(
-                        staff.staff_id
-                    )}
-                </span>
-
-            </td>
-
-
-            <td class="px-6 py-5">
-
-                <span
-                    class="inline-flex
-                           bg-blue-100
-                           text-blue-800
-                           px-2 py-1
-                           rounded-full
-                           text-xs
-                           font-bold"
-                >
-                    ${escapeHTML(
-                        formatRole(
-                            staff.role
-                        )
-                    )}
-                </span>
-
-            </td>
-
-
-            <td class="px-6 py-5">
-
-                ${escapeHTML(
-                    departmentName
-                )}
-
-            </td>
-
-
-            <td class="px-6 py-5">
-
-                ${escapeHTML(
-                    staff.phone
-                )}
-
-            </td>
-
-
-            <td class="px-6 py-5">
-
-                <div class="flex flex-wrap gap-2">
-
-                    <!-- APPROVE -->
-
-                    <button
-                        class="approve-button
-                               bg-green-600
-                               hover:bg-green-700
-                               text-white
-                               px-4 py-2
-                               rounded-lg
-                               font-bold"
-                        data-id="${escapeHTML(
-                            staff.id
-                        )}"
-                    >
-                        ✓ Approve
-                    </button>
-
-
-                    <!-- REJECT -->
-
-                    <button
-                        class="reject-button
-                               bg-red-600
-                               hover:bg-red-700
-                               text-white
-                               px-4 py-2
-                               rounded-lg
-                               font-bold"
-                        data-id="${escapeHTML(
-                            staff.id
-                        )}"
-                    >
-                        ✕ Reject
-                    </button>
-
-                </div>
-
-            </td>
-
-        `;
-
-        pendingTableBody.appendChild(
-            row
-        );
-
-    }
-); 
-
-                document
-    .querySelectorAll(
-        ".approve-button"
-    )
-    .forEach(
-        function(button) {
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    approveStaff(
-                        this.dataset.id
-                    );
-
-                }
-            );
-
-        }
-    );
-
-
-// ====================================================
-// REJECT BUTTONS
-// ====================================================
-
-document
-    .querySelectorAll(
-        ".reject-button"
-    )
-    .forEach(
-        function(button) {
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    rejectStaff(
-                        this.dataset.id
-                    );
-
-                }
-            );
-
-        }
-    );
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "CHA Pending Staff Error:",
-                    error
-                );
-
-
-                showStatus(
-                    "Unable to load pending staff: " +
-                    (
-                        error.message ||
-                        "Unknown error"
-                    ),
-                    "error"
-                );
-
-            }
-
-        }
-
-
-
-        // ====================================================
-        // FORMAT ROLE
-        // ====================================================
-
-        function formatRole(role) {
-
-            const roles = {
-
-                admin:
-                    "Administrator",
-
-                staff:
-                    "Staff",
-
-                doctor:
-                    "Doctor",
-
-                nurse:
-                    "Nurse",
-
-                midwife:
-                    "Midwife",
-
-                receptionist:
-                    "Receptionist",
-
-                pharmacist:
-                    "Pharmacist",
-
-                laboratory_staff:
-                    "Laboratory Staff",
-
-                medical_records:
-                    "Medical Records Staff",
-
-                accounts:
-                    "Accounts Staff",
-
-                ambulance:
-                    "Ambulance Staff",
-
-                theatre:
-                    "Theatre Staff",
-
-                stores:
-                    "Stores Staff"
-
-            };
-
-
-            return (
-                roles[role] ||
-                role ||
-                "Unknown"
-            );
-
-        }
-
-
-
-        // ====================================================
-        // APPROVE STAFF
-        // ====================================================
-
-        async function approveStaff(staffId) {
-
-    const confirmed =
-        window.confirm(
-            "Are you sure you want to approve this staff account?"
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    showStatus(
-        "Approving staff account...",
-        "info"
-    );
-
-    try {
-
-        const response =
-            await fetch(
-                "/.netlify/functions/approve-staff",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        staffProfileId: staffId
-                    })
-                }
-            );
-
-
-        let result;
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "The approval server returned an invalid response."
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result.error ||
-                "Unable to approve staff account."
-            );
-
-        }
-
-
-        showStatus(
-            result.message ||
-            "Staff account approved and email confirmed successfully.",
-            "success"
-        );
-
-
-        await loadPendingStaff();
-await loadStaffAccess();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "CHA Staff Approval Error:",
-            error
-        );
-
-        showStatus(
-            error.message ||
-            "Unable to approve staff account.",
-            "error"
-        );
-
-    }
-
-}
-
-// ====================================================
-// REJECT STAFF
-// ====================================================
-
-async function rejectStaff(staffId) {
-
-    const confirmed =
-        window.confirm(
-            "Are you sure you want to reject this staff registration?\n\nThe pending staff profile and authentication account will be removed."
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    showStatus(
-        "Rejecting staff registration...",
-        "info"
-    );
-
-    try {
-
-        const response =
-            await fetch(
-                "/.netlify/functions/reject-staff",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        staffProfileId: staffId
-                    })
-                }
-            );
-
-
-        let result;
-
-        try {
-
-            result =
-                await response.json();
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "The rejection server returned an invalid response."
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                result.error ||
-                "Unable to reject staff registration."
-            );
-
-        }
-
-
-        showStatus(
-            result.message ||
-            "Staff registration rejected successfully.",
-            "success"
-        );
-
-
-        await loadPendingStaff();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "CHA Staff Rejection Error:",
-            error
-        );
-
-        showStatus(
-            error.message ||
-            "Unable to reject staff registration.",
-            "error"
-        );
-
-    }
-
-}
-
-        // ====================================================
-        // REFRESH
-        // ====================================================
-
-        refreshButton.addEventListener(
-            "click",
-            async function() {
-
-                refreshButton.disabled =
-                    true;
-
-                refreshButton.textContent =
-                    "Refreshing...";
-
-
-                await loadPendingStaff();
-
-
-                refreshButton.disabled =
-                    false;
-
-                refreshButton.textContent =
-                    "↻ Refresh";
-
-            }
-        );
-
-        // ====================================================
-        // BACK TO DASHBOARD
-        // ====================================================
-
-        backButton.addEventListener(
-            "click",
-            function() {
-
-                window.location.href =
-                    "staff-dashboard.html";
-
-            }
-        );
-// ====================================================
-// STAFF ACCESS MANAGEMENT
-// ====================================================
-
-const activeStaffAccessCount =
+                Change Password
+            </button>
+        </form>
+        <div
+            id="passwordChangeStatus"
+            class="
+                hidden
+                mt-5
+                p-4
+                rounded-xl
+                text-sm
+            "
+        ></div>
+    </section>
+    <!-- ====================================================
+         SECURITY NOTICE
+    ==================================================== -->
+    <section
+        class="
+            mt-8
+            bg-blue-50
+            border
+            border-blue-100
+            rounded-2xl
+            p-6
+        "
+    >
+        <h2 class="font-black text-lg">
+            🔐 Administrator Security
+        </h2>
+        <p
+            class="
+                text-sm
+                text-blue-900
+                mt-2
+            "
+        >
+            Only authorized hospital administrators should approve
+            staff accounts. Verify the staff ID, position, department
+            and other information before approving an account.
+        </p>
+    </section>
+</div>
+</main>
+<!-- ============================================================
+     SUPABASE CONFIGURATION
+============================================================ -->
+<script src="js/supabase.js"></script>
+<!-- ============================================================
+     ADMINISTRATION LOGIC
+============================================================ -->
+<script>
+"use strict";
+// ============================================================
+// ELEMENTS
+// ============================================================
+const loading =
+    document.getElementById("loading");
+const adminPage =
+    document.getElementById("adminPage");
+const pendingCount =
+    document.getElementById("pendingCount");
+const pendingTableBody =
+    document.getElementById("pendingTableBody");
+const tableContainer =
+    document.getElementById("tableContainer");
+const emptyState =
+    document.getElementById("emptyState");
+const adminStatus =
+    document.getElementById("adminStatus");
+const refreshButton =
+    document.getElementById("refreshButton");
+const backButton =
+    document.getElementById("backButton");
+// Staff status elements
+const activeStaffCount =
+    document.getElementById("activeStaffCount");
+const inactiveStaffCount =
+    document.getElementById("inactiveStaffCount");
+const staffStatusMessage =
+    document.getElementById("staffStatusMessage");
+const staffStatusLoading =
+    document.getElementById("staffStatusLoading");
+const staffStatusEmpty =
+    document.getElementById("staffStatusEmpty");
+const staffStatusTableContainer =
     document.getElementById(
-        "activeStaffCount"
+        "staffStatusTableContainer"
     );
-
-const staffAccessTableBody =
-    document.getElementById("staffAccessTableBody");
-
-const staffAccessTableContainer =
-    document.getElementById("staffAccessTableContainer");
-
-const staffAccessEmpty =
-    document.getElementById("staffAccessEmpty");
-
-const staffAccessStatus =
-    document.getElementById("staffAccessStatus");
-
-
-function showStaffAccessStatus(message, type) {
-
-    staffAccessStatus.classList.remove(
+const staffStatusTableBody =
+    document.getElementById(
+        "staffStatusTableBody"
+    );
+// Password elements
+const changeAdminPasswordForm =
+    document.getElementById(
+        "changeAdminPasswordForm"
+    );
+const changeAdminPasswordButton =
+    document.getElementById(
+        "changeAdminPasswordButton"
+    );
+const passwordChangeStatus =
+    document.getElementById(
+        "passwordChangeStatus"
+    );
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+// ============================================================
+// STATUS MESSAGE
+// ============================================================
+function showStatus(message, type) {
+    adminStatus.classList.remove(
         "hidden",
         "bg-red-50",
         "text-red-700",
@@ -1536,78 +804,212 @@ function showStaffAccessStatus(message, type) {
         "bg-blue-50",
         "text-blue-700"
     );
-
     if (type === "error") {
-
-        staffAccessStatus.classList.add(
+        adminStatus.classList.add(
             "bg-red-50",
             "text-red-700"
         );
-
-    } else if (type === "success") {
-
-        staffAccessStatus.classList.add(
+    }
+    else if (type === "success") {
+        adminStatus.classList.add(
             "bg-green-50",
             "text-green-700"
         );
-
-    } else {
-
-        staffAccessStatus.classList.add(
+    }
+    else {
+        adminStatus.classList.add(
             "bg-blue-50",
             "text-blue-700"
         );
-
     }
-
-    staffAccessStatus.textContent = message;
-
+    adminStatus.textContent =
+        message;
 }
-
-
-// ====================================================
-// LOAD APPROVED STAFF
-// ====================================================
-
-async function loadStaffAccess() {
-
-    staffAccessTableContainer.classList.add(
+// ============================================================
+// STAFF STATUS MESSAGE
+// ============================================================
+function showStaffStatusMessage(
+    message,
+    type
+) {
+    staffStatusMessage.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+    if (type === "error") {
+        staffStatusMessage.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+    }
+    else if (type === "success") {
+        staffStatusMessage.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+    }
+    else {
+        staffStatusMessage.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+    }
+    staffStatusMessage.textContent =
+        message;
+}
+// ============================================================
+// PASSWORD STATUS
+// ============================================================
+function showPasswordStatus(
+    message,
+    type
+) {
+    passwordChangeStatus.classList.remove(
+        "hidden",
+        "bg-red-50",
+        "text-red-700",
+        "bg-green-50",
+        "text-green-700",
+        "bg-blue-50",
+        "text-blue-700"
+    );
+    if (type === "error") {
+        passwordChangeStatus.classList.add(
+            "bg-red-50",
+            "text-red-700"
+        );
+    }
+    else if (type === "success") {
+        passwordChangeStatus.classList.add(
+            "bg-green-50",
+            "text-green-700"
+        );
+    }
+    else {
+        passwordChangeStatus.classList.add(
+            "bg-blue-50",
+            "text-blue-700"
+        );
+    }
+    passwordChangeStatus.textContent =
+        message;
+}
+// ============================================================
+// FORMAT ROLE
+// ============================================================
+function formatRole(role) {
+    const roles = {
+        admin:
+            "Administrator",
+        staff:
+            "Staff",
+        doctor:
+            "Doctor",
+        nurse:
+            "Nurse",
+        midwife:
+            "Midwife",
+        receptionist:
+            "Receptionist",
+        pharmacist:
+            "Pharmacist",
+        laboratory_staff:
+            "Laboratory Staff",
+        medical_records:
+            "Medical Records Staff",
+        accounts:
+            "Accounts Staff",
+        ambulance:
+            "Ambulance Staff",
+        theatre:
+            "Theatre Staff",
+        stores:
+            "Stores Staff"
+    };
+    return (
+        roles[role] ||
+        role ||
+        "Unknown"
+    );
+}
+// ============================================================
+// CHECK ADMINISTRATOR
+// ============================================================
+async function checkAdministrator() {
+    if (!window.CHA_SUPABASE) {
+        throw new Error(
+            "Supabase is not configured."
+        );
+    }
+    const {
+        data: authData,
+        error: authError
+    } =
+        await window.CHA_SUPABASE
+            .auth
+            .getUser();
+    if (
+        authError ||
+        !authData ||
+        !authData.user
+    ) {
+        window.location.href =
+            "staff-login.html";
+        return null;
+    }
+    const user =
+        authData.user;
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await window.CHA_SUPABASE
+            .from("staff_profiles")
+            .select(`
+                id,
+                role,
+                is_active
+            `)
+            .eq(
+                "id",
+                user.id
+            )
+            .single();
+    if (profileError) {
+        throw profileError;
+    }
+    if (
+        !profile ||
+        profile.is_active !== true ||
+        String(profile.role || "")
+            .toLowerCase() !== "admin"
+    ) {
+        await window.CHA_SUPABASE
+            .auth
+            .signOut();
+        window.location.href =
+            "staff-login.html";
+        return null;
+    }
+    return user;
+}
+// ============================================================
+// LOAD PENDING STAFF
+// ============================================================
+async function loadPendingStaff() {
+    tableContainer.classList.add(
         "hidden"
     );
-
-    staffAccessEmpty.classList.add(
+    emptyState.classList.add(
         "hidden"
     );
-
-    staffAccessTableBody.innerHTML = "";
-
-
+    pendingTableBody.innerHTML = "";
     try {
-
-        const {
-            data: currentUserData,
-            error: currentUserError
-        } =
-            await window.CHA_SUPABASE.auth.getUser();
-
-
-        if (
-            currentUserError ||
-            !currentUserData ||
-            !currentUserData.user
-        ) {
-
-            throw new Error(
-                "Administrator session could not be verified."
-            );
-
-        }
-
-
-        const currentAdminId =
-            currentUserData.user.id;
-
-
         const {
             data,
             error
@@ -1619,11 +1021,16 @@ async function loadStaffAccess() {
                     full_name,
                     staff_id,
                     role,
-                    is_active
+                    department_id,
+                    phone,
+                    is_active,
+                    departments (
+                        name
+                    )
                 `)
-                .neq(
-                    "role",
-                    "admin"
+                .eq(
+                    "is_active",
+                    false
                 )
                 .order(
                     "full_name",
@@ -1631,846 +1038,351 @@ async function loadStaffAccess() {
                         ascending: true
                     }
                 );
-
-
         if (error) {
-
             throw error;
-
         }
-
-
-        const staffList =
+        const pending =
             data || [];
-
-
-        const activeCount =
-            staffList.filter(
-                function(staff) {
-                    return staff.is_active === true;
-                }
-            ).length;
-
-
-        activeStaffAccessCount.textContent =
-            activeCount +
-            (
-                activeCount === 1
-                    ? " Active"
-                    : " Active"
-            );
-
-
-        if (staffList.length === 0) {
-
-            staffAccessEmpty.classList.remove(
+        pendingCount.textContent =
+            pending.length +
+            " Pending";
+        if (pending.length === 0) {
+            emptyState.classList.remove(
                 "hidden"
             );
-
             return;
-
         }
-
-
-        staffAccessTableContainer.classList.remove(
+        tableContainer.classList.remove(
             "hidden"
         );
-
-
-        staffList.forEach(
+        pending.forEach(
             function(staff) {
-
                 const row =
                     document.createElement("tr");
-
                 row.className =
                     "hover:bg-slate-50";
-
-
-                const statusHTML =
-                    staff.is_active
-                        ? `
-                            <span
-                                class="inline-flex
-                                       bg-green-100
-                                       text-green-800
-                                       px-3 py-1
-                                       rounded-full
-                                       text-xs
-                                       font-black"
-                            >
-                                ● Active
-                            </span>
-                          `
-                        : `
-                            <span
-                                class="inline-flex
-                                       bg-red-100
-                                       text-red-800
-                                       px-3 py-1
-                                       rounded-full
-                                       text-xs
-                                       font-black"
-                            >
-                                ● Inactive
-                            </span>
-                          `;
-
-
-                const actionHTML =
-                    staff.is_active
-                        ? `
-                            <button
-                                class="deactivate-staff-button
-                                       bg-red-600
-                                       hover:bg-red-700
-                                       text-white
-                                       px-4 py-2
-                                       rounded-lg
-                                       font-bold"
-                                data-id="${escapeHTML(staff.id)}"
-                            >
-                                🔒 Deactivate
-                            </button>
-                          `
-                        : `
-                            <button
-                                class="activate-staff-button
-                                       bg-green-600
-                                       hover:bg-green-700
-                                       text-white
-                                       px-4 py-2
-                                       rounded-lg
-                                       font-bold"
-                                data-id="${escapeHTML(staff.id)}"
-                            >
-                                🔓 Activate
-                            </button>
-                          `;
-
-
+                const departmentName =
+                    staff.departments?.name ||
+                    "Not assigned";
                 row.innerHTML = `
-
                     <td class="px-6 py-5">
                         <div class="font-black text-slate-900">
-                            ${escapeHTML(staff.full_name)}
+                            ${escapeHTML(
+                                staff.full_name
+                            )}
                         </div>
                     </td>
-
                     <td class="px-6 py-5">
                         <span
-                            class="font-mono text-xs
-                                   bg-slate-100
-                                   px-2 py-1 rounded"
+                            class="
+                                font-mono
+                                text-xs
+                                bg-slate-100
+                                px-2
+                                py-1
+                                rounded
+                            "
                         >
-                            ${escapeHTML(staff.staff_id)}
+                            ${escapeHTML(
+                                staff.staff_id
+                            )}
                         </span>
                     </td>
-
+                    <td class="px-6 py-5">
+                        <span
+                            class="
+                                inline-flex
+                                bg-blue-100
+                                text-blue-800
+                                px-2
+                                py-1
+                                rounded-full
+                                text-xs
+                                font-bold
+                            "
+                        >
+                            ${escapeHTML(
+                                formatRole(
+                                    staff.role
+                                )
+                            )}
+                        </span>
+                    </td>
                     <td class="px-6 py-5">
                         ${escapeHTML(
-                            formatRole(staff.role)
+                            departmentName
                         )}
                     </td>
-
                     <td class="px-6 py-5">
-                        ${statusHTML}
+                        ${escapeHTML(
+                            staff.phone ||
+                            ""
+                        )}
                     </td>
-
                     <td class="px-6 py-5">
-                        ${actionHTML}
+                        <div class="flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                class="
+                                    approve-button
+                                    bg-green-600
+                                    hover:bg-green-700
+                                    text-white
+                                    px-4
+                                    py-2
+                                    rounded-lg
+                                    font-bold
+                                "
+                                data-id="${escapeHTML(
+                                    staff.id
+                                )}"
+                            >
+                                ✓ Approve
+                            </button>
+                            <button
+                                type="button"
+                                class="
+                                    reject-button
+                                    bg-red-600
+                                    hover:bg-red-700
+                                    text-white
+                                    px-4
+                                    py-2
+                                    rounded-lg
+                                    font-bold
+                                "
+                                data-id="${escapeHTML(
+                                    staff.id
+                                )}"
+                            >
+                                ✕ Reject
+                            </button>
+                        </div>
                     </td>
-
                 `;
-
-
-                staffAccessTableBody.appendChild(row);
-
+                pendingTableBody.appendChild(
+                    row
+                );
             }
         );
-
-
         document
             .querySelectorAll(
-                ".deactivate-staff-button"
+                ".approve-button"
             )
             .forEach(
                 function(button) {
-
                     button.addEventListener(
                         "click",
                         function() {
-
-                            changeStaffStatus(
-                                this.dataset.id,
-                                "deactivate"
+                            approveStaff(
+                                this.dataset.id
                             );
-
                         }
                     );
-
                 }
             );
-
-
         document
             .querySelectorAll(
-                ".activate-staff-button"
+                ".reject-button"
             )
             .forEach(
                 function(button) {
-
                     button.addEventListener(
                         "click",
                         function() {
-
-                            changeStaffStatus(
-                                this.dataset.id,
-                                "activate"
+                            rejectStaff(
+                                this.dataset.id
                             );
-
                         }
                     );
-
                 }
             );
-
     }
-
     catch (error) {
-
         console.error(
-            "CHA Staff Access Error:",
+            "CHA Pending Staff Error:",
             error
         );
-
-        showStaffAccessStatus(
-            error.message ||
-            "Unable to load staff accounts.",
+        showStatus(
+            "Unable to load pending staff: " +
+            (
+                error.message ||
+                "Unknown error"
+            ),
             "error"
         );
-
     }
-
 }
-
-
-// ====================================================
-// ACTIVATE / DEACTIVATE STAFF
-// ====================================================
-
-async function changeStaffStatus(
-    staffId,
-    action
-) {
-
-    const actionText =
-        action === "deactivate"
-            ? "deactivate"
-            : "activate";
-
-
+// ============================================================
+// APPROVE STAFF
+// ============================================================
+async function approveStaff(staffId) {
     const confirmed =
         window.confirm(
-            "Are you sure you want to " +
-            actionText +
-            " this staff account?"
+            "Are you sure you want to approve this staff account?"
         );
-
-
     if (!confirmed) {
-
         return;
-
     }
-
-
-    showStaffAccessStatus(
-        action === "deactivate"
-            ? "Deactivating staff account..."
-            : "Activating staff account...",
+    showStatus(
+        "Approving staff account...",
         "info"
     );
-
-
     try {
-
-        const {
-            data: sessionData,
-            error: sessionError
-        } =
-            await window.CHA_SUPABASE.auth.getSession();
-
-
-        if (
-            sessionError ||
-            !sessionData ||
-            !sessionData.session
-        ) {
-
-            throw new Error(
-                "Administrator session has expired. Please log in again."
-            );
-
-        }
-
-
         const response =
             await fetch(
-                "/.netlify/functions/manage-staff-status",
+                "/.netlify/functions/approve-staff",
                 {
                     method: "POST",
-
                     headers: {
                         "Content-Type":
-                            "application/json",
-
-                        "Authorization":
-                            "Bearer " +
-                            sessionData.session.access_token
+                            "application/json"
                     },
-
                     body: JSON.stringify({
                         staffProfileId:
-                            staffId,
-
-                        action:
-                            action
+                            staffId
                     })
                 }
             );
-
-
         let result;
-
         try {
-
             result =
                 await response.json();
-
         }
-
-        catch (jsonError) {
-
+        catch (error) {
             throw new Error(
-                "The staff status server returned an invalid response."
+                "The approval server returned an invalid response."
             );
-
         }
-
-
-        if (!response.ok || !result.success) {
-
+        if (!response.ok) {
             throw new Error(
                 result.error ||
-                "Unable to change staff account status."
+                "Unable to approve staff account."
             );
-
         }
-
-
-        showStaffAccessStatus(
+        showStatus(
             result.message ||
-            "Staff account status changed successfully.",
+            "Staff account approved successfully.",
             "success"
         );
-
-
-        await loadStaffAccess();
-
+        await loadPendingStaff();
+        await loadStaffStatus();
     }
-
     catch (error) {
-
         console.error(
-            "CHA Staff Status Error:",
+            "CHA Staff Approval Error:",
             error
         );
-
-        showStaffAccessStatus(
+        showStatus(
             error.message ||
-            "Unable to change staff account status.",
+            "Unable to approve staff account.",
             "error"
         );
-
     }
-
 }
-
-
-// ====================================================
-// CHANGE ADMIN PASSWORD
-// ====================================================
-
-const changeAdminPasswordForm =
-    document.getElementById(
-        "changeAdminPasswordForm"
-    );
-
-const changeAdminPasswordButton =
-    document.getElementById(
-        "changeAdminPasswordButton"
-    );
-
-const passwordChangeStatus =
-    document.getElementById(
-        "passwordChangeStatus"
-    );
-
-
-function showPasswordStatus(
-    message,
-    type
-) {
-
-    passwordChangeStatus.classList.remove(
-        "hidden",
-        "bg-red-50",
-        "text-red-700",
-        "bg-green-50",
-        "text-green-700",
-        "bg-blue-50",
-        "text-blue-700"
-    );
-
-
-    if (type === "error") {
-
-        passwordChangeStatus.classList.add(
-            "bg-red-50",
-            "text-red-700"
+// ============================================================
+// REJECT STAFF
+// ============================================================
+async function rejectStaff(staffId) {
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to reject this staff registration?\n\nThe pending staff profile and authentication account will be removed."
         );
-
+    if (!confirmed) {
+        return;
     }
-
-    else if (type === "success") {
-
-        passwordChangeStatus.classList.add(
-            "bg-green-50",
-            "text-green-700"
-        );
-
-    }
-
-    else {
-
-        passwordChangeStatus.classList.add(
-            "bg-blue-50",
-            "text-blue-700"
-        );
-
-    }
-
-
-    passwordChangeStatus.textContent =
-        message;
-
-}
-
-
-changeAdminPasswordForm.addEventListener(
-    "submit",
-    async function(event) {
-
-        event.preventDefault();
-
-
-        const currentPassword =
-            document
-                .getElementById(
-                    "currentAdminPassword"
-                )
-                .value;
-
-
-        const newPassword =
-            document
-                .getElementById(
-                    "newAdminPassword"
-                )
-                .value;
-
-
-        const confirmPassword =
-            document
-                .getElementById(
-                    "confirmAdminPassword"
-                )
-                .value;
-
-
-        if (newPassword.length < 8) {
-
-            showPasswordStatus(
-                "The new password must contain at least 8 characters.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        if (newPassword !== confirmPassword) {
-
-            showPasswordStatus(
-                "The new passwords do not match.",
-                "error"
-            );
-
-            return;
-
-        }
-
-
-        changeAdminPasswordButton.disabled =
-            true;
-
-        changeAdminPasswordButton.textContent =
-            "Changing Password...";
-
-
-        showPasswordStatus(
-            "Verifying your current password...",
-            "info"
-        );
-
-
-        try {
-
-            const {
-                data: userData,
-                error: userError
-            } =
-                await window.CHA_SUPABASE.auth.getUser();
-
-
-            if (
-                userError ||
-                !userData ||
-                !userData.user ||
-                !userData.user.email
-            ) {
-
-                throw new Error(
-                    "Administrator account could not be verified."
-                );
-
-            }
-
-
-            const email =
-                userData.user.email;
-
-
-            // Re-authenticate administrator
-
-            const {
-                error: loginError
-            } =
-                await window.CHA_SUPABASE.auth
-                    .signInWithPassword({
-                        email: email,
-                        password: currentPassword
-                    });
-
-
-            if (loginError) {
-
-                throw new Error(
-                    "The current administrator password is incorrect."
-                );
-
-            }
-
-
-            showPasswordStatus(
-                "Updating administrator password...",
-                "info"
-            );
-
-
-            const {
-                error: updatePasswordError
-            } =
-                await window.CHA_SUPABASE.auth
-                    .updateUser({
-                        password: newPassword
-                    });
-
-
-            if (updatePasswordError) {
-
-                throw updatePasswordError;
-
-            }
-
-
-            changeAdminPasswordForm.reset();
-
-
-            showPasswordStatus(
-                "Administrator password changed successfully.",
-                "success"
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "CHA Password Change Error:",
-                error
-            );
-
-
-            showPasswordStatus(
-                error.message ||
-                "Unable to change administrator password.",
-                "error"
-            );
-
-        }
-
-        finally {
-
-            changeAdminPasswordButton.disabled =
-                false;
-
-            changeAdminPasswordButton.textContent =
-                "Change Password";
-
-        }
-
-    }
-);
-
-
-        // ====================================================
-        // INITIALIZE
-        // ====================================================
-
-        async function initializeAdministration() {
-
-            try {
-
-                const user =
-                    await checkAdministrator();
-
-
-                if (!user) {
-
-                    return;
-
+    showStatus(
+        "Rejecting staff registration...",
+        "info"
+    );
+    try {
+        const response =
+            await fetch(
+                "/.netlify/functions/reject-staff",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        staffProfileId:
+                            staffId
+                    })
                 }
-
-
-                loading.classList.add(
-                    "hidden"
-                );
-
-
-                adminPage.classList.remove(
-                    "hidden"
-                );
-
-
-                await loadPendingStaff();
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "CHA Administration Error:",
-                    error
-                );
-
-
-                loading.innerHTML = `
-
-                    <div class="text-3xl">
-                        ⚠️
-                    </div>
-
-                    <p
-                        class="font-bold
-                              mt-3
-                              text-red-700"
-                    >
-                        Unable to load Staff Administration
-                    </p>
-
-                    <p
-                        class="text-sm
-                              text-slate-500
-                              mt-2"
-                    >
-                        ${
-                            escapeHTML(
-                                error.message ||
-                                "Please try again."
-                            )
-                        }
-                    </p>
-
-                    <button
-                        onclick="window.location.href='staff-dashboard.html'"
-                        class="
-                            mt-5
-                            bg-blue-900
-                            text-white
-                            px-5
-                            py-3
-                            rounded-xl
-                            font-bold
-                        "
-                    >
-                        Return to Dashboard
-                    </button>
-
-                `;
-
-            }
-
+            );
+        let result;
+        try {
+            result =
+                await response.json();
         }
-
-
-        initializeAdministration();
-// ============================================================
-// STAFF STATUS MANAGEMENT
-// ============================================================
-
-const staffStatusTableContainer =
-    document.getElementById(
-        "staffStatusTableContainer"
-    );
-
-const staffStatusTableBody =
-    document.getElementById(
-        "staffStatusTableBody"
-    );
-
-const staffStatusLoading =
-    document.getElementById(
-        "staffStatusLoading"
-    );
-
-const staffStatusEmpty =
-    document.getElementById(
-        "staffStatusEmpty"
-    );
-
-const activeStaffCount =
-    document.getElementById(
-        "activeStaffCount"
-    );
-
-const inactiveStaffCount =
-    document.getElementById(
-        "inactiveStaffCount"
-    );
-
-const staffStatusMessage =
-    document.getElementById(
-        "staffStatusMessage"
-    );
-
-
-function showStaffStatusMessage(
-    message,
-    type
-) {
-
-    staffStatusMessage.classList.remove(
-        "hidden",
-        "bg-red-50",
-        "text-red-700",
-        "bg-green-50",
-        "text-green-700",
-        "bg-blue-50",
-        "text-blue-700"
-    );
-
-    if (type === "error") {
-
-        staffStatusMessage.classList.add(
-            "bg-red-50",
-            "text-red-700"
+        catch (error) {
+            throw new Error(
+                "The rejection server returned an invalid response."
+            );
+        }
+        if (!response.ok) {
+            throw new Error(
+                result.error ||
+                "Unable to reject staff registration."
+            );
+        }
+        showStatus(
+            result.message ||
+            "Staff registration rejected successfully.",
+            "success"
         );
-
-    } else if (type === "success") {
-
-        staffStatusMessage.classList.add(
-            "bg-green-50",
-            "text-green-700"
-        );
-
-    } else {
-
-        staffStatusMessage.classList.add(
-            "bg-blue-50",
-            "text-blue-700"
-        );
-
+        await loadPendingStaff();
     }
-
-    staffStatusMessage.textContent =
-        message;
+    catch (error) {
+        console.error(
+            "CHA Staff Rejection Error:",
+            error
+        );
+        showStatus(
+            error.message ||
+            "Unable to reject staff registration.",
+            "error"
+        );
+    }
 }
-
-
 // ============================================================
-// LOAD ALL STAFF STATUS
+// LOAD STAFF ACCESS
 // ============================================================
-
 async function loadStaffStatus() {
-
     staffStatusLoading.classList.remove(
         "hidden"
     );
-
     staffStatusEmpty.classList.add(
         "hidden"
     );
-
     staffStatusTableContainer.classList.add(
         "hidden"
     );
-
     staffStatusTableBody.innerHTML = "";
-
     try {
-
         const {
             data: sessionData,
             error: sessionError
         } =
             await window.CHA_SUPABASE
-                .auth.getSession();
-
+                .auth
+                .getSession();
         if (sessionError) {
             throw sessionError;
         }
-
         const session =
             sessionData?.session;
-
         if (!session) {
-
             window.location.href =
                 "staff-login.html";
-
             return;
-
         }
-
         const response =
             await fetch(
                 "/.netlify/functions/list-staff-status",
                 {
                     method: "GET",
-
                     headers: {
                         "Authorization":
                             "Bearer " +
@@ -2478,161 +1390,134 @@ async function loadStaffStatus() {
                     }
                 }
             );
-
         let result;
-
         try {
-
             result =
                 await response.json();
-
-        } catch (error) {
-
+        }
+        catch (error) {
             throw new Error(
                 "The staff status server returned an invalid response."
             );
-
         }
-
         if (!response.ok) {
-
             throw new Error(
                 result.error ||
                 "Unable to load staff accounts."
             );
-
         }
-
         const staff =
             result.staff || [];
-
         const active =
             staff.filter(
                 function(member) {
-                    return member.is_active === true;
+                    return (
+                        member.is_active === true
+                    );
                 }
             );
-
         const inactive =
             staff.filter(
                 function(member) {
-                    return member.is_active !== true;
+                    return (
+                        member.is_active !== true
+                    );
                 }
             );
-
         activeStaffCount.textContent =
             active.length +
             " Active";
-
         inactiveStaffCount.textContent =
             inactive.length +
             " Inactive";
-
         staffStatusLoading.classList.add(
             "hidden"
         );
-
         if (staff.length === 0) {
-
             staffStatusEmpty.classList.remove(
                 "hidden"
             );
-
             return;
-
         }
-
         staffStatusTableContainer.classList.remove(
             "hidden"
         );
-
         staff.forEach(
             function(member) {
-
                 const row =
-                    document.createElement(
-                        "tr"
-                    );
-
+                    document.createElement("tr");
                 row.className =
                     "hover:bg-slate-50";
-
                 const statusClass =
                     member.is_active
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800";
-
                 const statusText =
                     member.is_active
                         ? "ACTIVE"
                         : "INACTIVE";
-
                 const actionClass =
                     member.is_active
                         ? "bg-red-600 hover:bg-red-700"
                         : "bg-green-600 hover:bg-green-700";
-
                 const actionText =
                     member.is_active
-                        ? "Deactivate"
-                        : "Activate";
-
+                        ? "🔒 Deactivate"
+                        : "🔓 Activate";
                 row.innerHTML = `
-
                     <td class="px-6 py-5">
-
                         <div class="font-black text-slate-900">
                             ${escapeHTML(
                                 member.full_name
                             )}
                         </div>
-
-                        <div class="text-xs text-slate-500 mt-1">
+                        <div
+                            class="
+                                text-xs
+                                text-slate-500
+                                mt-1
+                            "
+                        >
                             ${escapeHTML(
                                 member.phone || ""
                             )}
                         </div>
-
                     </td>
-
                     <td class="px-6 py-5">
-
                         <span
-                            class="font-mono text-xs
-                                   bg-slate-100
-                                   px-2 py-1 rounded"
+                            class="
+                                font-mono
+                                text-xs
+                                bg-slate-100
+                                px-2
+                                py-1
+                                rounded
+                            "
                         >
                             ${escapeHTML(
                                 member.staff_id
                             )}
                         </span>
-
                     </td>
-
                     <td class="px-6 py-5">
-
                         ${escapeHTML(
                             formatRole(
                                 member.role
                             )
                         )}
-
                     </td>
-
                     <td class="px-6 py-5">
-
                         ${escapeHTML(
-                            member.department
+                            member.department ||
+                            "Not assigned"
                         )}
-
                     </td>
-
                     <td class="px-6 py-5">
-
                         <span
                             class="
                                 inline-flex
-                                px-3 py-1
+                                px-3
+                                py-1
                                 rounded-full
                                 text-xs
                                 font-black
@@ -2641,18 +1526,16 @@ async function loadStaffStatus() {
                         >
                             ${statusText}
                         </span>
-
                     </td>
-
                     <td class="px-6 py-5">
-
                         <button
                             type="button"
                             class="
                                 staff-status-button
                                 ${actionClass}
                                 text-white
-                                px-4 py-2
+                                px-4
+                                py-2
                                 rounded-lg
                                 font-bold
                             "
@@ -2666,85 +1549,63 @@ async function loadStaffStatus() {
                         >
                             ${actionText}
                         </button>
-
                     </td>
-
                 `;
-
                 staffStatusTableBody.appendChild(
                     row
                 );
-
             }
         );
-
         document
             .querySelectorAll(
                 ".staff-status-button"
             )
             .forEach(
                 function(button) {
-
                     button.addEventListener(
                         "click",
                         function() {
-
                             changeStaffStatus(
                                 this.dataset.id,
                                 this.dataset.active === "true",
                                 this.dataset.name
                             );
-
                         }
                     );
-
                 }
             );
-
     }
-
     catch (error) {
-
         console.error(
             "CHA Staff Status Error:",
             error
         );
-
         staffStatusLoading.classList.add(
             "hidden"
         );
-
         showStaffStatusMessage(
             error.message ||
             "Unable to load staff accounts.",
             "error"
         );
-
     }
-
 }
-
-
 // ============================================================
 // CHANGE STAFF STATUS
 // ============================================================
-
 async function changeStaffStatus(
     staffId,
     currentlyActive,
     staffName
 ) {
-
     const action =
         currentlyActive
             ? "deactivate"
             : "activate";
-
     const actionText =
         currentlyActive
             ? "deactivate"
             : "activate";
-
     const confirmed =
         window.confirm(
             "Are you sure you want to " +
@@ -2753,128 +1614,342 @@ async function changeStaffStatus(
             staffName +
             "'s staff portal access?"
         );
-
     if (!confirmed) {
         return;
     }
-
     showStaffStatusMessage(
         currentlyActive
             ? "Deactivating staff account..."
             : "Activating staff account...",
         "info"
     );
-
     try {
-
         const {
             data: sessionData,
             error: sessionError
         } =
             await window.CHA_SUPABASE
-                .auth.getSession();
-
+                .auth
+                .getSession();
         if (sessionError) {
             throw sessionError;
         }
-
         const session =
             sessionData?.session;
-
         if (!session) {
-
             window.location.href =
                 "staff-login.html";
-
             return;
-
         }
-
         const response =
             await fetch(
                 "/.netlify/functions/manage-staff-status",
                 {
                     method: "POST",
-
                     headers: {
                         "Content-Type":
                             "application/json",
-
                         "Authorization":
                             "Bearer " +
                             session.access_token
                     },
-
                     body: JSON.stringify({
-
                         staffProfileId:
                             staffId,
-
                         action:
                             action
-
                     })
                 }
             );
-
         let result;
-
         try {
-
             result =
                 await response.json();
-
-        } catch (error) {
-
-            throw new Error(
-                "The status server returned an invalid response."
-            );
-
         }
-
-        if (!response.ok) {
-
+        catch (error) {
+            throw new Error(
+                "The staff status server returned an invalid response."
+            );
+        }
+        if (
+            !response.ok ||
+            !result.success
+        ) {
             throw new Error(
                 result.error ||
                 "Unable to change staff account status."
             );
-
         }
-
         showStaffStatusMessage(
             result.message ||
             "Staff account status updated successfully.",
             "success"
         );
-
         await loadStaffStatus();
-
     }
-
     catch (error) {
-
         console.error(
             "CHA Change Staff Status Error:",
             error
         );
-
         showStaffStatusMessage(
             error.message ||
             "Unable to change staff account status.",
             "error"
         );
-
     }
-
 }
-
-
 // ============================================================
-// LOAD STAFF STATUS AFTER ADMIN PAGE OPENS
+// CHANGE ADMINISTRATOR PASSWORD
 // ============================================================
-
-loadStaffStatus();
-    </script>
-
+changeAdminPasswordForm.addEventListener(
+    "submit",
+    async function(event) {
+        event.preventDefault();
+        const currentPassword =
+            document
+                .getElementById(
+                    "currentAdminPassword"
+                )
+                .value;
+        const newPassword =
+            document
+                .getElementById(
+                    "newAdminPassword"
+                )
+                .value;
+        const confirmPassword =
+            document
+                .getElementById(
+                    "confirmAdminPassword"
+                )
+                .value;
+        if (newPassword.length < 8) {
+            showPasswordStatus(
+                "The new password must contain at least 8 characters.",
+                "error"
+            );
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showPasswordStatus(
+                "The new passwords do not match.",
+                "error"
+            );
+            return;
+        }
+        changeAdminPasswordButton.disabled =
+            true;
+        changeAdminPasswordButton.textContent =
+            "Changing Password...";
+        showPasswordStatus(
+            "Verifying your current password...",
+            "info"
+        );
+        try {
+            const {
+                data: userData,
+                error: userError
+            } =
+                await window.CHA_SUPABASE
+                    .auth
+                    .getUser();
+            if (
+                userError ||
+                !userData ||
+                !userData.user ||
+                !userData.user.email
+            ) {
+                throw new Error(
+                    "Administrator account could not be verified."
+                );
+            }
+            const email =
+                userData.user.email;
+            // Re-authenticate administrator
+            const {
+                error: loginError
+            } =
+                await window.CHA_SUPABASE
+                    .auth
+                    .signInWithPassword({
+                        email:
+                            email,
+                        password:
+                            currentPassword
+                    });
+            if (loginError) {
+                throw new Error(
+                    "The current administrator password is incorrect."
+                );
+            }
+            showPasswordStatus(
+                "Updating administrator password...",
+                "info"
+            );
+            const {
+                error: updatePasswordError
+            } =
+                await window.CHA_SUPABASE
+                    .auth
+                    .updateUser({
+                        password:
+                            newPassword
+                    });
+            if (updatePasswordError) {
+                throw updatePasswordError;
+            }
+            changeAdminPasswordForm.reset();
+            showPasswordStatus(
+                "Administrator password changed successfully.",
+                "success"
+            );
+        }
+        catch (error) {
+            console.error(
+                "CHA Password Change Error:",
+                error
+            );
+            showPasswordStatus(
+                error.message ||
+                "Unable to change administrator password.",
+                "error"
+            );
+        }
+        finally {
+            changeAdminPasswordButton.disabled =
+                false;
+            changeAdminPasswordButton.textContent =
+                "Change Password";
+        }
+    }
+);
+// ============================================================
+// REFRESH
+// ============================================================
+refreshButton.addEventListener(
+    "click",
+    async function() {
+        refreshButton.disabled =
+            true;
+        refreshButton.textContent =
+            "Refreshing...";
+        try {
+            await loadPendingStaff();
+            await loadStaffStatus();
+        }
+        catch (error) {
+            console.error(
+                "CHA Refresh Error:",
+                error
+            );
+        }
+        finally {
+            refreshButton.disabled =
+                false;
+            refreshButton.textContent =
+                "↻ Refresh";
+        }
+    }
+);
+// ============================================================
+// BACK TO DASHBOARD
+// ============================================================
+backButton.addEventListener(
+    "click",
+    function() {
+        window.location.href =
+            "staff-dashboard.html";
+    }
+);
+// ============================================================
+// INITIALIZE ADMINISTRATION
+// ============================================================
+async function initializeAdministration() {
+    try {
+        const user =
+            await checkAdministrator();
+        if (!user) {
+            return;
+        }
+        loading.classList.add(
+            "hidden"
+        );
+        adminPage.classList.remove(
+            "hidden"
+        );
+        // Load both administration areas
+        await Promise.all([
+            loadPendingStaff(),
+            loadStaffStatus()
+        ]);
+    }
+    catch (error) {
+        console.error(
+            "CHA Administration Error:",
+            error
+        );
+        loading.innerHTML = `
+            <div class="text-3xl">
+                ⚠️
+            </div>
+            <p
+                class="
+                    font-bold
+                    mt-3
+                    text-red-700
+                "
+            >
+                Unable to load Staff Administration
+            </p>
+            <p
+                class="
+                    text-sm
+                    text-slate-500
+                    mt-2
+                "
+            >
+                ${escapeHTML(
+                    error.message ||
+                    "Please try again."
+                )}
+            </p>
+            <button
+                type="button"
+                id="returnDashboardButton"
+                class="
+                    mt-5
+                    bg-blue-900
+                    hover:bg-blue-800
+                    text-white
+                    px-5
+                    py-3
+                    rounded-xl
+                    font-bold
+                "
+            >
+                Return to Dashboard
+            </button>
+        `;
+        const returnDashboardButton =
+            document.getElementById(
+                "returnDashboardButton"
+            );
+        if (returnDashboardButton) {
+            returnDashboardButton.addEventListener(
+                "click",
+                function() {
+                    window.location.href =
+                        "staff-dashboard.html";
+                }
+            );
+        }
+    }
+}
+// ============================================================
+// START
+// ============================================================
+initializeAdministration();
+</script>
 </body>
 </html>
