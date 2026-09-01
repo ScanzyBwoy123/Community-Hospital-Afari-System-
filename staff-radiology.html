@@ -1964,7 +1964,126 @@ async function loadRadiologyReports() {
   }
 
 }
+// =========================================================
+// RENDER RADIOLOGY REPORTS
+// =========================================================
 
+function renderRadiologyReports() {
+
+  const table =
+    document.getElementById(
+      "radiologyReportsTableBody"
+    );
+
+  if (!table) return;
+
+
+  const searchInput =
+    document.getElementById(
+      "reportSearch"
+    );
+
+  const search =
+    (searchInput?.value || "")
+      .trim()
+      .toLowerCase();
+
+
+  const filtered =
+    radiologyReports.filter(report => {
+
+      const patient =
+        String(
+          report.patient_name || ""
+        ).toLowerCase();
+
+      const examination =
+        String(
+          report.examination_type || ""
+        ).toLowerCase();
+
+      const bodyPart =
+        String(
+          report.body_part || ""
+        ).toLowerCase();
+
+
+      return (
+        patient.includes(search) ||
+        examination.includes(search) ||
+        bodyPart.includes(search)
+      );
+
+    });
+
+
+  if (!filtered.length) {
+
+    table.innerHTML = `
+      <tr>
+        <td
+          colspan="6"
+          class="text-center py-8 text-gray-500"
+        >
+          No radiology reports found.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  table.innerHTML =
+    filtered.map(report => {
+
+      return `
+        <tr class="border-b hover:bg-gray-50">
+
+          <td class="px-4 py-3 font-medium text-gray-800">
+            ${escapeHTML(report.patient_name)}
+          </td>
+
+          <td class="px-4 py-3">
+            ${escapeHTML(report.examination_type)}
+          </td>
+
+          <td class="px-4 py-3">
+            ${escapeHTML(report.body_part || "—")}
+          </td>
+
+          <td class="px-4 py-3">
+
+            <span
+              class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700"
+            >
+              Report Available
+            </span>
+
+          </td>
+
+          <td class="px-4 py-3 text-gray-600">
+            ${formatDate(report.created_at)}
+          </td>
+
+          <td class="px-4 py-3">
+
+            <button
+              onclick="viewRadiologyReport('${report.id}')"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs"
+            >
+              Open
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+
+}
     // =========================================================
     // RENDER ALL REQUESTS
     // =========================================================
