@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>X-ray & Ultrasound | Community Hospital Afari</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="js/supabase.js"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- HEADER -->
+  <header class="bg-blue-700 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 py-5">
+
+      <div class="flex items-center justify-between gap-4">
+
+        <div class="flex items-center gap-4">
+
+          <img
+            src="cha-logo.jpeg"
+            alt="Community Hospital Afari"
+            class="w-14 h-14 rounded-full object-cover bg-white"
+          />
+
+          <div>
+            <h1 class="text-xl md:text-2xl font-bold">
+              COMMUNITY HOSPITAL AFARI
+            </h1>
+
+            <p class="text-blue-100">
+              X-ray & Ultrasound
+            </p>
+          </div>
+
+        </div>
+
+        <a
+          href="staff-dashboard.html"
+          class="bg-white text-blue-700 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition"
+        >
+          ← Dashboard
+        </a>
+
+      </div>
+
+    </div>
+  </header>
+
+
+  <!-- LOADING -->
+  <div
+    id="loadingScreen"
+    class="min-h-[70vh] flex items-center justify-center"
+  >
+
+    <div class="text-center">
+
+      <div
+        class="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-600 mx-auto mb-4"
+      ></div>
+
+      <p class="text-gray-600 font-medium">
+        Checking staff authentication...
+      </p>
+
+    </div>
+
+  </div>
+
+
+  <!-- MAIN CONTENT -->
+  <main
+    id="mainContent"
+    class="hidden max-w-7xl mx-auto px-4 py-8"
+  >
+
+    <!-- PAGE INTRO -->
+    <div class="mb-8">
+
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-800">
+        X-ray & Ultrasound Department
+      </h2>
+
+      <p class="text-gray-600 mt-2">
+        Manage diagnostic imaging requests, examinations, reports and
+        imaging records.
+      </p>
+
+    </div>
+
+
+    <!-- MODULE CARDS -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+
+      <!-- IMAGING REQUESTS -->
+      <div
+        class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition"
+      >
+
+        <div
+          class="w-12 h-12 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-2xl mb-4"
+        >
+          📋
+        </div>
+
+        <h3 class="text-lg font-bold text-gray-800">
+          Imaging Requests
+        </h3>
+
+        <p class="text-gray-600 text-sm mt-2">
+          View and manage requests for X-ray and ultrasound examinations.
+        </p>
+
+        <button
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onclick="showMessage('Imaging Requests')"
+        >
+          Open
+        </button>
+
+      </div>
+
+
+      <!-- X-RAY -->
+      <div
+        class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition"
+      >
+
+        <div
+          class="w-12 h-12 bg-gray-100 text-gray-700 rounded-lg flex items-center justify-center text-2xl mb-4"
+        >
+          🩻
+        </div>
+
+        <h3 class="text-lg font-bold text-gray-800">
+          X-ray
+        </h3>
+
+        <p class="text-gray-600 text-sm mt-2">
+          Manage X-ray examinations and associated patient information.
+        </p>
+
+        <button
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onclick="showMessage('X-ray')"
+        >
+          Open
+        </button>
+
+      </div>
+
+
+      <!-- ULTRASOUND -->
+      <div
+        class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition"
+      >
+
+        <div
+          class="w-12 h-12 bg-purple-100 text-purple-700 rounded-lg flex items-center justify-center text-2xl mb-4"
+        >
+          🔊
+        </div>
+
+        <h3 class="text-lg font-bold text-gray-800">
+          Ultrasound
+        </h3>
+
+        <p class="text-gray-600 text-sm mt-2">
+          Manage ultrasound examinations and diagnostic imaging requests.
+        </p>
+
+        <button
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onclick="showMessage('Ultrasound')"
+        >
+          Open
+        </button>
+
+      </div>
+
+
+      <!-- RADIOLOGY REPORTS -->
+      <div
+        class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition"
+      >
+
+        <div
+          class="w-12 h-12 bg-green-100 text-green-700 rounded-lg flex items-center justify-center text-2xl mb-4"
+        >
+          📄
+        </div>
+
+        <h3 class="text-lg font-bold text-gray-800">
+          Radiology Reports
+        </h3>
+
+        <p class="text-gray-600 text-sm mt-2">
+          Review and manage diagnostic imaging reports.
+        </p>
+
+        <button
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onclick="showMessage('Radiology Reports')"
+        >
+          Open
+        </button>
+
+      </div>
+
+
+      <!-- IMAGING RECORDS -->
+      <div
+        class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition"
+      >
+
+        <div
+          class="w-12 h-12 bg-yellow-100 text-yellow-700 rounded-lg flex items-center justify-center text-2xl mb-4"
+        >
+          🗂️
+        </div>
+
+        <h3 class="text-lg font-bold text-gray-800">
+          Imaging Records
+        </h3>
+
+        <p class="text-gray-600 text-sm mt-2">
+          Access patient imaging history and examination records.
+        </p>
+
+        <button
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onclick="showMessage('Imaging Records')"
+        >
+          Open
+        </button>
+
+      </div>
+
+
+      <!-- ACTIVITY -->
+      <div
+        class="bg-white rounded-xl shadow-md p-6 border border-gray-200 hover:shadow-lg transition"
+      >
+
+        <div
+          class="w-12 h-12 bg-red-100 text-red-700 rounded-lg flex items-center justify-center text-2xl mb-4"
+        >
+          📊
+        </div>
+
+        <h3 class="text-lg font-bold text-gray-800">
+          Reports & Activity
+        </h3>
+
+        <p class="text-gray-600 text-sm mt-2">
+          Monitor imaging activity and departmental reports.
+        </p>
+
+        <button
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+          onclick="showMessage('Reports & Activity')"
+        >
+          Open
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- SECURITY NOTICE -->
+    <div
+      class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-5"
+    >
+
+      <div class="flex gap-3">
+
+        <div class="text-2xl">
+          🔒
+        </div>
+
+        <div>
+
+          <h3 class="font-bold text-blue-800">
+            Staff Access
+          </h3>
+
+          <p class="text-sm text-blue-700 mt-1">
+            This module is restricted to authenticated Community Hospital
+            Afari staff members. Patient imaging information must be handled
+            confidentially and only accessed for authorized clinical duties.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+
+  <!-- MESSAGE MODAL -->
+  <div
+    id="messageBox"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4"
+  >
+
+    <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+
+      <h3
+        id="messageTitle"
+        class="text-xl font-bold text-gray-800 mb-3"
+      >
+        Module
+      </h3>
+
+      <p class="text-gray-600 mb-6">
+        This section is ready for connection to the hospital's
+        imaging management system.
+      </p>
+
+      <button
+        onclick="closeMessage()"
+        class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700"
+      >
+        Close
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- SCRIPT -->
+  <script>
+
+    async function loadRadiologyPage() {
+
+      try {
+
+        if (!window.CHA_SUPABASE) {
+          throw new Error("Supabase is not configured.");
+        }
+
+        const { data: { user }, error: authError } =
+          await window.CHA_SUPABASE.auth.getUser();
+
+        if (authError || !user) {
+          window.location.href = "staff-login.html";
+          return;
+        }
+
+
+        const { data: profile, error: profileError } =
+          await window.CHA_SUPABASE
+            .from("staff_profiles")
+            .select(`
+              id,
+              full_name,
+              role,
+              is_active,
+              department_id,
+              departments (
+                name
+              )
+            `)
+            .eq("id", user.id)
+            .single();
+
+
+        if (profileError || !profile) {
+          window.location.href = "staff-login.html";
+          return;
+        }
+
+
+        if (profile.is_active !== true) {
+
+          await window.CHA_SUPABASE.auth.signOut();
+
+          window.location.href = "staff-login.html";
+
+          return;
+        }
+
+
+        document.getElementById("loadingScreen").classList.add("hidden");
+
+        document.getElementById("mainContent").classList.remove("hidden");
+
+
+      } catch (error) {
+
+        console.error("Radiology authentication error:", error);
+
+        window.location.href = "staff-login.html";
+
+      }
+
+    }
+
+
+    function showMessage(title) {
+
+      document.getElementById("messageTitle").textContent = title;
+
+      document.getElementById("messageBox").classList.remove("hidden");
+
+    }
+
+
+    function closeMessage() {
+
+      document.getElementById("messageBox").classList.add("hidden");
+
+    }
+
+
+    loadRadiologyPage();
+
+  </script>
+
+</body>
+</html>
