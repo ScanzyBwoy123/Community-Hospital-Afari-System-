@@ -1884,7 +1884,86 @@ let selectedRadiologyReportRequestId = null;
       }
 
     }
+// =========================================================
+// RADIOLOGY REPORTS
+// =========================================================
 
+async function loadRadiologyReports() {
+
+  try {
+
+    const {
+      data,
+      error
+    } = await window.CHA_SUPABASE
+      .from("imaging_reports")
+      .select(`
+        id,
+        imaging_request_id,
+        patient_id,
+        patient_name,
+        examination_type,
+        body_part,
+        findings,
+        impression,
+        report_notes,
+        reported_by,
+        reported_by_name,
+        created_at,
+        updated_at
+      `)
+      .order("created_at", {
+        ascending: false
+      });
+
+
+    if (error) {
+
+      console.error(
+        "Error loading radiology reports:",
+        error
+      );
+
+      throw error;
+
+    }
+
+
+    radiologyReports =
+      data || [];
+
+
+    renderRadiologyReports();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    const table =
+      document.getElementById(
+        "radiologyReportsTableBody"
+      );
+
+    if (table) {
+
+      table.innerHTML = `
+        <tr>
+          <td
+            colspan="6"
+            class="text-center py-8 text-red-500"
+          >
+            Unable to load radiology reports.
+          </td>
+        </tr>
+      `;
+
+    }
+
+  }
+
+}
 
     // =========================================================
     // RENDER ALL REQUESTS
