@@ -4,298 +4,380 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f4c81">
-    <title>Community Hospital Afari | Your Health Our Priority</title>
-    <meta
-        name="description"
-        content="Community Hospital Afari — 24-hour healthcare services in Afari, Ashanti Region, Ghana."
-    >
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cha: {
-                            blue: "#0f4c81",
-                            dark: "#07345a",
-                            light: "#eef7ff",
-                            green: "#0f8a5f",
-                            red: "#d62828"
-                        }
+<title>
+    Community Hospital Afari | Your Health Our Priority
+</title>
+<meta
+    name="description"
+    content="Community Hospital Afari — 24-hour healthcare services in Afari, Ashanti Region, Ghana."
+>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    cha: {
+                        blue: "#0f4c81",
+                        dark: "#07345a",
+                        light: "#eef7ff",
+                        green: "#0f8a5f",
+                        red: "#d62828"
                     }
                 }
             }
-        };
-    </script>
-    <style>
-        html {
-            scroll-behavior: smooth;
         }
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        .hero-bg {
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(7, 52, 90, 0.97),
-                    rgba(15, 76, 129, 0.92)
-                );
-        }
-        .service-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
-        }
-        .glass {
-            background: rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(10px);
-        }
-    </style>
+    };
+</script>
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .hero-bg {
+        background:
+            linear-gradient(
+                135deg,
+                rgba(7, 52, 90, 0.97),
+                rgba(15, 76, 129, 0.92)
+            );
+    }
+    .service-card {
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.10);
+        backdrop-filter: blur(10px);
+    }
+    .cha-logo {
+        width: 52px;
+        height: 52px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+    }
+</style>
 </head>
 <body class="bg-slate-50 text-slate-800">
 <!-- =========================================================
      TOP EMERGENCY BAR
 ========================================================= -->
 <div class="bg-red-600 text-white">
-    <div class="max-w-7xl mx-auto px-4 py-2">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm">
-            <span class="font-bold">
-                🚑 24 HR EMERGENCY SERVICE
-            </span>
-            <a
-                href="tel:+233240170502"
-                class="font-black hover:underline"
-            >
-                Call +233 240 170 502
-            </a>
-        </div>
+<div class="max-w-7xl mx-auto px-4 py-2">
+    <div
+        class="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm"
+    >
+        <span class="font-bold">
+            🚑 24 HR EMERGENCY SERVICE
+        </span>
+        <a
+            href="tel:+233240170502"
+            class="font-black hover:underline"
+        >
+            Call +233 240 170 502
+        </a>
     </div>
+</div>
 </div>
 <!-- =========================================================
      HEADER
 ========================================================= -->
 <header class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="h-20 flex items-center justify-between">
-            <!-- LOGO PLACEHOLDER -->
-            <a href="#home" class="flex items-center gap-3">
-                <div
-                    class="w-12 h-12 rounded-full bg-cha-blue text-white
-                           flex items-center justify-center
-                           font-black text-lg shadow"
-                >
-                    CHA
-                </div>
-                <div>
-                    <div class="font-black text-cha-blue text-lg leading-tight">
-                        COMMUNITY HOSPITAL
-                    </div>
-                    <div class="font-bold text-cha-dark">
-                        AFARI
-                    </div>
-                </div>
-            </a>
-            <!-- DESKTOP NAVIGATION -->
-            <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold">
-                <a href="#home" class="hover:text-cha-blue">
-                    Home
-                </a>
-                <a href="#services" class="hover:text-cha-blue">
-                    Services
-                </a>
-                <a href="#departments" class="hover:text-cha-blue">
-                    Departments
-                </a>
-                <a href="#appointment" class="hover:text-cha-blue">
-                    Appointments
-                </a>
-                <a href="#ai-doctor" class="text-cha-green font-bold">
-                    🤖 AI Doctor
-                </a>
-                <a
-                    href="#staff"
-                    class="bg-cha-blue text-white px-4 py-2 rounded-lg"
-                >
-                    Staff Portal
-                </a>
-            </nav>
-            <!-- MOBILE BUTTON -->
-            <button
-                id="menuButton"
-                class="lg:hidden text-2xl"
-                aria-label="Open menu"
-            >
-                ☰
-            </button>
-        </div>
-        <!-- MOBILE NAVIGATION -->
-        <nav
-            id="mobileMenu"
-            class="hidden lg:hidden pb-4 space-y-2"
+<div class="max-w-7xl mx-auto px-4">
+    <div class="h-20 flex items-center justify-between">
+        <!-- OFFICIAL CHA LOGO -->
+        <a
+            href="#home"
+            class="flex items-center gap-3"
         >
-            <a href="#home" class="block p-3 rounded hover:bg-slate-100">
+            <img
+                src="cha-logo.jpeg"
+                alt="Community Hospital Afari Official Logo"
+                class="cha-logo shadow"
+            >
+            <div>
+                <div
+                    class="font-black text-cha-blue text-lg leading-tight"
+                >
+                    COMMUNITY HOSPITAL
+                </div>
+                <div class="font-bold text-cha-dark">
+                    AFARI
+                </div>
+            </div>
+        </a>
+        <!-- DESKTOP NAVIGATION -->
+        <nav
+            class="hidden lg:flex items-center gap-6 text-sm font-semibold"
+        >
+            <a
+                href="#home"
+                class="hover:text-cha-blue"
+            >
                 Home
             </a>
-            <a href="#services" class="block p-3 rounded hover:bg-slate-100">
+            <a
+                href="#services"
+                class="hover:text-cha-blue"
+            >
                 Services
             </a>
-            <a href="#departments" class="block p-3 rounded hover:bg-slate-100">
+            <a
+                href="#departments"
+                class="hover:text-cha-blue"
+            >
                 Departments
             </a>
-            <a href="#appointment" class="block p-3 rounded hover:bg-slate-100">
+            <a
+                href="#appointment"
+                class="hover:text-cha-blue"
+            >
                 Appointments
             </a>
-            <a href="#ai-doctor" class="block p-3 rounded bg-green-50 text-cha-green font-bold">
+            <a
+                href="#ai-doctor"
+                class="text-cha-green font-bold"
+            >
                 🤖 AI Doctor
             </a>
-            <a href="#staff" class="block p-3 rounded bg-blue-50 text-cha-blue font-bold">
+            <a
+                href="#staff"
+                class="bg-cha-blue text-white px-4 py-2 rounded-lg"
+            >
                 Staff Portal
             </a>
         </nav>
+        <!-- MOBILE BUTTON -->
+        <button
+            id="menuButton"
+            class="lg:hidden text-2xl"
+            aria-label="Open menu"
+            type="button"
+        >
+            ☰
+        </button>
     </div>
+    <!-- MOBILE NAVIGATION -->
+    <nav
+        id="mobileMenu"
+        class="hidden lg:hidden pb-4 space-y-2"
+    >
+        <a
+            href="#home"
+            class="block p-3 rounded hover:bg-slate-100"
+        >
+            Home
+        </a>
+        <a
+            href="#services"
+            class="block p-3 rounded hover:bg-slate-100"
+        >
+            Services
+        </a>
+        <a
+            href="#departments"
+            class="block p-3 rounded hover:bg-slate-100"
+        >
+            Departments
+        </a>
+        <a
+            href="#appointment"
+            class="block p-3 rounded hover:bg-slate-100"
+        >
+            Appointments
+        </a>
+        <a
+            href="#ai-doctor"
+            class="block p-3 rounded bg-green-50 text-cha-green font-bold"
+        >
+            🤖 AI Doctor
+        </a>
+        <a
+            href="#staff"
+            class="block p-3 rounded bg-blue-50 text-cha-blue font-bold"
+        >
+            Staff Portal
+        </a>
+    </nav>
+</div>
 </header>
 <!-- =========================================================
      HERO
 ========================================================= -->
 <main>
-<section id="home" class="hero-bg text-white">
-    <div class="max-w-7xl mx-auto px-4 py-20">
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-                <div class="inline-block glass px-4 py-2 rounded-full text-sm mb-6">
-                    🏥 Community Hospital Afari
-                </div>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight">
-                    Your Health
-                    <span class="text-yellow-300">
-                        Our Priority
-                    </span>
-                </h1>
-                <p class="text-blue-100 text-lg mt-6 max-w-xl leading-relaxed">
-                    Providing accessible, compassionate healthcare services
-                    to our community 24 hours a day.
-                </p>
-                <div class="flex flex-wrap gap-4 mt-8">
-                    <a
-                        href="#appointment"
-                        class="bg-white text-cha-blue font-black px-6 py-3 rounded-xl"
-                    >
-                        📅 Book Appointment
-                    </a>
-                    <a
-                        href="#ai-doctor"
-                        class="bg-cha-green text-white font-black px-6 py-3 rounded-xl"
-                    >
-                        🤖 Consult AI Doctor
-                    </a>
-                </div>
+<section
+    id="home"
+    class="hero-bg text-white"
+>
+<div class="max-w-7xl mx-auto px-4 py-20">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+        <div>
+            <div
+                class="inline-block glass px-4 py-2 rounded-full text-sm mb-6"
+            >
+                🏥 Community Hospital Afari
             </div>
-            <!-- EMERGENCY CARD -->
-            <div class="glass rounded-3xl p-8 border border-white/20">
-                <p class="text-blue-200 text-sm font-bold uppercase">
-                    Emergency & Ambulance
-                </p>
-                <h2 class="text-3xl font-black mt-2">
-                    24 Hours
-                </h2>
-                <p class="text-blue-100 mt-3">
-                    For urgent medical assistance, contact Community
-                    Hospital Afari immediately.
-                </p>
+            <h1
+                class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight"
+            >
+                Your Health
+                <span class="text-yellow-300">
+                    Our Priority
+                </span>
+            </h1>
+            <p
+                class="text-blue-100 text-lg mt-6 max-w-xl leading-relaxed"
+            >
+                Providing accessible, compassionate healthcare services
+                to our community 24 hours a day.
+            </p>
+            <div class="flex flex-wrap gap-4 mt-8">
                 <a
-                    href="tel:+233240170502"
-                    class="block mt-6 bg-red-600 hover:bg-red-700
-                           text-white text-center font-black
-                           py-4 rounded-xl"
+                    href="#appointment"
+                    class="bg-white text-cha-blue font-black px-6 py-3 rounded-xl"
                 >
-                    🚑 CALL +233 240 170 502
+                    📅 Book Appointment
+                </a>
+                <a
+                    href="#ai-doctor"
+                    class="bg-cha-green text-white font-black px-6 py-3 rounded-xl"
+                >
+                    🤖 Consult AI Doctor
                 </a>
             </div>
         </div>
+        <!-- EMERGENCY CARD -->
+        <div
+            class="glass rounded-3xl p-8 border border-white/20"
+        >
+            <p
+                class="text-blue-200 text-sm font-bold uppercase"
+            >
+                Emergency & Ambulance
+            </p>
+            <h2 class="text-3xl font-black mt-2">
+                24 Hours
+            </h2>
+            <p class="text-blue-100 mt-3">
+                For urgent medical assistance, contact Community
+                Hospital Afari immediately.
+            </p>
+            <a
+                href="tel:+233240170502"
+                class="block mt-6 bg-red-600 hover:bg-red-700
+                       text-white text-center font-black
+                       py-4 rounded-xl"
+            >
+                🚑 CALL +233 240 170 502
+            </a>
+        </div>
     </div>
+</div>
 </section>
 <!-- =========================================================
      QUICK ACTIONS
 ========================================================= -->
 <section class="bg-white py-8">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <a
-                href="#appointment"
-                class="p-5 rounded-2xl bg-blue-50 border border-blue-100"
-            >
-                <div class="text-2xl">📅</div>
-                <h3 class="font-black mt-2">
-                    Book Appointment
-                </h3>
-                <p class="text-sm text-slate-600 mt-1">
-                    Request a real hospital appointment.
-                </p>
-            </a>
-            <a
-                href="#ai-doctor"
-                class="p-5 rounded-2xl bg-green-50 border border-green-100"
-            >
-                <div class="text-2xl">🤖</div>
-                <h3 class="font-black mt-2">
-                    AI Doctor
-                </h3>
-                <p class="text-sm text-slate-600 mt-1">
-                    Get general health guidance.
-                </p>
-            </a>
-            <a
-                href="#departments"
-                class="p-5 rounded-2xl bg-purple-50 border border-purple-100"
-            >
-                <div class="text-2xl">🏥</div>
-                <h3 class="font-black mt-2">
-                    Departments
-                </h3>
-                <p class="text-sm text-slate-600 mt-1">
-                    Explore hospital units and services.
-                </p>
-            </a>
-            <a
-                href="#staff"
-                class="p-5 rounded-2xl bg-amber-50 border border-amber-100"
-            >
-                <div class="text-2xl">🔐</div>
-                <h3 class="font-black mt-2">
-                    Staff Portal
-                </h3>
-                <p class="text-sm text-slate-600 mt-1">
-                    Secure access for hospital staff.
-                </p>
-            </a>
-        </div>
+<div class="max-w-7xl mx-auto px-4">
+    <div
+        class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+    >
+        <a
+            href="#appointment"
+            class="p-5 rounded-2xl bg-blue-50 border border-blue-100"
+        >
+            <div class="text-2xl">
+                📅
+            </div>
+            <h3 class="font-black mt-2">
+                Book Appointment
+            </h3>
+            <p class="text-sm text-slate-600 mt-1">
+                Request a real hospital appointment.
+            </p>
+        </a>
+        <a
+            href="#ai-doctor"
+            class="p-5 rounded-2xl bg-green-50 border border-green-100"
+        >
+            <div class="text-2xl">
+                🤖
+            </div>
+            <h3 class="font-black mt-2">
+                AI Doctor
+            </h3>
+            <p class="text-sm text-slate-600 mt-1">
+                Get general health guidance.
+            </p>
+        </a>
+        <a
+            href="#departments"
+            class="p-5 rounded-2xl bg-purple-50 border border-purple-100"
+        >
+            <div class="text-2xl">
+                🏥
+            </div>
+            <h3 class="font-black mt-2">
+                Departments
+            </h3>
+            <p class="text-sm text-slate-600 mt-1">
+                Explore hospital units and services.
+            </p>
+        </a>
+        <a
+            href="#staff"
+            class="p-5 rounded-2xl bg-amber-50 border border-amber-100"
+        >
+            <div class="text-2xl">
+                🔐
+            </div>
+            <h3 class="font-black mt-2">
+                Staff Portal
+            </h3>
+            <p class="text-sm text-slate-600 mt-1">
+                Secure access for hospital staff.
+            </p>
+        </a>
     </div>
+</div>
 </section>
 <!-- =========================================================
      SERVICES
 ========================================================= -->
-<section id="services" class="py-16">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="text-center max-w-2xl mx-auto">
-            <p class="text-cha-blue font-bold uppercase text-sm">
-                Healthcare Services
-            </p>
-            <h2 class="text-3xl sm:text-4xl font-black mt-2">
-                Our Services
-            </h2>
-            <p class="text-slate-600 mt-4">
-                Community Hospital Afari provides a range of healthcare
-                services for individuals and families.
-            </p>
-        </div>
-        <div
-            id="serviceGrid"
-            class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-10"
-        ></div>
+<section
+    id="services"
+    class="py-16"
+>
+<div class="max-w-7xl mx-auto px-4">
+    <div class="text-center max-w-2xl mx-auto">
+        <p
+            class="text-cha-blue font-bold uppercase text-sm"
+        >
+            Healthcare Services
+        </p>
+        <h2
+            class="text-3xl sm:text-4xl font-black mt-2"
+        >
+            Our Services
+        </h2>
+        <p class="text-slate-600 mt-4">
+            Community Hospital Afari provides a range of healthcare
+            services for individuals and families.
+        </p>
     </div>
+    <div
+        id="serviceGrid"
+        class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-10"
+    ></div>
+</div>
 </section>
 <!-- =========================================================
      DEPARTMENTS
@@ -304,24 +386,30 @@
     id="departments"
     class="py-16 bg-white"
 >
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="text-center">
-            <p class="text-cha-blue font-bold uppercase text-sm">
-                Hospital Units
-            </p>
-            <h2 class="text-3xl sm:text-4xl font-black mt-2">
-                Departments & Units
-            </h2>
-            <p class="text-slate-600 mt-4 max-w-2xl mx-auto">
-                Our internal hospital system will provide authorized
-                staff with dedicated workspaces for their departments.
-            </p>
-        </div>
-        <div
-            id="departmentGrid"
-            class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-10"
-        ></div>
+<div class="max-w-7xl mx-auto px-4">
+    <div class="text-center">
+        <p
+            class="text-cha-blue font-bold uppercase text-sm"
+        >
+            Hospital Units
+        </p>
+        <h2
+            class="text-3xl sm:text-4xl font-black mt-2"
+        >
+            Departments & Units
+        </h2>
+        <p
+            class="text-slate-600 mt-4 max-w-2xl mx-auto"
+        >
+            Our internal hospital system will provide authorized
+            staff with dedicated workspaces for their departments.
+        </p>
     </div>
+    <div
+        id="departmentGrid"
+        class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-10"
+    ></div>
+</div>
 </section>
 <!-- =========================================================
      AI DOCTOR
@@ -330,41 +418,50 @@
     id="ai-doctor"
     class="py-16 bg-gradient-to-br from-green-50 to-blue-50"
 >
-    <div class="max-w-5xl mx-auto px-4">
-        <div class="bg-white rounded-3xl shadow-xl border border-green-100 p-8 sm:p-12">
-            <div class="text-center">
-                <div
-                    class="mx-auto w-16 h-16 rounded-full
-                           bg-green-100 flex items-center justify-center text-3xl"
-                >
-                    🤖
-                </div>
-                <p class="text-cha-green font-bold uppercase text-sm mt-5">
-                    Virtual Health Assistant
-                </p>
-                <h2 class="text-3xl sm:text-4xl font-black mt-2">
-                    AI Doctor
-                </h2>
-                <p class="text-slate-600 max-w-2xl mx-auto mt-4">
-                    Get general health information and preliminary guidance
-                    before speaking with a qualified healthcare professional.
-                </p>
-                <div class="mt-8">
-                    <button
-                        id="openAiDoctor"
-                        class="bg-cha-green text-white font-black
-                               px-7 py-4 rounded-xl shadow"
-                    >
-                        🤖 Open AI Doctor
-                    </button>
-                </div>
-                <p class="text-xs text-slate-500 mt-6">
-                    AI-generated information is not a substitute for
-                    professional medical assessment.
-                </p>
+<div class="max-w-5xl mx-auto px-4">
+    <div
+        class="bg-white rounded-3xl shadow-xl border border-green-100 p-8 sm:p-12"
+    >
+        <div class="text-center">
+            <div
+                class="mx-auto w-16 h-16 rounded-full
+                       bg-green-100 flex items-center justify-center text-3xl"
+            >
+                🤖
             </div>
+            <p
+                class="text-cha-green font-bold uppercase text-sm mt-5"
+            >
+                Virtual Health Assistant
+            </p>
+            <h2
+                class="text-3xl sm:text-4xl font-black mt-2"
+            >
+                AI Doctor
+            </h2>
+            <p
+                class="text-slate-600 max-w-2xl mx-auto mt-4"
+            >
+                Get general health information and preliminary guidance
+                before speaking with a qualified healthcare professional.
+            </p>
+            <div class="mt-8">
+                <button
+                    id="openAiDoctor"
+                    type="button"
+                    class="bg-cha-green text-white font-black
+                           px-7 py-4 rounded-xl shadow"
+                >
+                    🤖 Open AI Doctor
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 mt-6">
+                AI-generated information is not a substitute for
+                professional medical assessment.
+            </p>
         </div>
     </div>
+</div>
 </section>
 <!-- =========================================================
      APPOINTMENT
@@ -373,115 +470,149 @@
     id="appointment"
     class="py-16"
 >
-    <div class="max-w-5xl mx-auto px-4">
-        <div class="text-center">
-            <p class="text-cha-blue font-bold uppercase text-sm">
-                Patient Services
-            </p>
-            <h2 class="text-3xl sm:text-4xl font-black mt-2">
-                Book an Appointment
-            </h2>
-            <p class="text-slate-600 mt-4">
-                Our appointment system will securely send your request
-                to the hospital for processing.
-            </p>
-        </div>
-        <div class="mt-10 bg-white rounded-3xl shadow-lg border p-6 sm:p-10">
-            <form id="appointmentForm" class="grid sm:grid-cols-2 gap-5">
-                <div>
-                    <label class="font-bold text-sm">
-                        Patient Name
-                    </label>
-                    <input
-                        id="patientName"
-                        required
-                        type="text"
-                        class="w-full mt-2 border rounded-xl px-4 py-3"
-                        placeholder="Full name"
-                    >
-                </div>
-                <div>
-                    <label class="font-bold text-sm">
-                        Phone Number
-                    </label>
-                    <input
-                        id="patientPhone"
-                        required
-                        type="tel"
-                        class="w-full mt-2 border rounded-xl px-4 py-3"
-                        placeholder="+233..."
-                    >
-                </div>
-                <div>
-                    <label class="font-bold text-sm">
-                        Department / Service
-                    </label>
-                    <select
-                        id="appointmentDepartment"
-                        required
-                        class="w-full mt-2 border rounded-xl px-4 py-3"
-                    ></select>
-                </div>
-                <div>
-                    <label class="font-bold text-sm">
-                        Preferred Date
-                    </label>
-                    <input
-                        id="appointmentDate"
-                        required
-                        type="date"
-                        class="w-full mt-2 border rounded-xl px-4 py-3"
-                    >
-                </div>
-                <div>
-                    <label class="font-bold text-sm">
-                        Preferred Time
-                    </label>
-                    <input
-                        id="appointmentTime"
-                        required
-                        type="time"
-                        class="w-full mt-2 border rounded-xl px-4 py-3"
-                    >
-                </div>
-                <div>
-                    <label class="font-bold text-sm">
-                        Reason for Visit
-                    </label>
-                    <input
-                        id="appointmentReason"
-                        type="text"
-                        class="w-full mt-2 border rounded-xl px-4 py-3"
-                        placeholder="Brief reason"
-                    >
-                </div>
-                <div class="sm:col-span-2">
-                    <label class="font-bold text-sm">
-                        Additional Information
-                    </label>
-                    <textarea
-                        id="appointmentNotes"
-                        rows="4"
-                        class="w-full mt-2 border rounded-xl px-4 py-3"
-                        placeholder="Anything else the hospital should know?"
-                    ></textarea>
-                </div>
-                <div class="sm:col-span-2">
-                    <button
-                        type="submit"
-                        class="w-full bg-cha-blue text-white
-                               font-black py-4 rounded-xl"
-                    >
-                        📅 Submit Appointment Request
-                    </button>
-                </div>
-            </form>
-            <div
-                id="appointmentMessage"
-                class="hidden mt-5 p-4 rounded-xl"
-            ></div>
-        </div>
+<div class="max-w-5xl mx-auto px-4">
+    <div class="text-center">
+        <p
+            class="text-cha-blue font-bold uppercase text-sm"
+        >
+            Patient Services
+        </p>
+        <h2
+            class="text-3xl sm:text-4xl font-black mt-2"
+        >
+            Book an Appointment
+        </h2>
+        <p class="text-slate-600 mt-4">
+            Our appointment system will securely send your request
+            to the hospital for processing.
+        </p>
     </div>
+    <div
+        class="mt-10 bg-white rounded-3xl shadow-lg border p-6 sm:p-10"
+    >
+        <form
+            id="appointmentForm"
+            class="grid sm:grid-cols-2 gap-5"
+        >
+            <div>
+                <label
+                    for="patientName"
+                    class="font-bold text-sm"
+                >
+                    Patient Name
+                </label>
+                <input
+                    id="patientName"
+                    required
+                    type="text"
+                    class="w-full mt-2 border rounded-xl px-4 py-3"
+                    placeholder="Full name"
+                >
+            </div>
+            <div>
+                <label
+                    for="patientPhone"
+                    class="font-bold text-sm"
+                >
+                    Phone Number
+                </label>
+                <input
+                    id="patientPhone"
+                    required
+                    type="tel"
+                    class="w-full mt-2 border rounded-xl px-4 py-3"
+                    placeholder="+233..."
+                >
+            </div>
+            <div>
+                <label
+                    for="appointmentDepartment"
+                    class="font-bold text-sm"
+                >
+                    Department / Service
+                </label>
+                <select
+                    id="appointmentDepartment"
+                    required
+                    class="w-full mt-2 border rounded-xl px-4 py-3"
+                >
+                    <option value="">
+                        Loading departments...
+                    </option>
+                </select>
+            </div>
+            <div>
+                <label
+                    for="appointmentDate"
+                    class="font-bold text-sm"
+                >
+                    Preferred Date
+                </label>
+                <input
+                    id="appointmentDate"
+                    required
+                    type="date"
+                    class="w-full mt-2 border rounded-xl px-4 py-3"
+                >
+            </div>
+            <div>
+                <label
+                    for="appointmentTime"
+                    class="font-bold text-sm"
+                >
+                    Preferred Time
+                </label>
+                <input
+                    id="appointmentTime"
+                    required
+                    type="time"
+                    class="w-full mt-2 border rounded-xl px-4 py-3"
+                >
+            </div>
+            <div>
+                <label
+                    for="appointmentReason"
+                    class="font-bold text-sm"
+                >
+                    Reason for Visit
+                </label>
+                <input
+                    id="appointmentReason"
+                    type="text"
+                    class="w-full mt-2 border rounded-xl px-4 py-3"
+                    placeholder="Brief reason"
+                >
+            </div>
+            <div class="sm:col-span-2">
+                <label
+                    for="appointmentNotes"
+                    class="font-bold text-sm"
+                >
+                    Additional Information
+                </label>
+                <textarea
+                    id="appointmentNotes"
+                    rows="4"
+                    class="w-full mt-2 border rounded-xl px-4 py-3"
+                    placeholder="Anything else the hospital should know?"
+                ></textarea>
+            </div>
+            <div class="sm:col-span-2">
+                <button
+                    type="submit"
+                    class="w-full bg-cha-blue text-white
+                           font-black py-4 rounded-xl"
+                >
+                    📅 Submit Appointment Request
+                </button>
+            </div>
+        </form>
+        <div
+            id="appointmentMessage"
+            class="hidden mt-5 p-4 rounded-xl"
+        ></div>
+    </div>
+</div>
 </section>
 <!-- =========================================================
      STAFF PORTAL
@@ -490,78 +621,90 @@
     id="staff"
     class="py-16 bg-cha-dark text-white"
 >
-    <div class="max-w-5xl mx-auto px-4 text-center">
-        <div class="text-4xl">
-            🔐
-        </div>
-        <h2 class="text-3xl sm:text-4xl font-black mt-4">
-            Community Hospital Afari Staff Portal
-        </h2>
-        <p class="text-blue-200 max-w-2xl mx-auto mt-4">
-            A secure workspace for authorized hospital staff,
-            departments, patient records, appointments and
-            internal communication.
-        </p>
-        <button
-            id="staffLoginButton"
-            class="mt-8 bg-white text-cha-blue font-black
-                   px-7 py-4 rounded-xl"
-        >
-            Staff Login
-        </button>
+<div
+    class="max-w-5xl mx-auto px-4 text-center"
+>
+    <div class="text-4xl">
+        🔐
     </div>
+    <h2
+        class="text-3xl sm:text-4xl font-black mt-4"
+    >
+        Community Hospital Afari Staff Portal
+    </h2>
+    <p
+        class="text-blue-200 max-w-2xl mx-auto mt-4"
+    >
+        A secure workspace for authorized hospital staff,
+        departments, patient records, appointments and
+        internal communication.
+    </p>
+    <button
+        id="staffLoginButton"
+        type="button"
+        class="mt-8 bg-white text-cha-blue font-black
+               px-7 py-4 rounded-xl"
+    >
+        Staff Login
+    </button>
+</div>
 </section>
 </main>
 <!-- =========================================================
      FOOTER
 ========================================================= -->
 <footer class="bg-slate-950 text-white">
-    <div class="max-w-7xl mx-auto px-4 py-12">
-        <div class="grid md:grid-cols-3 gap-10">
-            <div>
-                <div class="font-black text-xl">
-                    COMMUNITY HOSPITAL AFARI
-                </div>
-                <p class="text-slate-400 mt-3">
-                    Your Health Our Priority.
-                </p>
-                <p class="text-slate-400 mt-2">
-                    24 HR SERVICE
-                </p>
+<div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid md:grid-cols-3 gap-10">
+        <div>
+            <div class="font-black text-xl">
+                COMMUNITY HOSPITAL AFARI
             </div>
-            <div>
-                <h3 class="font-bold">
-                    Contact
-                </h3>
-                <a
-                    href="tel:+233240170502"
-                    class="block text-slate-400 mt-3 hover:text-white"
-                >
-                    📞 +233 240 170 502
-                </a>
-                <p class="text-slate-400 mt-2">
-                    📍 Afari, Ashanti Region, Ghana
-                </p>
-            </div>
-            <div>
-                <h3 class="font-bold">
-                    Emergency
-                </h3>
-                <a
-                    href="tel:+233240170502"
-                    class="inline-block mt-3 bg-red-600 px-5 py-3 rounded-xl font-black"
-                >
-                    🚑 Call Emergency
-                </a>
-            </div>
+            <p class="text-slate-400 mt-3">
+                Your Health Our Priority.
+            </p>
+            <p class="text-slate-400 mt-2">
+                24 HR SERVICE
+            </p>
         </div>
-        <div class="border-t border-slate-800 mt-10 pt-6 text-sm text-slate-500">
-            © <span id="year"></span> Community Hospital Afari. All rights reserved.
+        <div>
+            <h3 class="font-bold">
+                Contact
+            </h3>
+            <a
+                href="tel:+233240170502"
+                class="block text-slate-400 mt-3 hover:text-white"
+            >
+                📞 +233 240 170 502
+            </a>
+            <p class="text-slate-400 mt-2">
+                📍 Afari, Ashanti Region, Ghana
+            </p>
+        </div>
+        <div>
+            <h3 class="font-bold">
+                Emergency
+            </h3>
+            <a
+                href="tel:+233240170502"
+                class="inline-block mt-3 bg-red-600 px-5 py-3 rounded-xl font-black"
+            >
+                🚑 Call Emergency
+            </a>
         </div>
     </div>
+    <div
+        class="border-t border-slate-800 mt-10 pt-6 text-sm text-slate-500"
+    >
+        ©
+        <span id="year"></span>
+        Community Hospital Afari.
+        All rights reserved.
+    </div>
+</div>
 </footer>
 <!-- =========================================================
-     APPLICATION DATA
+     APPLICATION DATA & FUNCTIONS
 ========================================================= -->
 <script>
 const CHA_SERVICES = [
@@ -681,48 +824,68 @@ const CHA_DEPARTMENTS = [
     }
 ];
 function renderServices() {
-    const grid = document.getElementById("serviceGrid");
-    grid.innerHTML = CHA_SERVICES.map(service => `
-        <div class="service-card bg-white border rounded-2xl p-6">
-            <div class="text-3xl">
-                ${service.icon}
-            </div>
-            <h3 class="font-black text-lg mt-4">
-                ${service.name}
-            </h3>
-            <p class="text-sm text-slate-500 mt-2">
-                Community Hospital Afari healthcare service.
-            </p>
-        </div>
-    `).join("");
+    const grid =
+        document.getElementById("serviceGrid");
+    if (!grid) {
+        return;
+    }
+    grid.innerHTML =
+        CHA_SERVICES.map(function(service) {
+            return `
+                <div class="service-card bg-white border rounded-2xl p-6">
+                    <div class="text-3xl">
+                        ${service.icon}
+                    </div>
+                    <h3 class="font-black text-lg mt-4">
+                        ${service.name}
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Community Hospital Afari healthcare service.
+                    </p>
+                </div>
+            `;
+        }).join("");
 }
 function renderDepartments() {
-    const grid = document.getElementById("departmentGrid");
-    grid.innerHTML = CHA_DEPARTMENTS.map(department => `
-        <div class="bg-slate-50 border rounded-2xl p-6">
-            <div class="text-3xl">
-                ${department.icon}
-            </div>
-            <h3 class="font-black text-lg mt-4">
-                ${department.name}
-            </h3>
-            <p class="text-sm text-slate-500 mt-2">
-                Staff workspace to be connected to the secure hospital portal.
-            </p>
-        </div>
-    `).join("");
+    const grid =
+        document.getElementById("departmentGrid");
+    if (!grid) {
+        return;
+    }
+    grid.innerHTML =
+        CHA_DEPARTMENTS.map(function(department) {
+            return `
+                <div class="bg-slate-50 border rounded-2xl p-6">
+                    <div class="text-3xl">
+                        ${department.icon}
+                    </div>
+                    <h3 class="font-black text-lg mt-4">
+                        ${department.name}
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-2">
+                        Staff workspace to be connected to the secure hospital portal.
+                    </p>
+                </div>
+            `;
+        }).join("");
 }
 async function populateAppointmentDepartments() {
     const select =
         document.getElementById("appointmentDepartment");
-
+    if (!select) {
+        return;
+    }
     select.innerHTML = `
         <option value="">
             Loading departments...
         </option>
     `;
-
     try {
+        if (!window.CHA_SUPABASE) {
+            throw new Error(
+                "Hospital database is temporarily unavailable."
+            );
+        }
         const {
             data,
             error
@@ -731,33 +894,36 @@ async function populateAppointmentDepartments() {
             .select("id, name")
             .eq("is_active", true)
             .order("name");
-
         if (error) {
             throw error;
         }
-
+        if (!data || data.length === 0) {
+            select.innerHTML = `
+                <option value="">
+                    No departments available
+                </option>
+            `;
+            return;
+        }
         select.innerHTML = `
             <option value="">
                 Select department
             </option>
         `;
-
         data.forEach(function(department) {
             const option =
                 document.createElement("option");
-
-            option.value = department.id;
-            option.textContent = department.name;
-
+            option.value =
+                department.id;
+            option.textContent =
+                department.name;
             select.appendChild(option);
         });
-
     } catch (error) {
         console.error(
             "Department loading error:",
             error
         );
-
         select.innerHTML = `
             <option value="">
                 Unable to load departments
@@ -765,13 +931,40 @@ async function populateAppointmentDepartments() {
         `;
     }
 }
-document
-    .getElementById("menuButton")
-    .addEventListener("click", function () {
-        document
-            .getElementById("mobileMenu")
-            .classList.toggle("hidden");
+// ============================================================
+// MOBILE MENU
+// ============================================================
+const menuButton =
+    document.getElementById("menuButton");
+const mobileMenu =
+    document.getElementById("mobileMenu");
+if (menuButton && mobileMenu) {
+    menuButton.addEventListener(
+        "click",
+        function() {
+            mobileMenu.classList.toggle(
+                "hidden"
+            );
+        }
+    );
+}
+// ============================================================
+// CLOSE MOBILE MENU AFTER NAVIGATION
+// ============================================================
+if (mobileMenu) {
+    const mobileLinks =
+        mobileMenu.querySelectorAll("a");
+    mobileLinks.forEach(function(link) {
+        link.addEventListener(
+            "click",
+            function() {
+                mobileMenu.classList.add(
+                    "hidden"
+                );
+            }
+        );
     });
+}
 // ============================================================
 // REAL APPOINTMENT BOOKING — SUPABASE
 // ============================================================
@@ -779,149 +972,229 @@ const appointmentForm =
     document.getElementById("appointmentForm");
 const appointmentMessage =
     document.getElementById("appointmentMessage");
-appointmentForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
-    appointmentMessage.className =
-        "mt-5 p-4 rounded-xl bg-blue-50 text-blue-800";
-    appointmentMessage.textContent =
-        "Submitting your appointment request...";
-    const submitButton =
-        appointmentForm.querySelector("button[type='submit']");
-    submitButton.disabled = true;
-    submitButton.textContent = "Submitting...";
-    try {
-        // Make sure Supabase is available
-        if (!window.CHA_SUPABASE) {
-            throw new Error(
-                "Hospital appointment system is temporarily unavailable."
-            );
+if (appointmentForm) {
+    appointmentForm.addEventListener(
+        "submit",
+        async function(event) {
+            event.preventDefault();
+            appointmentMessage.className =
+                "mt-5 p-4 rounded-xl bg-blue-50 text-blue-800";
+            appointmentMessage.textContent =
+                "Submitting your appointment request...";
+            const submitButton =
+                appointmentForm.querySelector(
+                    "button[type='submit']"
+                );
+            submitButton.disabled = true;
+            submitButton.textContent =
+                "Submitting...";
+            try {
+                if (!window.CHA_SUPABASE) {
+                    throw new Error(
+                        "Hospital appointment system is temporarily unavailable."
+                    );
+                }
+                const patientName =
+                    document
+                        .getElementById("patientName")
+                        .value
+                        .trim();
+                const patientPhone =
+                    document
+                        .getElementById("patientPhone")
+                        .value
+                        .trim();
+                const departmentId =
+                    document
+                        .getElementById("appointmentDepartment")
+                        .value;
+                const preferredDate =
+                    document
+                        .getElementById("appointmentDate")
+                        .value;
+                const preferredTime =
+                    document
+                        .getElementById("appointmentTime")
+                        .value;
+                const reason =
+                    document
+                        .getElementById("appointmentReason")
+                        .value
+                        .trim();
+                const notes =
+                    document
+                        .getElementById("appointmentNotes")
+                        .value
+                        .trim();
+                if (!patientName) {
+                    throw new Error(
+                        "Please enter the patient's name."
+                    );
+                }
+                if (!patientPhone) {
+                    throw new Error(
+                        "Please enter a phone number."
+                    );
+                }
+                if (!departmentId) {
+                    throw new Error(
+                        "Please select a department."
+                    );
+                }
+                if (!preferredDate) {
+                    throw new Error(
+                        "Please select a preferred date."
+                    );
+                }
+                if (!preferredTime) {
+                    throw new Error(
+                        "Please select a preferred time."
+                    );
+                }
+                const {
+                    data,
+                    error
+                } = await window.CHA_SUPABASE
+                    .from("appointments")
+                    .insert({
+                        appointment_number: "",
+                        patient_name:
+                            patientName,
+                        patient_phone:
+                            patientPhone,
+                        department_id:
+                            departmentId,
+                        preferred_date:
+                            preferredDate,
+                        preferred_time:
+                            preferredTime,
+                        reason:
+                            reason,
+                        notes:
+                            notes,
+                        status:
+                            "pending"
+                    })
+                    .select("appointment_number")
+                    .single();
+                if (error) {
+                    throw error;
+                }
+                appointmentMessage.className =
+                    "mt-5 p-5 rounded-xl bg-green-50 text-green-800";
+                appointmentMessage.innerHTML = `
+                    <div class="font-black text-lg">
+                        ✅ Appointment Request Submitted
+                    </div>
+                    <p class="mt-2">
+                        Your appointment request has been successfully
+                        sent to Community Hospital Afari.
+                    </p>
+                    <div
+                        class="mt-4 p-4 bg-white rounded-xl border border-green-200"
+                    >
+                        <div class="text-sm text-slate-500">
+                            Appointment Reference
+                        </div>
+                        <div
+                            class="text-2xl font-black text-cha-blue mt-1"
+                        >
+                            ${
+                                data &&
+                                data.appointment_number
+                                    ? data.appointment_number
+                                    : "Submitted"
+                            }
+                        </div>
+                    </div>
+                    <p class="mt-3 text-sm">
+                        Please keep this reference. Hospital staff will
+                        review your request and confirm the appointment.
+                    </p>
+                `;
+                appointmentForm.reset();
+            } catch (error) {
+                console.error(
+                    "CHA appointment error:",
+                    error
+                );
+                appointmentMessage.className =
+                    "mt-5 p-5 rounded-xl bg-red-50 text-red-800";
+                appointmentMessage.innerHTML = `
+                    <div class="font-black">
+                        ❌ Appointment could not be submitted
+                    </div>
+                    <p class="mt-2">
+                        ${
+                            error &&
+                            error.message
+                                ? error.message
+                                : "Something went wrong. Please try again."
+                        }
+                    </p>
+                `;
+            }
+            submitButton.disabled = false;
+            submitButton.textContent =
+                "📅 Submit Appointment Request";
         }
-        const patientName =
-            document.getElementById("patientName").value.trim();
-        const patientPhone =
-            document.getElementById("patientPhone").value.trim();
-        const departmentId =
-    document.getElementById("appointmentDepartment").value;
-        const preferredDate =
-            document.getElementById("appointmentDate").value;
-        const preferredTime =
-            document.getElementById("appointmentTime").value;
-        const reason =
-            document.getElementById("appointmentReason").value.trim();
-        const notes =
-            document.getElementById("appointmentNotes").value.trim();
-        if (!patientName) {
-            throw new Error("Please enter the patient's name.");
-        }
-        if (!patientPhone) {
-            throw new Error("Please enter a phone number.");
-        }
-        if (!departmentId) {
-    throw new Error("Please select a department.");
+    );
 }
-        if (!preferredDate) {
-            throw new Error("Please select a preferred date.");
+// ============================================================
+// AI DOCTOR
+// ============================================================
+const openAiDoctor =
+    document.getElementById("openAiDoctor");
+if (openAiDoctor) {
+    openAiDoctor.addEventListener(
+        "click",
+        function() {
+            window.location.href =
+                "ai-assistant.html";
         }
-        if (!preferredTime) {
-            throw new Error("Please select a preferred time.");
-        }
-        // Create the real appointment
-        const {
-            data,
-            error
-        } = await window.CHA_SUPABASE
-            .from("appointments")
-            .insert({
-                appointment_number: "",
-                patient_name: patientName,
-                patient_phone: patientPhone,
-                department_id: departmentId,
-                preferred_date: preferredDate,
-                preferred_time: preferredTime,
-                reason: reason,
-                notes: notes,
-                status: "pending"
-            })
-            .select("appointment_number")
-            .single();
-        if (error) {
-            throw error;
-        }
-        // Successful booking
-        appointmentMessage.className =
-            "mt-5 p-5 rounded-xl bg-green-50 text-green-800";
-        appointmentMessage.innerHTML = `
-            <div class="font-black text-lg">
-                ✅ Appointment Request Submitted
-            </div>
-            <p class="mt-2">
-                Your appointment request has been successfully
-                sent to Community Hospital Afari.
-            </p>
-            <div class="mt-4 p-4 bg-white rounded-xl border border-green-200">
-                <div class="text-sm text-slate-500">
-                    Appointment Reference
-                </div>
-                <div class="text-2xl font-black text-cha-blue mt-1">
-                    ${data.appointment_number}
-                </div>
-            </div>
-            <p class="mt-3 text-sm">
-                Please keep this reference. Hospital staff will
-                review your request and confirm the appointment.
-            </p>
-        `;
-        appointmentForm.reset();
-    } catch (error) {
-        console.error(
-            "CHA appointment error:",
-            error
-        );
-        appointmentMessage.className =
-            "mt-5 p-5 rounded-xl bg-red-50 text-red-800";
-        appointmentMessage.innerHTML = `
-            <div class="font-black">
-                ❌ Appointment could not be submitted
-            </div>
-            <p class="mt-2">
-                ${error.message ||
-                "Something went wrong. Please try again."}
-            </p>
-        `;
-    }
-    submitButton.disabled = false;
-    submitButton.textContent =
-        "📅 Submit Appointment Request";
-});
-document
-    .getElementById("openAiDoctor")
-    .addEventListener("click", function () {
-        window.location.href = "ai-assistant.html";
-    });
-document
-    .getElementById("staffLoginButton")
-    .addEventListener(
+    );
+}
+// ============================================================
+// STAFF LOGIN
+// ============================================================
+const staffLoginButton =
+    document.getElementById("staffLoginButton");
+if (staffLoginButton) {
+    staffLoginButton.addEventListener(
         "click",
         function() {
             window.location.href =
                 "staff-login.html";
         }
     );
-document.getElementById("year").textContent =
-    new Date().getFullYear();
+}
+// ============================================================
+// CURRENT YEAR
+// ============================================================
+const yearElement =
+    document.getElementById("year");
+if (yearElement) {
+    yearElement.textContent =
+        new Date().getFullYear();
+}
+// ============================================================
+// INITIAL RENDER
+// ============================================================
 renderServices();
 renderDepartments();
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 <script src="js/supabase.js"></script>
-
+<!-- =========================================================
+     LOAD APPOINTMENT DEPARTMENTS AFTER SUPABASE
+========================================================= -->
 <script>
 populateAppointmentDepartments();
 </script>
-<script>
-    populateAppointmentDepartments();
-</script>
-
 </body>
 </html>
