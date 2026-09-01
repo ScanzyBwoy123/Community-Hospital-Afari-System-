@@ -15,11 +15,16 @@
 
 <body class="bg-gray-100 min-h-screen">
 
-  <!-- HEADER -->
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
   <header class="bg-white shadow-sm">
+
     <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
 
       <div class="flex items-center gap-3">
+
         <img
           src="cha-logo.jpeg"
           alt="Community Hospital Afari"
@@ -35,6 +40,7 @@
             X-ray & Ultrasound Services
           </p>
         </div>
+
       </div>
 
       <button
@@ -45,46 +51,84 @@
       </button>
 
     </div>
+
   </header>
 
 
-  <!-- LOADING -->
+  <!-- =====================================================
+       LOADING
+       ===================================================== -->
+
   <div
     id="loading"
     class="min-h-[70vh] flex items-center justify-center"
   >
+
     <div class="text-center">
-      <div class="text-4xl mb-3">⏳</div>
-      <p class="text-gray-600">Loading radiology department...</p>
+
+      <div class="text-4xl mb-3">
+        ⏳
+      </div>
+
+      <p class="text-gray-600">
+        Loading radiology department...
+      </p>
+
     </div>
+
   </div>
 
 
-  <!-- MAIN -->
+  <!-- =====================================================
+       MAIN CONTENT
+       ===================================================== -->
+
   <main
     id="mainContent"
     class="hidden max-w-7xl mx-auto px-4 py-8"
   >
 
     <!-- STAFF INFORMATION -->
+
     <div class="bg-white rounded-xl shadow-sm p-5 mb-6">
 
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+      >
 
         <div>
+
           <h2 class="text-2xl font-bold text-gray-800">
-            Welcome, <span id="staffName">Staff</span>
+
+            Welcome,
+            <span id="staffName">
+              Staff
+            </span>
+
           </h2>
 
           <p class="text-gray-500 mt-1">
-            <span id="staffRole">Staff</span>
-            <span class="mx-1">•</span>
-            <span id="staffDepartment">Radiology</span>
+
+            <span id="staffRole">
+              Staff
+            </span>
+
+            <span class="mx-1">
+              •
+            </span>
+
+            <span id="staffDepartment">
+              Radiology
+            </span>
+
           </p>
+
         </div>
 
         <div class="bg-blue-50 text-blue-700 px-4 py-3 rounded-lg text-sm">
+
           Radiology Workspace
+
         </div>
 
       </div>
@@ -92,18 +136,25 @@
     </div>
 
 
-    <!-- MODULE CARDS -->
+    <!-- =====================================================
+         MODULE CARDS
+         ===================================================== -->
+
     <div
       id="moduleCards"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8"
     >
 
       <!-- IMAGING REQUESTS -->
+
       <button
         onclick="openModule('requests')"
         class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-left border border-transparent hover:border-blue-300"
       >
-        <div class="text-4xl mb-4">📋</div>
+
+        <div class="text-4xl mb-4">
+          📋
+        </div>
 
         <h3 class="text-lg font-bold text-gray-800">
           Imaging Requests
@@ -112,15 +163,20 @@
         <p class="text-sm text-gray-500 mt-2">
           View and manage imaging requests.
         </p>
+
       </button>
 
 
       <!-- X-RAY -->
+
       <button
         onclick="openModule('xray')"
         class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-left border border-transparent hover:border-blue-300"
       >
-        <div class="text-4xl mb-4">🩻</div>
+
+        <div class="text-4xl mb-4">
+          🩻
+        </div>
 
         <h3 class="text-lg font-bold text-gray-800">
           X-ray
@@ -129,15 +185,20 @@
         <p class="text-sm text-gray-500 mt-2">
           Process and manage X-ray examinations.
         </p>
+
       </button>
 
 
       <!-- ULTRASOUND -->
+
       <button
         onclick="showMessage('Ultrasound module will be added next.')"
         class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-left"
       >
-        <div class="text-4xl mb-4">📡</div>
+
+        <div class="text-4xl mb-4">
+          📡
+        </div>
 
         <h3 class="text-lg font-bold text-gray-800">
           Ultrasound
@@ -146,15 +207,20 @@
         <p class="text-sm text-gray-500 mt-2">
           Manage ultrasound examinations.
         </p>
+
       </button>
 
 
-      <!-- REPORTS -->
+      <!-- RADIOLOGY REPORTS -->
+
       <button
         onclick="showMessage('Radiology Reports module will be added next.')"
         class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-left"
       >
-        <div class="text-4xl mb-4">📄</div>
+
+        <div class="text-4xl mb-4">
+          📄
+        </div>
 
         <h3 class="text-lg font-bold text-gray-800">
           Radiology Reports
@@ -163,15 +229,20 @@
         <p class="text-sm text-gray-500 mt-2">
           Create and manage radiology reports.
         </p>
+
       </button>
 
 
-      <!-- RECORDS -->
+      <!-- IMAGING RECORDS -->
+
       <button
         onclick="showMessage('Imaging Records module will be added next.')"
         class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-left"
       >
-        <div class="text-4xl mb-4">🗂️</div>
+
+        <div class="text-4xl mb-4">
+          🗂️
+        </div>
 
         <h3 class="text-lg font-bold text-gray-800">
           Imaging Records
@@ -180,15 +251,20 @@
         <p class="text-sm text-gray-500 mt-2">
           Access previous imaging records.
         </p>
+
       </button>
 
 
-      <!-- ACTIVITY -->
+      <!-- REPORTS & ACTIVITY -->
+
       <button
         onclick="showMessage('Reports & Activity module will be added next.')"
         class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-left"
       >
-        <div class="text-4xl mb-4">📊</div>
+
+        <div class="text-4xl mb-4">
+          📊
+        </div>
 
         <h3 class="text-lg font-bold text-gray-800">
           Reports & Activity
@@ -197,23 +273,27 @@
         <p class="text-sm text-gray-500 mt-2">
           Review radiology activity.
         </p>
+
       </button>
 
     </div>
 
 
-    <!-- ======================================================
+    <!-- =====================================================
          IMAGING REQUESTS PANEL
-         ====================================================== -->
+         ===================================================== -->
 
     <section
       id="requestsPanel"
       class="hidden bg-white rounded-xl shadow-sm p-6"
     >
 
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
+      >
 
         <div>
+
           <h2 class="text-2xl font-bold text-gray-800">
             Imaging Requests
           </h2>
@@ -221,19 +301,32 @@
           <p class="text-sm text-gray-500 mt-1">
             Create and manage X-ray and ultrasound requests.
           </p>
+
         </div>
 
-        <button
-          onclick="showRequestForm()"
-          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium"
-        >
-          + New Request
-        </button>
+        <div class="flex gap-2">
+
+          <button
+            onclick="backToModules()"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-3 rounded-lg"
+          >
+            ← Back
+          </button>
+
+          <button
+            onclick="showRequestForm()"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium"
+          >
+            + New Request
+          </button>
+
+        </div>
 
       </div>
 
 
       <!-- REQUEST FORM -->
+
       <div
         id="requestForm"
         class="hidden bg-gray-50 border rounded-xl p-5 mb-6"
@@ -243,12 +336,18 @@
           New Imaging Request
         </h3>
 
+
         <form onsubmit="createRequest(event)">
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
+            <!-- PATIENT -->
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+
+              <label
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Patient Name
               </label>
 
@@ -259,11 +358,17 @@
                 class="w-full border rounded-lg px-3 py-2"
                 placeholder="Enter patient name"
               />
+
             </div>
 
 
+            <!-- EXAMINATION -->
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+
+              <label
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Examination Type
               </label>
 
@@ -272,15 +377,31 @@
                 required
                 class="w-full border rounded-lg px-3 py-2"
               >
-                <option value="">Select examination</option>
-                <option value="X-ray">X-ray</option>
-                <option value="Ultrasound">Ultrasound</option>
+
+                <option value="">
+                  Select examination
+                </option>
+
+                <option value="X-ray">
+                  X-ray
+                </option>
+
+                <option value="Ultrasound">
+                  Ultrasound
+                </option>
+
               </select>
+
             </div>
 
 
+            <!-- BODY PART -->
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+
+              <label
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Body Part / Area
               </label>
 
@@ -290,11 +411,17 @@
                 class="w-full border rounded-lg px-3 py-2"
                 placeholder="e.g. Chest, Abdomen, Leg"
               />
+
             </div>
 
 
+            <!-- CLINICAL REASON -->
+
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+
+              <label
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Clinical Reason
               </label>
 
@@ -304,14 +431,19 @@
                 class="w-full border rounded-lg px-3 py-2"
                 placeholder="Reason for examination"
               />
+
             </div>
 
           </div>
 
 
+          <!-- NOTES -->
+
           <div class="mt-4">
 
-            <label class="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              class="block text-sm font-medium text-gray-700 mb-1"
+            >
               Additional Notes
             </label>
 
@@ -324,6 +456,8 @@
 
           </div>
 
+
+          <!-- BUTTONS -->
 
           <div class="flex gap-3 mt-5">
 
@@ -349,7 +483,8 @@
       </div>
 
 
-      <!-- SEARCH / FILTER -->
+      <!-- SEARCH -->
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
 
         <input
@@ -360,27 +495,46 @@
           class="border rounded-lg px-3 py-2"
         />
 
+
         <select
           id="requestStatusFilter"
           onchange="renderRequests()"
           class="border rounded-lg px-3 py-2"
         >
-          <option value="">All statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
+
+          <option value="">
+            All statuses
+          </option>
+
+          <option value="Pending">
+            Pending
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+          <option value="Cancelled">
+            Cancelled
+          </option>
+
         </select>
 
       </div>
 
 
-      <!-- REQUEST TABLE -->
+      <!-- TABLE -->
+
       <div class="overflow-x-auto">
 
         <table class="w-full text-sm">
 
           <thead>
+
             <tr class="border-b bg-gray-50">
 
               <th class="text-left px-4 py-3">
@@ -408,11 +562,10 @@
               </th>
 
             </tr>
+
           </thead>
 
-          <tbody id="requestsTableBody">
-
-          </tbody>
+          <tbody id="requestsTableBody"></tbody>
 
         </table>
 
@@ -421,18 +574,23 @@
     </section>
 
 
-    <!-- ======================================================
+    <!-- =====================================================
          X-RAY PANEL
-         ====================================================== -->
+         ===================================================== -->
 
     <section
       id="xrayPanel"
       class="hidden bg-white rounded-xl shadow-sm p-6"
     >
 
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+      <!-- HEADER -->
+
+      <div
+        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
+      >
 
         <div>
+
           <h2 class="text-2xl font-bold text-gray-800">
             🩻 X-ray
           </h2>
@@ -440,6 +598,7 @@
           <p class="text-sm text-gray-500 mt-1">
             Manage X-ray examinations requested through the imaging system.
           </p>
+
         </div>
 
         <button
@@ -452,10 +611,14 @@
       </div>
 
 
-      <!-- X-RAY STATISTICS -->
+      <!-- STATISTICS -->
+
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
-        <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
+        <div
+          class="bg-yellow-50 border border-yellow-100 rounded-xl p-4"
+        >
+
           <p class="text-sm text-gray-500">
             Pending
           </p>
@@ -466,10 +629,14 @@
           >
             0
           </p>
+
         </div>
 
 
-        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+        <div
+          class="bg-blue-50 border border-blue-100 rounded-xl p-4"
+        >
+
           <p class="text-sm text-gray-500">
             In Progress
           </p>
@@ -480,10 +647,14 @@
           >
             0
           </p>
+
         </div>
 
 
-        <div class="bg-green-50 border border-green-100 rounded-xl p-4">
+        <div
+          class="bg-green-50 border border-green-100 rounded-xl p-4"
+        >
+
           <p class="text-sm text-gray-500">
             Completed
           </p>
@@ -494,10 +665,14 @@
           >
             0
           </p>
+
         </div>
 
 
-        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+        <div
+          class="bg-gray-50 border border-gray-200 rounded-xl p-4"
+        >
+
           <p class="text-sm text-gray-500">
             Total X-rays
           </p>
@@ -508,12 +683,14 @@
           >
             0
           </p>
+
         </div>
 
       </div>
 
 
-      <!-- X-RAY SEARCH -->
+      <!-- SEARCH / FILTER -->
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
 
         <input
@@ -524,27 +701,46 @@
           class="border rounded-lg px-3 py-2"
         />
 
+
         <select
           id="xrayStatusFilter"
           onchange="renderXrayRequests()"
           class="border rounded-lg px-3 py-2"
         >
-          <option value="">All X-ray requests</option>
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
+
+          <option value="">
+            All X-ray requests
+          </option>
+
+          <option value="Pending">
+            Pending
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+          <option value="Cancelled">
+            Cancelled
+          </option>
+
         </select>
 
       </div>
 
 
       <!-- X-RAY TABLE -->
+
       <div class="overflow-x-auto">
 
         <table class="w-full text-sm">
 
           <thead>
+
             <tr class="border-b bg-gray-50">
 
               <th class="text-left px-4 py-3">
@@ -572,11 +768,10 @@
               </th>
 
             </tr>
+
           </thead>
 
-          <tbody id="xrayTableBody">
-
-          </tbody>
+          <tbody id="xrayTableBody"></tbody>
 
         </table>
 
@@ -587,45 +782,290 @@
   </main>
 
 
-  <!-- ======================================================
+  <!-- =====================================================
+       X-RAY REQUEST MODAL
+       ===================================================== -->
+
+  <div
+    id="xrayModal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+  >
+
+    <div
+      class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+    >
+
+      <!-- MODAL HEADER -->
+
+      <div
+        class="flex items-center justify-between border-b px-6 py-4"
+      >
+
+        <div>
+
+          <h2 class="text-xl font-bold text-gray-800">
+            🩻 X-ray Examination
+          </h2>
+
+          <p class="text-sm text-gray-500">
+            Request details and status
+          </p>
+
+        </div>
+
+        <button
+          onclick="closeXrayModal()"
+          class="text-gray-500 hover:text-gray-800 text-2xl"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <!-- MODAL CONTENT -->
+
+      <div class="p-6">
+
+        <!-- PATIENT -->
+
+        <div class="mb-4">
+
+          <p class="text-xs text-gray-500 uppercase">
+            Patient
+          </p>
+
+          <p
+            id="modalPatientName"
+            class="font-semibold text-gray-800 mt-1"
+          >
+            -
+          </p>
+
+        </div>
+
+
+        <!-- X-RAY AREA -->
+
+        <div class="mb-4">
+
+          <p class="text-xs text-gray-500 uppercase">
+            X-ray Area
+          </p>
+
+          <p
+            id="modalBodyPart"
+            class="font-semibold text-gray-800 mt-1"
+          >
+            -
+          </p>
+
+        </div>
+
+
+        <!-- CLINICAL REASON -->
+
+        <div class="mb-4">
+
+          <p class="text-xs text-gray-500 uppercase">
+            Clinical Reason
+          </p>
+
+          <p
+            id="modalClinicalReason"
+            class="text-gray-700 mt-1"
+          >
+            -
+          </p>
+
+        </div>
+
+
+        <!-- REQUESTED BY -->
+
+        <div class="mb-4">
+
+          <p class="text-xs text-gray-500 uppercase">
+            Requested By
+          </p>
+
+          <p
+            id="modalRequestedBy"
+            class="text-gray-700 mt-1"
+          >
+            -
+          </p>
+
+        </div>
+
+
+        <!-- DATE -->
+
+        <div class="mb-4">
+
+          <p class="text-xs text-gray-500 uppercase">
+            Request Date
+          </p>
+
+          <p
+            id="modalRequestDate"
+            class="text-gray-700 mt-1"
+          >
+            -
+          </p>
+
+        </div>
+
+
+        <!-- NOTES -->
+
+        <div class="mb-5">
+
+          <p class="text-xs text-gray-500 uppercase">
+            Notes
+          </p>
+
+          <div
+            id="modalNotes"
+            class="bg-gray-50 border rounded-lg p-3 text-gray-700 mt-1 min-h-[60px]"
+          >
+            -
+          </div>
+
+        </div>
+
+
+        <!-- STATUS -->
+
+        <div class="border-t pt-5">
+
+          <label
+            for="xrayNewStatus"
+            class="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Examination Status
+          </label>
+
+          <select
+            id="xrayNewStatus"
+            class="w-full border border-gray-300 rounded-lg px-3 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+
+            <option value="Pending">
+              Pending
+            </option>
+
+            <option value="In Progress">
+              In Progress
+            </option>
+
+            <option value="Completed">
+              Completed
+            </option>
+
+            <option value="Cancelled">
+              Cancelled
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- MODAL FOOTER -->
+
+      <div
+        class="border-t px-6 py-4 flex justify-end gap-3"
+      >
+
+        <button
+          onclick="closeXrayModal()"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-5 py-2.5 rounded-lg"
+        >
+          Close
+        </button>
+
+        <button
+          onclick="saveXrayStatus()"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium"
+        >
+          Save Status
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
        JAVASCRIPT
-       ====================================================== -->
+       ===================================================== -->
 
   <script>
 
     let currentUser = null;
+
     let currentStaff = null;
+
     let imagingRequests = [];
 
+    let selectedXrayRequestId = null;
 
-    // -------------------------------------------------------
+
+    // =====================================================
     // INITIALIZE
-    // -------------------------------------------------------
+    // =====================================================
 
     async function loadStaffRadiology() {
 
       try {
 
         if (!window.CHA_SUPABASE) {
-          throw new Error("Supabase is not configured.");
+
+          throw new Error(
+            "Supabase is not configured."
+          );
+
         }
 
-        const { data: authData, error: authError } =
+
+        const {
+          data: authData,
+          error: authError
+        } =
           await window.CHA_SUPABASE.auth.getUser();
 
-        if (authError || !authData?.user) {
 
-          window.location.href = "staff-login.html";
+        if (
+          authError ||
+          !authData ||
+          !authData.user
+        ) {
+
+          window.location.href =
+            "staff-login.html";
+
           return;
 
         }
 
-        currentUser = authData.user;
+
+        currentUser =
+          authData.user;
 
 
-        const { data: staff, error: staffError } =
+        const {
+          data: staff,
+          error: staffError
+        } =
           await window.CHA_SUPABASE
+
             .from("staff_profiles")
+
             .select(`
               id,
               full_name,
@@ -634,50 +1074,90 @@
               department_id,
               departments (name)
             `)
-            .eq("id", currentUser.id)
+
+            .eq(
+              "id",
+              currentUser.id
+            )
+
             .single();
 
 
-        if (staffError || !staff) {
+        if (
+          staffError ||
+          !staff
+        ) {
 
-          alert("Unable to load your staff profile.");
-          window.location.href = "staff-login.html";
+          console.error(
+            staffError
+          );
+
+          alert(
+            "Unable to load your staff profile."
+          );
+
+          window.location.href =
+            "staff-login.html";
+
           return;
 
         }
 
 
-        if (staff.is_active === false) {
+        if (
+          staff.is_active === false
+        ) {
 
           await window.CHA_SUPABASE.auth.signOut();
 
-          alert("Your staff account is inactive.");
+          alert(
+            "Your staff account is inactive."
+          );
 
-          window.location.href = "staff-login.html";
+          window.location.href =
+            "staff-login.html";
 
           return;
 
         }
 
 
-        currentStaff = staff;
+        currentStaff =
+          staff;
 
 
-        document.getElementById("staffName").textContent =
-          staff.full_name || currentUser.email || "Staff";
+        document
+          .getElementById("staffName")
+          .textContent =
+          staff.full_name ||
+          currentUser.email ||
+          "Staff";
 
 
-        document.getElementById("staffRole").textContent =
-          staff.role || "Staff";
+        document
+          .getElementById("staffRole")
+          .textContent =
+          staff.role ||
+          "Staff";
 
 
-        document.getElementById("staffDepartment").textContent =
-          staff.departments?.name || "Radiology";
+        document
+          .getElementById("staffDepartment")
+          .textContent =
+          staff.departments?.name ||
+          "Radiology";
 
 
-        document.getElementById("loading").classList.add("hidden");
+        document
+          .getElementById("loading")
+          .classList
+          .add("hidden");
 
-        document.getElementById("mainContent").classList.remove("hidden");
+
+        document
+          .getElementById("mainContent")
+          .classList
+          .remove("hidden");
 
 
         await loadImagingRequests();
@@ -697,9 +1177,9 @@
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
     // LOGOUT
-    // -------------------------------------------------------
+    // =====================================================
 
     async function logout() {
 
@@ -707,35 +1187,52 @@
 
         await window.CHA_SUPABASE.auth.signOut();
 
-      } catch (error) {
+      }
+
+      catch (error) {
 
         console.error(error);
 
       }
 
-      window.location.href = "staff-login.html";
+
+      window.location.href =
+        "staff-login.html";
 
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
     // MODULE NAVIGATION
-    // -------------------------------------------------------
+    // =====================================================
 
     function openModule(module) {
 
-      document.getElementById("requestsPanel").classList.add("hidden");
+      document
+        .getElementById("requestsPanel")
+        .classList
+        .add("hidden");
 
-      document.getElementById("xrayPanel").classList.add("hidden");
 
-      document.getElementById("moduleCards").classList.add("hidden");
+      document
+        .getElementById("xrayPanel")
+        .classList
+        .add("hidden");
+
+
+      document
+        .getElementById("moduleCards")
+        .classList
+        .add("hidden");
 
 
       if (module === "requests") {
 
         document
           .getElementById("requestsPanel")
-          .classList.remove("hidden");
+          .classList
+          .remove("hidden");
+
 
         loadImagingRequests();
 
@@ -746,7 +1243,9 @@
 
         document
           .getElementById("xrayPanel")
-          .classList.remove("hidden");
+          .classList
+          .remove("hidden");
+
 
         renderXrayRequests();
 
@@ -759,28 +1258,34 @@
 
       document
         .getElementById("requestsPanel")
-        .classList.add("hidden");
+        .classList
+        .add("hidden");
+
 
       document
         .getElementById("xrayPanel")
-        .classList.add("hidden");
+        .classList
+        .add("hidden");
+
 
       document
         .getElementById("moduleCards")
-        .classList.remove("hidden");
+        .classList
+        .remove("hidden");
 
     }
 
 
-    // -------------------------------------------------------
-    // IMAGING REQUEST FORM
-    // -------------------------------------------------------
+    // =====================================================
+    // REQUEST FORM
+    // =====================================================
 
     function showRequestForm() {
 
       document
         .getElementById("requestForm")
-        .classList.remove("hidden");
+        .classList
+        .remove("hidden");
 
     }
 
@@ -789,14 +1294,15 @@
 
       document
         .getElementById("requestForm")
-        .classList.add("hidden");
+        .classList
+        .add("hidden");
 
     }
 
 
-    // -------------------------------------------------------
-    // CREATE REQUEST
-    // -------------------------------------------------------
+    // =====================================================
+    // CREATE IMAGING REQUEST
+    // =====================================================
 
     async function createRequest(event) {
 
@@ -804,24 +1310,47 @@
 
 
       const patientName =
-        document.getElementById("patientName").value.trim();
+        document
+          .getElementById("patientName")
+          .value
+          .trim();
+
 
       const requestType =
-        document.getElementById("requestType").value;
+        document
+          .getElementById("requestType")
+          .value;
+
 
       const bodyPart =
-        document.getElementById("bodyPart").value.trim();
+        document
+          .getElementById("bodyPart")
+          .value
+          .trim();
+
 
       const clinicalReason =
-        document.getElementById("clinicalReason").value.trim();
+        document
+          .getElementById("clinicalReason")
+          .value
+          .trim();
+
 
       const notes =
-        document.getElementById("requestNotes").value.trim();
+        document
+          .getElementById("requestNotes")
+          .value
+          .trim();
 
 
-      if (!patientName || !requestType) {
+      if (
+        !patientName ||
+        !requestType
+      ) {
 
-        alert("Please enter the patient name and examination type.");
+        alert(
+          "Please enter the patient name and examination type."
+        );
 
         return;
 
@@ -830,29 +1359,43 @@
 
       try {
 
-        const { error } =
+        const {
+          error
+        } =
           await window.CHA_SUPABASE
+
             .from("imaging_requests")
+
             .insert({
 
-              patient_name: patientName,
+              patient_name:
+                patientName,
 
-              request_type: requestType,
+              request_type:
+                requestType,
 
-              body_part: bodyPart || null,
+              body_part:
+                bodyPart ||
+                null,
 
-              clinical_reason: clinicalReason || null,
+              clinical_reason:
+                clinicalReason ||
+                null,
 
-              requested_by: currentUser.id,
+              requested_by:
+                currentUser.id,
 
               requested_by_name:
                 currentStaff?.full_name ||
                 currentUser.email ||
                 "Staff",
 
-              status: "Pending",
+              status:
+                "Pending",
 
-              notes: notes || null
+              notes:
+                notes ||
+                null
 
             });
 
@@ -871,7 +1414,9 @@
         }
 
 
-        alert("Saved successfully.");
+        alert(
+          "Saved successfully."
+        );
 
 
         document
@@ -882,6 +1427,7 @@
 
         hideRequestForm();
 
+
         await loadImagingRequests();
 
       }
@@ -890,26 +1436,39 @@
 
         console.error(error);
 
-        alert("Unable to save the imaging request.");
+        alert(
+          "Unable to save the imaging request."
+        );
 
       }
 
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
     // LOAD IMAGING REQUESTS
-    // -------------------------------------------------------
+    // =====================================================
 
     async function loadImagingRequests() {
 
       try {
 
-        const { data, error } =
+        const {
+          data,
+          error
+        } =
           await window.CHA_SUPABASE
+
             .from("imaging_requests")
+
             .select("*")
-            .order("created_at", { ascending: false });
+
+            .order(
+              "created_at",
+              {
+                ascending: false
+              }
+            );
 
 
         if (error) {
@@ -926,7 +1485,8 @@
         }
 
 
-        imagingRequests = data || [];
+        imagingRequests =
+          data || [];
 
 
         renderRequests();
@@ -944,14 +1504,16 @@
     }
 
 
-    // -------------------------------------------------------
-    // RENDER ALL REQUESTS
-    // -------------------------------------------------------
+    // =====================================================
+    // RENDER ALL IMAGING REQUESTS
+    // =====================================================
 
     function renderRequests() {
 
       const tbody =
-        document.getElementById("requestsTableBody");
+        document.getElementById(
+          "requestsTableBody"
+        );
 
 
       const search =
@@ -964,41 +1526,58 @@
 
       const status =
         document
-          .getElementById("requestStatusFilter")
+          .getElementById(
+            "requestStatusFilter"
+          )
           .value;
 
 
       const filtered =
-        imagingRequests.filter(request => {
+        imagingRequests.filter(
+          request => {
 
-          const matchesSearch =
-            !search ||
-            String(request.patient_name || "")
-              .toLowerCase()
-              .includes(search);
+            const matchesSearch =
+              !search ||
+              String(
+                request.patient_name ||
+                ""
+              )
+                .toLowerCase()
+                .includes(search);
 
 
-          const matchesStatus =
-            !status ||
-            request.status === status;
+            const matchesStatus =
+              !status ||
+              request.status ===
+              status;
 
 
-          return matchesSearch && matchesStatus;
+            return (
+              matchesSearch &&
+              matchesStatus
+            );
 
-        });
+          }
+        );
 
 
       if (!filtered.length) {
 
         tbody.innerHTML = `
+
           <tr>
+
             <td
               colspan="6"
               class="text-center text-gray-500 py-8"
             >
+
               No imaging requests found.
+
             </td>
+
           </tr>
+
         `;
 
         return;
@@ -1007,63 +1586,90 @@
 
 
       tbody.innerHTML =
-        filtered.map(request => {
+        filtered
+          .map(request => {
 
-          return `
+            return `
 
-            <tr class="border-b hover:bg-gray-50">
+              <tr class="border-b hover:bg-gray-50">
 
-              <td class="px-4 py-3 font-medium text-gray-800">
-                ${escapeHTML(request.patient_name)}
-              </td>
+                <td class="px-4 py-3 font-medium text-gray-800">
 
-              <td class="px-4 py-3">
-                ${escapeHTML(request.request_type)}
-              </td>
+                  ${escapeHTML(
+                    request.patient_name
+                  )}
 
-              <td class="px-4 py-3">
-                ${escapeHTML(request.body_part || "-")}
-              </td>
+                </td>
 
-              <td class="px-4 py-3">
-                ${statusBadge(request.status)}
-              </td>
+                <td class="px-4 py-3">
 
-              <td class="px-4 py-3 text-gray-500">
-                ${formatDate(request.created_at)}
-              </td>
+                  ${escapeHTML(
+                    request.request_type
+                  )}
 
-              <td class="px-4 py-3">
+                </td>
 
-                <button
-                  onclick="viewRequest('${request.id}')"
-                  class="text-blue-600 hover:underline font-medium"
-                >
-                  View
-                </button>
+                <td class="px-4 py-3">
 
-              </td>
+                  ${escapeHTML(
+                    request.body_part ||
+                    "-"
+                  )}
 
-            </tr>
+                </td>
 
-          `;
+                <td class="px-4 py-3">
 
-        }).join("");
+                  ${statusBadge(
+                    request.status
+                  )}
+
+                </td>
+
+                <td class="px-4 py-3 text-gray-500">
+
+                  ${formatDate(
+                    request.created_at
+                  )}
+
+                </td>
+
+                <td class="px-4 py-3">
+
+                  <button
+                    onclick="viewRequest('${request.id}')"
+                    class="text-blue-600 hover:underline font-medium"
+                  >
+                    View
+                  </button>
+
+                </td>
+
+              </tr>
+
+            `;
+
+          })
+          .join("");
 
     }
 
 
-    // -------------------------------------------------------
-    // X-RAY MODULE
-    // -------------------------------------------------------
+    // =====================================================
+    // RENDER X-RAY REQUESTS
+    // =====================================================
 
     function renderXrayRequests() {
 
       const tbody =
-        document.getElementById("xrayTableBody");
+        document.getElementById(
+          "xrayTableBody"
+        );
 
 
-      if (!tbody) return;
+      if (!tbody) {
+        return;
+      }
 
 
       const search =
@@ -1076,72 +1682,107 @@
 
       const status =
         document
-          .getElementById("xrayStatusFilter")
+          .getElementById(
+            "xrayStatusFilter"
+          )
           .value;
 
 
       const xrayRequests =
-        imagingRequests.filter(request => {
-
-          return request.request_type === "X-ray";
-
-        });
+        imagingRequests.filter(
+          request =>
+            request.request_type ===
+            "X-ray"
+        );
 
 
       // COUNTS
+
       const pending =
         xrayRequests.filter(
-          r => r.status === "Pending"
+          request =>
+            request.status ===
+            "Pending"
         ).length;
 
 
       const progress =
         xrayRequests.filter(
-          r => r.status === "In Progress"
+          request =>
+            request.status ===
+            "In Progress"
         ).length;
 
 
       const completed =
         xrayRequests.filter(
-          r => r.status === "Completed"
+          request =>
+            request.status ===
+            "Completed"
         ).length;
 
 
-      document.getElementById("xrayPendingCount").textContent =
+      document
+        .getElementById(
+          "xrayPendingCount"
+        )
+        .textContent =
         pending;
 
 
-      document.getElementById("xrayProgressCount").textContent =
+      document
+        .getElementById(
+          "xrayProgressCount"
+        )
+        .textContent =
         progress;
 
 
-      document.getElementById("xrayCompletedCount").textContent =
+      document
+        .getElementById(
+          "xrayCompletedCount"
+        )
+        .textContent =
         completed;
 
 
-      document.getElementById("xrayTotalCount").textContent =
+      document
+        .getElementById(
+          "xrayTotalCount"
+        )
+        .textContent =
         xrayRequests.length;
 
 
       // FILTER
+
       const filtered =
-        xrayRequests.filter(request => {
+        xrayRequests.filter(
+          request => {
 
-          const matchesSearch =
-            !search ||
-            String(request.patient_name || "")
-              .toLowerCase()
-              .includes(search);
+            const matchesSearch =
+              !search ||
+              String(
+                request.patient_name ||
+                ""
+              )
+                .toLowerCase()
+                .includes(search);
 
 
-          const matchesStatus =
-            !status ||
-            request.status === status;
+            const matchesStatus =
+              !status ||
+              request.status ===
+              status;
 
 
-          return matchesSearch && matchesStatus;
+            return (
+              matchesSearch &&
+              matchesStatus
+            );
 
-        });
+          }
+        );
 
 
       if (!filtered.length) {
@@ -1180,67 +1821,94 @@
 
 
       tbody.innerHTML =
-        filtered.map(request => {
+        filtered
+          .map(request => {
 
-          return `
+            return `
 
-            <tr class="border-b hover:bg-gray-50">
+              <tr class="border-b hover:bg-gray-50">
 
-              <td class="px-4 py-3 font-medium text-gray-800">
-                ${escapeHTML(request.patient_name)}
-              </td>
+                <td class="px-4 py-3 font-medium text-gray-800">
 
-              <td class="px-4 py-3">
-                ${escapeHTML(request.body_part || "-")}
-              </td>
+                  ${escapeHTML(
+                    request.patient_name
+                  )}
 
-              <td class="px-4 py-3">
-                ${escapeHTML(request.clinical_reason || "-")}
-              </td>
+                </td>
 
-              <td class="px-4 py-3">
-                ${statusBadge(request.status)}
-              </td>
+                <td class="px-4 py-3">
 
-              <td class="px-4 py-3 text-gray-500">
-                ${formatDate(request.created_at)}
-              </td>
+                  ${escapeHTML(
+                    request.body_part ||
+                    "-"
+                  )}
 
-              <td class="px-4 py-3">
+                </td>
 
-                <button
-                  onclick="viewXrayRequest('${request.id}')"
-                  class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs"
-                >
-                  Open
-                </button>
+                <td class="px-4 py-3">
 
-              </td>
+                  ${escapeHTML(
+                    request.clinical_reason ||
+                    "-"
+                  )}
 
-            </tr>
+                </td>
 
-          `;
+                <td class="px-4 py-3">
 
-        }).join("");
+                  ${statusBadge(
+                    request.status
+                  )}
+
+                </td>
+
+                <td class="px-4 py-3 text-gray-500">
+
+                  ${formatDate(
+                    request.created_at
+                  )}
+
+                </td>
+
+                <td class="px-4 py-3">
+
+                  <button
+                    onclick="viewXrayRequest('${request.id}')"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs"
+                  >
+                    Open
+                  </button>
+
+                </td>
+
+              </tr>
+
+            `;
+
+          })
+          .join("");
 
     }
 
 
-    // -------------------------------------------------------
-    // VIEW GENERAL REQUEST
-    // -------------------------------------------------------
+    // =====================================================
+    // VIEW GENERAL IMAGING REQUEST
+    // =====================================================
 
     function viewRequest(id) {
 
       const request =
         imagingRequests.find(
-          item => item.id === id
+          item =>
+            item.id === id
         );
 
 
       if (!request) {
 
-        alert("Request not found.");
+        alert(
+          "Request not found."
+        );
 
         return;
 
@@ -1252,85 +1920,202 @@
         "IMAGING REQUEST\n\n" +
 
         "Patient: " +
-        (request.patient_name || "-") +
+        (
+          request.patient_name ||
+          "-"
+        ) +
 
         "\nExamination: " +
-        (request.request_type || "-") +
+        (
+          request.request_type ||
+          "-"
+        ) +
 
         "\nBody Part: " +
-        (request.body_part || "-") +
+        (
+          request.body_part ||
+          "-"
+        ) +
 
         "\nClinical Reason: " +
-        (request.clinical_reason || "-") +
+        (
+          request.clinical_reason ||
+          "-"
+        ) +
 
         "\nStatus: " +
-        (request.status || "-") +
+        (
+          request.status ||
+          "-"
+        ) +
 
         "\nRequested By: " +
-        (request.requested_by_name || "-") +
+        (
+          request.requested_by_name ||
+          "-"
+        ) +
 
         "\nDate: " +
-        formatDate(request.created_at) +
+        formatDate(
+          request.created_at
+        ) +
 
         "\n\nNotes:\n" +
-        (request.notes || "-")
+        (
+          request.notes ||
+          "-"
+        )
 
       );
 
     }
 
 
-    // -------------------------------------------------------
-    // VIEW X-RAY REQUEST
-    // -------------------------------------------------------
+    // =====================================================
+    // OPEN X-RAY REQUEST
+    // =====================================================
 
-    async function viewXrayRequest(id) {
+    function viewXrayRequest(id) {
 
       const request =
         imagingRequests.find(
-          item => item.id === id
+          item =>
+            item.id === id
         );
 
 
       if (!request) {
 
-        alert("X-ray request not found.");
+        alert(
+          "X-ray request not found."
+        );
 
         return;
 
       }
 
 
-      const newStatus =
-        prompt(
+      selectedXrayRequestId =
+        id;
 
-          "X-RAY REQUEST\n\n" +
 
-          "Patient: " +
-          (request.patient_name || "-") +
+      document
+        .getElementById(
+          "modalPatientName"
+        )
+        .textContent =
+        request.patient_name ||
+        "-";
 
-          "\nX-ray Area: " +
-          (request.body_part || "-") +
 
-          "\nClinical Reason: " +
-          (request.clinical_reason || "-") +
+      document
+        .getElementById(
+          "modalBodyPart"
+        )
+        .textContent =
+        request.body_part ||
+        "-";
 
-          "\nCurrent Status: " +
-          (request.status || "-") +
 
-          "\n\nEnter new status:\n" +
+      document
+        .getElementById(
+          "modalClinicalReason"
+        )
+        .textContent =
+        request.clinical_reason ||
+        "-";
 
-          "Pending\n" +
-          "In Progress\n" +
-          "Completed\n" +
-          "Cancelled",
 
-          request.status || "Pending"
+      document
+        .getElementById(
+          "modalRequestedBy"
+        )
+        .textContent =
+        request.requested_by_name ||
+        "-";
 
+
+      document
+        .getElementById(
+          "modalRequestDate"
+        )
+        .textContent =
+        formatDate(
+          request.created_at
         );
 
 
-      if (newStatus === null) return;
+      document
+        .getElementById(
+          "modalNotes"
+        )
+        .textContent =
+        request.notes ||
+        "-";
+
+
+      document
+        .getElementById(
+          "xrayNewStatus"
+        )
+        .value =
+        request.status ||
+        "Pending";
+
+
+      document
+        .getElementById(
+          "xrayModal"
+        )
+        .classList
+        .remove("hidden");
+
+    }
+
+
+    // =====================================================
+    // CLOSE X-RAY MODAL
+    // =====================================================
+
+    function closeXrayModal() {
+
+      document
+        .getElementById(
+          "xrayModal"
+        )
+        .classList
+        .add("hidden");
+
+
+      selectedXrayRequestId =
+        null;
+
+    }
+
+
+    // =====================================================
+    // SAVE X-RAY STATUS
+    // =====================================================
+
+    async function saveXrayStatus() {
+
+      if (!selectedXrayRequestId) {
+
+        alert(
+          "No X-ray request selected."
+        );
+
+        return;
+
+      }
+
+
+      const selectedStatus =
+        document
+          .getElementById(
+            "xrayNewStatus"
+          )
+          .value;
 
 
       const validStatuses = [
@@ -1341,15 +2126,14 @@
       ];
 
 
-      if (!validStatuses.includes(newStatus.trim())) {
+      if (
+        !validStatuses.includes(
+          selectedStatus
+        )
+      ) {
 
         alert(
-          "Invalid status.\n\n" +
-          "Use exactly:\n" +
-          "Pending\n" +
-          "In Progress\n" +
-          "Completed\n" +
-          "Cancelled"
+          "Please select a valid status."
         );
 
         return;
@@ -1359,25 +2143,40 @@
 
       try {
 
-        const { error } =
+        const {
+          error
+        } =
           await window.CHA_SUPABASE
+
             .from("imaging_requests")
+
             .update({
 
-              status: newStatus.trim(),
+              status:
+                selectedStatus,
 
-              updated_at: new Date().toISOString()
+              updated_at:
+                new Date()
+                  .toISOString()
 
             })
-            .eq("id", id);
+
+            .eq(
+              "id",
+              selectedXrayRequestId
+            );
 
 
         if (error) {
 
-          console.error(error);
+          console.error(
+            "X-ray status update error:",
+            error
+          );
+
 
           alert(
-            "Unable to update X-ray request.\n\n" +
+            "Unable to update X-ray status.\n\n" +
             error.message
           );
 
@@ -1386,9 +2185,39 @@
         }
 
 
-        alert("X-ray status updated successfully.");
+        // Update local copy immediately
 
-        await loadImagingRequests();
+        const index =
+          imagingRequests.findIndex(
+            item =>
+              item.id ===
+              selectedXrayRequestId
+          );
+
+
+        if (index !== -1) {
+
+          imagingRequests[index].status =
+            selectedStatus;
+
+          imagingRequests[index].updated_at =
+            new Date()
+              .toISOString();
+
+        }
+
+
+        renderXrayRequests();
+
+        renderRequests();
+
+
+        closeXrayModal();
+
+
+        alert(
+          "X-ray status updated successfully."
+        );
 
       }
 
@@ -1396,49 +2225,60 @@
 
         console.error(error);
 
-        alert("Unable to update X-ray request.");
+        alert(
+          "Unable to update X-ray status."
+        );
 
       }
 
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
     // STATUS BADGE
-    // -------------------------------------------------------
+    // =====================================================
 
     function statusBadge(status) {
 
       const value =
-        status || "Pending";
+        status ||
+        "Pending";
 
 
       let classes =
         "inline-flex px-2.5 py-1 rounded-full text-xs font-medium";
 
 
-      if (value === "Pending") {
+      if (
+        value === "Pending"
+      ) {
 
         classes +=
           " bg-yellow-100 text-yellow-800";
 
       }
 
-      else if (value === "In Progress") {
+      else if (
+        value === "In Progress"
+      ) {
 
         classes +=
           " bg-blue-100 text-blue-800";
 
       }
 
-      else if (value === "Completed") {
+      else if (
+        value === "Completed"
+      ) {
 
         classes +=
           " bg-green-100 text-green-800";
 
       }
 
-      else if (value === "Cancelled") {
+      else if (
+        value === "Cancelled"
+      ) {
 
         classes +=
           " bg-red-100 text-red-800";
@@ -1454,17 +2294,21 @@
 
 
       return `
+
         <span class="${classes}">
+
           ${escapeHTML(value)}
+
         </span>
+
       `;
 
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
     // MESSAGE
-    // -------------------------------------------------------
+    // =====================================================
 
     function showMessage(message) {
 
@@ -1473,20 +2317,26 @@
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
     // DATE FORMAT
-    // -------------------------------------------------------
+    // =====================================================
 
     function formatDate(value) {
 
-      if (!value) return "-";
+      if (!value) {
+        return "-";
+      }
 
 
       const date =
         new Date(value);
 
 
-      if (Number.isNaN(date.getTime())) {
+      if (
+        Number.isNaN(
+          date.getTime()
+        )
+      ) {
 
         return "-";
 
@@ -1498,30 +2348,73 @@
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
     // ESCAPE HTML
-    // -------------------------------------------------------
+    // =====================================================
 
     function escapeHTML(value) {
 
-      return String(value ?? "")
+      return String(
+        value ?? ""
+      )
 
-        .replace(/&/g, "&amp;")
+        .replace(
+          /&/g,
+          "&amp;"
+        )
 
-        .replace(/</g, "&lt;")
+        .replace(
+          /</g,
+          "&lt;"
+        )
 
-        .replace(/>/g, "&gt;")
+        .replace(
+          />/g,
+          "&gt;"
+        )
 
-        .replace(/"/g, "&quot;")
+        .replace(
+          /"/g,
+          "&quot;"
+        )
 
-        .replace(/'/g, "&#039;");
+        .replace(
+          /'/g,
+          "&#039;"
+        );
 
     }
 
 
-    // -------------------------------------------------------
+    // =====================================================
+    // CLOSE MODAL WHEN CLICKING OUTSIDE
+    // =====================================================
+
+    document.addEventListener(
+      "click",
+      function(event) {
+
+        const modal =
+          document.getElementById(
+            "xrayModal"
+          );
+
+
+        if (
+          event.target === modal
+        ) {
+
+          closeXrayModal();
+
+        }
+
+      }
+    );
+
+
+    // =====================================================
     // START
-    // -------------------------------------------------------
+    // =====================================================
 
     document.addEventListener(
       "DOMContentLoaded",
