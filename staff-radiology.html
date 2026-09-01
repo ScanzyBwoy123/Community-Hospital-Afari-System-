@@ -96,10 +96,7 @@
     </div>
 
 
-    <!-- =======================================================
-         MODULE CARDS
-         ======================================================= -->
-
+    <!-- MODULE CARDS -->
     <div
       id="moduleCards"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8"
@@ -175,7 +172,7 @@
 
       <!-- IMAGING RECORDS -->
       <button
-        onclick="showMessage('Imaging Records module will be added next.')"
+        onclick="openModule('records')"
         class="bg-white rounded-xl shadow-sm hover:shadow-md transition p-6 text-left border border-transparent hover:border-blue-300"
       >
         <div class="text-4xl mb-4">🗂️</div>
@@ -405,7 +402,6 @@
       </div>
 
 
-      <!-- REQUEST TABLE -->
       <div class="overflow-x-auto">
 
         <table class="w-full text-sm">
@@ -463,7 +459,6 @@
       </div>
 
 
-      <!-- STATS -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
         <div class="bg-yellow-50 border rounded-xl p-4">
@@ -685,7 +680,6 @@
       </div>
 
 
-      <!-- SEARCH -->
       <div class="mb-5">
 
         <input
@@ -699,7 +693,6 @@
       </div>
 
 
-      <!-- REPORT TABLE -->
       <div class="overflow-x-auto">
 
         <table class="w-full text-sm">
@@ -725,11 +718,171 @@
 
     </section>
 
+
+    <!-- =======================================================
+         IMAGING RECORDS
+         ======================================================= -->
+
+    <section
+      id="recordsPanel"
+      class="hidden bg-white rounded-xl shadow-sm p-6"
+    >
+
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+          <h2 class="text-2xl font-bold text-gray-800">
+            🗂️ Imaging Records
+          </h2>
+
+          <p class="text-sm text-gray-500 mt-1">
+            Search and review previous X-ray and ultrasound examinations.
+          </p>
+        </div>
+
+        <button
+          onclick="backToModules()"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg"
+        >
+          ← Back
+        </button>
+
+      </div>
+
+
+      <!-- RECORD FILTERS -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+
+        <input
+          id="recordsSearch"
+          oninput="renderImagingRecords()"
+          type="text"
+          placeholder="Search patient, examination or body part..."
+          class="border rounded-lg px-3 py-2"
+        />
+
+        <select
+          id="recordsTypeFilter"
+          onchange="renderImagingRecords()"
+          class="border rounded-lg px-3 py-2"
+        >
+
+          <option value="">
+            All examinations
+          </option>
+
+          <option value="X-ray">
+            X-ray
+          </option>
+
+          <option value="Ultrasound">
+            Ultrasound
+          </option>
+
+        </select>
+
+
+        <select
+          id="recordsStatusFilter"
+          onchange="renderImagingRecords()"
+          class="border rounded-lg px-3 py-2"
+        >
+
+          <option value="">
+            All statuses
+          </option>
+
+          <option value="Pending">
+            Pending
+          </option>
+
+          <option value="In Progress">
+            In Progress
+          </option>
+
+          <option value="Completed">
+            Completed
+          </option>
+
+          <option value="Cancelled">
+            Cancelled
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <!-- RECORD COUNT -->
+      <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-5">
+
+        <p class="text-sm text-blue-700">
+          Total records:
+          <span
+            id="imagingRecordsCount"
+            class="font-bold"
+          >
+            0
+          </span>
+        </p>
+
+      </div>
+
+
+      <!-- RECORD TABLE -->
+      <div class="overflow-x-auto">
+
+        <table class="w-full text-sm">
+
+          <thead>
+
+            <tr class="border-b bg-gray-50">
+
+              <th class="text-left px-4 py-3">
+                Patient
+              </th>
+
+              <th class="text-left px-4 py-3">
+                Examination
+              </th>
+
+              <th class="text-left px-4 py-3">
+                Body Part / Area
+              </th>
+
+              <th class="text-left px-4 py-3">
+                Requested By
+              </th>
+
+              <th class="text-left px-4 py-3">
+                Date
+              </th>
+
+              <th class="text-left px-4 py-3">
+                Status
+              </th>
+
+              <th class="text-left px-4 py-3">
+                Action
+              </th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="imagingRecordsTableBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
   </main>
 
 
   <!-- =======================================================
-       REPORT MODAL
+       RADIOLOGY REPORT MODAL
        ======================================================= -->
 
   <div
@@ -744,6 +897,7 @@
       <div class="flex items-center justify-between p-5 border-b">
 
         <div>
+
           <h2 class="text-xl font-bold text-gray-800">
             Radiology Report
           </h2>
@@ -754,6 +908,7 @@
           >
             New Report
           </p>
+
         </div>
 
         <button
@@ -767,8 +922,6 @@
 
 
       <div class="p-5">
-
-        <!-- SELECT IMAGING REQUEST -->
 
         <div class="mb-5">
 
@@ -795,77 +948,30 @@
         </div>
 
 
-        <!-- PATIENT DETAILS -->
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
 
           <div class="bg-gray-50 rounded-lg p-4">
-
-            <p class="text-xs text-gray-500">
-              Patient
-            </p>
-
-            <p
-              id="reportPatient"
-              class="font-semibold text-gray-800 mt-1"
-            >
-              —
-            </p>
-
+            <p class="text-xs text-gray-500">Patient</p>
+            <p id="reportPatient" class="font-semibold text-gray-800 mt-1">—</p>
           </div>
 
-
           <div class="bg-gray-50 rounded-lg p-4">
-
-            <p class="text-xs text-gray-500">
-              Examination
-            </p>
-
-            <p
-              id="reportExamination"
-              class="font-semibold text-gray-800 mt-1"
-            >
-              —
-            </p>
-
+            <p class="text-xs text-gray-500">Examination</p>
+            <p id="reportExamination" class="font-semibold text-gray-800 mt-1">—</p>
           </div>
 
-
           <div class="bg-gray-50 rounded-lg p-4">
-
-            <p class="text-xs text-gray-500">
-              Body Part / Area
-            </p>
-
-            <p
-              id="reportBodyPart"
-              class="font-semibold text-gray-800 mt-1"
-            >
-              —
-            </p>
-
+            <p class="text-xs text-gray-500">Body Part / Area</p>
+            <p id="reportBodyPart" class="font-semibold text-gray-800 mt-1">—</p>
           </div>
 
-
           <div class="bg-gray-50 rounded-lg p-4">
-
-            <p class="text-xs text-gray-500">
-              Clinical Reason
-            </p>
-
-            <p
-              id="reportClinicalReason"
-              class="font-semibold text-gray-800 mt-1"
-            >
-              —
-            </p>
-
+            <p class="text-xs text-gray-500">Clinical Reason</p>
+            <p id="reportClinicalReason" class="font-semibold text-gray-800 mt-1">—</p>
           </div>
 
         </div>
 
-
-        <!-- FINDINGS -->
 
         <div class="mb-5">
 
@@ -884,8 +990,6 @@
         </div>
 
 
-        <!-- IMPRESSION -->
-
         <div class="mb-5">
 
           <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -901,8 +1005,6 @@
 
         </div>
 
-
-        <!-- NOTES -->
 
         <div class="mb-5">
 
@@ -925,8 +1027,6 @@
           class="hidden bg-blue-50 border border-blue-200 rounded-lg p-4 mb-5 text-sm text-blue-800"
         ></div>
 
-
-        <!-- BUTTONS -->
 
         <div class="flex justify-end gap-3">
 
@@ -1194,6 +1294,289 @@
   </div>
 
 
+  <!-- =======================================================
+       IMAGING RECORD MODAL
+       ======================================================= -->
+
+  <div
+    id="imagingRecordModal"
+    class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+  >
+
+    <div
+      class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+    >
+
+      <div class="flex items-center justify-between p-5 border-b">
+
+        <div>
+
+          <h2 class="text-xl font-bold text-gray-800">
+            Imaging Record
+          </h2>
+
+          <p
+            id="recordModalHeading"
+            class="text-sm text-gray-500 mt-1"
+          >
+            Examination Record
+          </p>
+
+        </div>
+
+        <button
+          onclick="closeImagingRecordModal()"
+          class="text-gray-500 hover:text-gray-800 text-2xl"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="p-5">
+
+        <!-- BASIC INFORMATION -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-xs text-gray-500">
+              Patient
+            </p>
+
+            <p
+              id="recordPatient"
+              class="font-semibold text-gray-800 mt-1"
+            >
+              —
+            </p>
+          </div>
+
+
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-xs text-gray-500">
+              Examination
+            </p>
+
+            <p
+              id="recordExamination"
+              class="font-semibold text-gray-800 mt-1"
+            >
+              —
+            </p>
+          </div>
+
+
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-xs text-gray-500">
+              Body Part / Area
+            </p>
+
+            <p
+              id="recordBodyPart"
+              class="font-semibold text-gray-800 mt-1"
+            >
+              —
+            </p>
+          </div>
+
+
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-xs text-gray-500">
+              Status
+            </p>
+
+            <p
+              id="recordStatus"
+              class="font-semibold text-gray-800 mt-1"
+            >
+              —
+            </p>
+          </div>
+
+
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-xs text-gray-500">
+              Requested By
+            </p>
+
+            <p
+              id="recordRequestedBy"
+              class="font-semibold text-gray-800 mt-1"
+            >
+              —
+            </p>
+          </div>
+
+
+          <div class="bg-gray-50 rounded-lg p-4">
+            <p class="text-xs text-gray-500">
+              Request Date
+            </p>
+
+            <p
+              id="recordDate"
+              class="font-semibold text-gray-800 mt-1"
+            >
+              —
+            </p>
+          </div>
+
+        </div>
+
+
+        <!-- CLINICAL REASON -->
+        <div class="mt-5">
+
+          <p class="text-sm font-medium text-gray-700 mb-2">
+            Clinical Reason
+          </p>
+
+          <div
+            id="recordClinicalReason"
+            class="bg-gray-50 rounded-lg p-4 text-sm text-gray-700"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <!-- REQUEST NOTES -->
+        <div class="mt-5">
+
+          <p class="text-sm font-medium text-gray-700 mb-2">
+            Request Notes
+          </p>
+
+          <div
+            id="recordNotes"
+            class="bg-gray-50 rounded-lg p-4 text-sm text-gray-700"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <!-- RADIOLOGY REPORT -->
+        <div class="mt-6 border-t pt-5">
+
+          <h3 class="text-lg font-bold text-gray-800 mb-4">
+            📄 Radiology Report
+          </h3>
+
+
+          <div
+            id="recordReportEmpty"
+            class="hidden bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-sm text-yellow-800"
+          >
+            No radiology report has been entered for this examination yet.
+          </div>
+
+
+          <div
+            id="recordReportContent"
+            class="hidden"
+          >
+
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+
+              <p class="text-xs text-gray-500">
+                Reported By
+              </p>
+
+              <p
+                id="recordReportedBy"
+                class="font-semibold mt-1"
+              >
+                —
+              </p>
+
+              <p class="text-xs text-gray-500 mt-3">
+                Report Date
+              </p>
+
+              <p
+                id="recordReportDate"
+                class="font-semibold mt-1"
+              >
+                —
+              </p>
+
+            </div>
+
+
+            <div class="mb-4">
+
+              <p class="text-sm font-medium text-gray-700 mb-2">
+                Findings
+              </p>
+
+              <div
+                id="recordFindings"
+                class="bg-white border rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap"
+              >
+                —
+              </div>
+
+            </div>
+
+
+            <div class="mb-4">
+
+              <p class="text-sm font-medium text-gray-700 mb-2">
+                Impression
+              </p>
+
+              <div
+                id="recordImpression"
+                class="bg-white border rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap"
+              >
+                —
+              </div>
+
+            </div>
+
+
+            <div>
+
+              <p class="text-sm font-medium text-gray-700 mb-2">
+                Additional Report Notes
+              </p>
+
+              <div
+                id="recordReportNotes"
+                class="bg-white border rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap"
+              >
+                —
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="flex justify-end mt-6">
+
+          <button
+            onclick="closeImagingRecordModal()"
+            class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-5 py-2 rounded-lg"
+          >
+            Close
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
   <!-- MESSAGE -->
   <div
     id="messageBox"
@@ -1215,6 +1598,8 @@
   let selectedRadiologyReportId = null;
   let selectedRadiologyReportRequestId = null;
 
+  let selectedImagingRecordId = null;
+
 
   // =========================================================
   // INITIALIZE
@@ -1233,16 +1618,14 @@
         error: authError
       } = await window.CHA_SUPABASE.auth.getUser();
 
-      if (
-        authError ||
-        !authData ||
-        !authData.user
-      ) {
+
+      if (authError || !authData || !authData.user) {
 
         window.location.href = "staff-login.html";
         return;
 
       }
+
 
       currentUser = authData.user;
 
@@ -1309,16 +1692,9 @@
         "Radiology";
 
 
-      document
-        .getElementById("loading")
-        .classList
-        .add("hidden");
+      document.getElementById("loading").classList.add("hidden");
 
-
-      document
-        .getElementById("mainContent")
-        .classList
-        .remove("hidden");
+      document.getElementById("mainContent").classList.remove("hidden");
 
 
       await loadImagingRequests();
@@ -1372,7 +1748,8 @@
       "requestsPanel",
       "xrayPanel",
       "ultrasoundPanel",
-      "reportsPanel"
+      "reportsPanel",
+      "recordsPanel"
     ].forEach(id => {
 
       const element =
@@ -1444,6 +1821,18 @@
 
     }
 
+
+    if (module === "records") {
+
+      document
+        .getElementById("recordsPanel")
+        .classList
+        .remove("hidden");
+
+      renderImagingRecords();
+
+    }
+
   }
 
 
@@ -1496,13 +1885,13 @@
       }
 
 
-      imagingRequests =
-        data || [];
+      imagingRequests = data || [];
 
 
       renderRequests();
       renderXrayRequests();
       renderUltrasoundRequests();
+      renderImagingRecords();
 
     }
 
@@ -2064,10 +2453,7 @@
       }
 
 
-      if (
-        !data ||
-        data.status !== newStatus
-      ) {
+      if (!data || data.status !== newStatus) {
 
         throw new Error(
           "The status was not confirmed by the database."
@@ -2105,6 +2491,7 @@
 
       renderXrayRequests();
       renderRequests();
+      renderImagingRecords();
 
     }
 
@@ -2380,10 +2767,7 @@
       }
 
 
-      if (
-        !data ||
-        data.status !== newStatus
-      ) {
+      if (!data || data.status !== newStatus) {
 
         throw new Error(
           "The status was not confirmed by the database."
@@ -2421,6 +2805,7 @@
 
       renderUltrasoundRequests();
       renderRequests();
+      renderImagingRecords();
 
     }
 
@@ -2489,6 +2874,7 @@
 
 
       renderRadiologyReports();
+      renderImagingRecords();
 
     }
 
@@ -2685,10 +3071,14 @@
     ).value = "";
 
 
+    document.getElementById(
+      "saveRadiologyReportButton"
+    ).textContent =
+      "Save Report";
+
+
     document
-      .getElementById(
-        "radiologyReportModal"
-      )
+      .getElementById("radiologyReportModal")
       .classList
       .remove("hidden");
 
@@ -2736,14 +3126,10 @@
 
           <option value="${request.id}">
 
-            ${escapeHTML(
-              request.patient_name
-            )}
+            ${escapeHTML(request.patient_name)}
 
             —
-            ${escapeHTML(
-              request.request_type
-            )}
+            ${escapeHTML(request.request_type)}
 
             —
             ${escapeHTML(
@@ -2751,9 +3137,7 @@
             )}
 
             —
-            ${formatDate(
-              request.created_at
-            )}
+            ${formatDate(request.created_at)}
 
           </option>
 
@@ -2996,6 +3380,10 @@
       );
 
 
+    const wasUpdating =
+      Boolean(selectedRadiologyReportId);
+
+
     button.disabled = true;
     button.textContent = "Saving...";
 
@@ -3020,7 +3408,6 @@
           request.body_part || null,
 
         findings:
-
           findings,
 
         impression:
@@ -3088,7 +3475,7 @@
 
 
       showMessage(
-        selectedRadiologyReportId
+        wasUpdating
           ? "Radiology report updated successfully."
           : "Radiology report saved successfully.",
         "success"
@@ -3268,6 +3655,336 @@
 
 
   // =========================================================
+  // IMAGING RECORDS
+  // =========================================================
+
+  function renderImagingRecords() {
+
+    const table =
+      document.getElementById(
+        "imagingRecordsTableBody"
+      );
+
+
+    const count =
+      document.getElementById(
+        "imagingRecordsCount"
+      );
+
+
+    if (!table) return;
+
+
+    const search =
+      (
+        document
+          .getElementById("recordsSearch")
+          ?.value ||
+        ""
+      )
+      .trim()
+      .toLowerCase();
+
+
+    const type =
+      document
+        .getElementById("recordsTypeFilter")
+        ?.value ||
+      "";
+
+
+    const status =
+      document
+        .getElementById("recordsStatusFilter")
+        ?.value ||
+      "";
+
+
+    const filtered =
+      imagingRequests.filter(record => {
+
+        const searchableText = [
+
+          record.patient_name,
+          record.request_type,
+          record.body_part,
+          record.clinical_reason,
+          record.requested_by_name
+
+        ]
+          .map(value =>
+            String(value || "").toLowerCase()
+          )
+          .join(" ");
+
+
+        const matchesSearch =
+          !search ||
+          searchableText.includes(search);
+
+
+        const matchesType =
+          !type ||
+          record.request_type === type;
+
+
+        const matchesStatus =
+          !status ||
+          record.status === status;
+
+
+        return (
+          matchesSearch &&
+          matchesType &&
+          matchesStatus
+        );
+
+      });
+
+
+    if (count) {
+      count.textContent =
+        filtered.length;
+    }
+
+
+    if (!filtered.length) {
+
+      table.innerHTML = `
+        <tr>
+          <td
+            colspan="7"
+            class="text-center py-10 text-gray-500"
+          >
+            No imaging records found.
+          </td>
+        </tr>
+      `;
+
+      return;
+
+    }
+
+
+    table.innerHTML =
+      filtered.map(record => `
+
+        <tr class="border-b hover:bg-gray-50">
+
+          <td class="px-4 py-3 font-medium">
+            ${escapeHTML(record.patient_name)}
+          </td>
+
+          <td class="px-4 py-3">
+            ${escapeHTML(record.request_type)}
+          </td>
+
+          <td class="px-4 py-3">
+            ${escapeHTML(record.body_part || "—")}
+          </td>
+
+          <td class="px-4 py-3">
+            ${escapeHTML(record.requested_by_name || "—")}
+          </td>
+
+          <td class="px-4 py-3">
+            ${formatDate(record.created_at)}
+          </td>
+
+          <td class="px-4 py-3">
+            ${statusBadge(record.status)}
+          </td>
+
+          <td class="px-4 py-3">
+
+            <button
+              onclick="viewImagingRecord('${record.id}')"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg text-xs"
+            >
+              View
+            </button>
+
+          </td>
+
+        </tr>
+
+      `).join("");
+
+  }
+
+
+  function viewImagingRecord(id) {
+
+    const record =
+      imagingRequests.find(
+        item =>
+          item.id === id
+      );
+
+
+    if (!record) {
+
+      showMessage(
+        "Imaging record could not be found.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    selectedImagingRecordId =
+      record.id;
+
+
+    const report =
+      radiologyReports.find(
+        item =>
+          item.imaging_request_id ===
+          record.id
+      );
+
+
+    document.getElementById(
+      "recordModalHeading"
+    ).textContent =
+      `${record.request_type || "Imaging"} Record`;
+
+
+    document.getElementById(
+      "recordPatient"
+    ).textContent =
+      record.patient_name || "—";
+
+
+    document.getElementById(
+      "recordExamination"
+    ).textContent =
+      record.request_type || "—";
+
+
+    document.getElementById(
+      "recordBodyPart"
+    ).textContent =
+      record.body_part || "—";
+
+
+    document.getElementById(
+      "recordStatus"
+    ).innerHTML =
+      statusBadge(record.status);
+
+
+    document.getElementById(
+      "recordRequestedBy"
+    ).textContent =
+      record.requested_by_name || "—";
+
+
+    document.getElementById(
+      "recordDate"
+    ).textContent =
+      formatDate(record.created_at);
+
+
+    document.getElementById(
+      "recordClinicalReason"
+    ).textContent =
+      record.clinical_reason || "—";
+
+
+    document.getElementById(
+      "recordNotes"
+    ).textContent =
+      record.notes || "—";
+
+
+    const emptyReport =
+      document.getElementById(
+        "recordReportEmpty"
+      );
+
+
+    const reportContent =
+      document.getElementById(
+        "recordReportContent"
+      );
+
+
+    if (report) {
+
+      emptyReport.classList.add("hidden");
+
+      reportContent.classList.remove("hidden");
+
+
+      document.getElementById(
+        "recordReportedBy"
+      ).textContent =
+        report.reported_by_name || "—";
+
+
+      document.getElementById(
+        "recordReportDate"
+      ).textContent =
+        formatDate(report.created_at);
+
+
+      document.getElementById(
+        "recordFindings"
+      ).textContent =
+        report.findings || "—";
+
+
+      document.getElementById(
+        "recordImpression"
+      ).textContent =
+        report.impression || "—";
+
+
+      document.getElementById(
+        "recordReportNotes"
+      ).textContent =
+        report.report_notes || "—";
+
+    }
+
+    else {
+
+      emptyReport.classList.remove("hidden");
+
+      reportContent.classList.add("hidden");
+
+    }
+
+
+    document
+      .getElementById(
+        "imagingRecordModal"
+      )
+      .classList
+      .remove("hidden");
+
+  }
+
+
+  function closeImagingRecordModal() {
+
+    document
+      .getElementById(
+        "imagingRecordModal"
+      )
+      .classList
+      .add("hidden");
+
+
+    selectedImagingRecordId = null;
+
+  }
+
+
+  // =========================================================
   // GENERAL VIEW REQUEST
   // =========================================================
 
@@ -3291,10 +4008,7 @@
     }
 
 
-    if (
-      request.request_type ===
-      "Ultrasound"
-    ) {
+    if (request.request_type === "Ultrasound") {
 
       viewUltrasoundRequest(id);
       return;
@@ -3488,6 +4202,12 @@
         );
 
 
+      const recordModal =
+        document.getElementById(
+          "imagingRecordModal"
+        );
+
+
       if (
         event.target ===
         xrayModal
@@ -3514,6 +4234,16 @@
       ) {
 
         closeRadiologyReportModal();
+
+      }
+
+
+      if (
+        event.target ===
+        recordModal
+      ) {
+
+        closeImagingRecordModal();
 
       }
 
