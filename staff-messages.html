@@ -3,60 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>CHA Department Messages</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
         }
-
         .message-card {
             transition:
                 transform 0.2s ease,
                 box-shadow 0.2s ease;
         }
-
         .message-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
         }
+        .hospital-logo {
+            width: 58px;
+            height: 58px;
+            object-fit: contain;
+            background: white;
+            border-radius: 12px;
+            padding: 5px;
+        }
     </style>
 </head>
-
 <body class="bg-slate-100 text-slate-800">
-
+<!-- =====================================================
+     HEADER
+====================================================== -->
 <header class="bg-blue-900 text-white shadow-lg">
     <div class="max-w-7xl mx-auto px-4">
         <div class="min-h-20 flex items-center justify-between gap-4">
-
             <div class="flex items-center gap-3">
-
-                <div
-                    class="w-12 h-12 rounded-full bg-white
-                           text-blue-900 flex items-center
-                           justify-center font-black"
+                <!-- REAL AFARI COMMUNITY HOSPITAL LOGO -->
+                <img
+                    src="https://afaricommunityhospital.com/images/logo-nav.png"
+                    alt="Afari Community Hospital Logo"
+                    class="hospital-logo"
+                    onerror="this.style.display='none';"
                 >
-                    CHA
-                </div>
-
                 <div>
                     <div class="font-black">
                         COMMUNITY HOSPITAL AFARI
                     </div>
-
                     <div class="text-blue-200 text-sm">
                         Staff Messages
                     </div>
                 </div>
-
             </div>
-
             <button
                 id="backButton"
+                type="button"
                 class="bg-white text-blue-900
                        hover:bg-blue-50
                        px-4 py-2
@@ -65,16 +64,16 @@
             >
                 ← Dashboard
             </button>
-
         </div>
     </div>
 </header>
-
-
+<!-- =====================================================
+     MAIN
+====================================================== -->
 <main class="max-w-7xl mx-auto px-4 py-8">
-
-    <!-- LOADING -->
-
+    <!-- =================================================
+         LOADING
+    ================================================== -->
     <div
         id="loading"
         class="bg-white rounded-2xl shadow p-8 text-center"
@@ -82,25 +81,26 @@
         <div class="text-3xl">
             🔐
         </div>
-
         <p class="font-bold mt-3">
             Loading Staff Messages...
         </p>
-
         <p class="text-sm text-slate-500 mt-2">
             Please wait...
         </p>
     </div>
-
-
-    <!-- MAIN PAGE -->
-
-    <div id="inboxPage" class="hidden">
-
-        <!-- HEADER -->
-
-        <section class="bg-white rounded-2xl shadow p-6 mb-8">
-
+    <!-- =================================================
+         MAIN PAGE
+    ================================================== -->
+    <div
+        id="inboxPage"
+        class="hidden"
+    >
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+        <section
+            class="bg-white rounded-2xl shadow p-6 mb-8"
+        >
             <div
                 class="flex flex-col
                        sm:flex-row
@@ -108,31 +108,31 @@
                        sm:justify-between
                        gap-4"
             >
-
                 <div>
-
                     <p class="text-sm text-slate-500">
                         Hospital Communication
                     </p>
-
                     <h1
                         id="departmentTitle"
-                        class="text-3xl font-black text-slate-900 mt-1"
+                        class="text-3xl
+                               font-black
+                               text-slate-900
+                               mt-1"
                     >
                         Staff Messages
                     </h1>
-
                     <p
                         id="staffWelcome"
-                        class="text-sm text-slate-500 mt-2"
+                        class="text-sm
+                               text-slate-500
+                               mt-2"
                     >
                         Secure communication between authorized hospital staff.
                     </p>
-
                 </div>
-
                 <button
                     id="refreshButton"
+                    type="button"
                     class="bg-blue-900
                            hover:bg-blue-800
                            text-white
@@ -142,43 +142,32 @@
                 >
                     ↻ Refresh
                 </button>
-
             </div>
-
         </section>
-
-
-        <!-- SEND MESSAGE -->
-
+        <!-- =================================================
+             SEND MESSAGE
+        ================================================== -->
         <section
             class="bg-white rounded-2xl shadow p-6 mb-8"
         >
-
             <h2 class="text-xl font-black">
                 ✉️ Send Department Message
             </h2>
-
             <p class="text-sm text-slate-500 mt-1">
                 Send a message to another authorized hospital department.
             </p>
-
-
             <form
                 id="messageForm"
                 class="mt-6 space-y-5"
             >
-
                 <!-- RECIPIENT -->
-
                 <div>
-
                     <label
                         for="recipientDepartment"
                         class="block text-sm font-bold mb-2"
                     >
                         Recipient Department
                     </label>
-
                     <select
                         id="recipientDepartment"
                         required
@@ -191,27 +180,19 @@
                                focus:ring-2
                                focus:ring-blue-500"
                     >
-
                         <option value="">
                             Select department
                         </option>
-
                     </select>
-
                 </div>
-
-
                 <!-- SUBJECT -->
-
                 <div>
-
                     <label
                         for="messageSubject"
                         class="block text-sm font-bold mb-2"
                     >
                         Subject
                     </label>
-
                     <input
                         id="messageSubject"
                         type="text"
@@ -226,21 +207,15 @@
                                focus:ring-2
                                focus:ring-blue-500"
                     >
-
                 </div>
-
-
                 <!-- MESSAGE -->
-
                 <div>
-
                     <label
                         for="messageBody"
                         class="block text-sm font-bold mb-2"
                     >
                         Message
                     </label>
-
                     <textarea
                         id="messageBody"
                         rows="6"
@@ -256,12 +231,8 @@
                                focus:ring-2
                                focus:ring-blue-500"
                     ></textarea>
-
                 </div>
-
-
                 <!-- FORM STATUS -->
-
                 <div
                     id="formStatus"
                     class="hidden
@@ -269,10 +240,7 @@
                            rounded-xl
                            text-sm"
                 ></div>
-
-
                 <!-- SEND -->
-
                 <button
                     id="sendButton"
                     type="submit"
@@ -281,26 +249,23 @@
                            text-white
                            px-6 py-3
                            rounded-xl
-                           font-bold"
+                           font-bold
+                           disabled:opacity-50
+                           disabled:cursor-not-allowed"
                 >
                     Send Message
                 </button>
-
             </form>
-
         </section>
-
-
-        <!-- RECEIVED MESSAGES -->
-
+        <!-- =================================================
+             RECEIVED MESSAGES
+        ================================================== -->
         <section
             class="bg-white rounded-2xl shadow overflow-hidden"
         >
-
             <div
                 class="p-6 border-b border-slate-200"
             >
-
                 <div
                     class="flex flex-col
                            sm:flex-row
@@ -308,19 +273,14 @@
                            sm:justify-between
                            gap-3"
                 >
-
                     <div>
-
                         <h2 class="text-xl font-black">
                             📥 Messages
                         </h2>
-
                         <p class="text-sm text-slate-500 mt-1">
                             Messages received by your department.
                         </p>
-
                     </div>
-
                     <span
                         id="messageCount"
                         class="inline-flex
@@ -335,56 +295,52 @@
                     >
                         0 Messages
                     </span>
-
                 </div>
-
             </div>
-
-
             <div
                 id="inboxStatus"
-                class="hidden m-6 p-4 rounded-xl text-sm"
+                class="hidden
+                       m-6
+                       p-4
+                       rounded-xl
+                       text-sm"
             ></div>
-
-
             <div
                 id="emptyState"
-                class="hidden p-10 text-center"
+                class="hidden
+                       p-10
+                       text-center"
             >
-
                 <div class="text-5xl">
                     📭
                 </div>
-
                 <h3 class="font-black text-xl mt-4">
                     No Messages
                 </h3>
-
                 <p class="text-slate-500 text-sm mt-2">
                     Your department has no messages yet.
                 </p>
-
             </div>
-
-
             <div
                 id="messagesContainer"
-                class="hidden p-6 space-y-4"
+                class="hidden
+                       p-6
+                       space-y-4"
             ></div>
-
         </section>
-
-
-        <!-- SENT MESSAGES -->
-
+        <!-- =================================================
+             SENT MESSAGES
+        ================================================== -->
         <section
-            class="bg-white rounded-2xl shadow overflow-hidden mt-8"
+            class="bg-white
+                   rounded-2xl
+                   shadow
+                   overflow-hidden
+                   mt-8"
         >
-
             <div
                 class="p-6 border-b border-slate-200"
             >
-
                 <div
                     class="flex flex-col
                            sm:flex-row
@@ -392,19 +348,14 @@
                            sm:justify-between
                            gap-3"
                 >
-
                     <div>
-
                         <h2 class="text-xl font-black">
                             📤 Sent Messages
                         </h2>
-
                         <p class="text-sm text-slate-500 mt-1">
                             Messages you have sent to other departments.
                         </p>
-
                     </div>
-
                     <span
                         id="sentMessageCount"
                         class="inline-flex
@@ -419,42 +370,34 @@
                     >
                         0 Sent
                     </span>
-
                 </div>
-
             </div>
-
-
             <div
                 id="sentEmptyState"
-                class="hidden p-10 text-center"
+                class="hidden
+                       p-10
+                       text-center"
             >
-
                 <div class="text-5xl">
                     📭
                 </div>
-
                 <h3 class="font-black text-xl mt-4">
                     No Sent Messages
                 </h3>
-
                 <p class="text-slate-500 text-sm mt-2">
                     You have not sent any messages yet.
                 </p>
-
             </div>
-
-
             <div
                 id="sentMessagesContainer"
-                class="hidden p-6 space-y-4"
+                class="hidden
+                       p-6
+                       space-y-4"
             ></div>
-
         </section>
-
-
-        <!-- SECURITY -->
-
+        <!-- =================================================
+             SECURITY
+        ================================================== -->
         <section
             class="mt-8
                    bg-blue-50
@@ -462,11 +405,9 @@
                    rounded-2xl
                    p-6"
         >
-
             <h2 class="font-black text-lg">
                 🔐 Communication Security
             </h2>
-
             <p
                 class="text-sm
                       text-blue-900
@@ -476,116 +417,79 @@
                 Do not share passwords or confidential information with
                 unauthorized personnel.
             </p>
-
         </section>
-
     </div>
-
 </main>
-
-
-<!-- SUPABASE -->
-
+<!-- =====================================================
+     SUPABASE
+====================================================== -->
 <script src="js/supabase.js"></script>
-
-
+<!-- =====================================================
+     JAVASCRIPT
+====================================================== -->
 <script>
-
 "use strict";
-
-
 // ============================================================
 // ELEMENTS
 // ============================================================
-
 const loading =
     document.getElementById("loading");
-
 const inboxPage =
     document.getElementById("inboxPage");
-
 const departmentTitle =
     document.getElementById("departmentTitle");
-
 const staffWelcome =
     document.getElementById("staffWelcome");
-
 const recipientDepartment =
     document.getElementById("recipientDepartment");
-
 const messageForm =
     document.getElementById("messageForm");
-
 const messageSubject =
     document.getElementById("messageSubject");
-
 const messageBody =
     document.getElementById("messageBody");
-
 const sendButton =
     document.getElementById("sendButton");
-
 const formStatus =
     document.getElementById("formStatus");
-
 const inboxStatus =
     document.getElementById("inboxStatus");
-
 const messageCount =
     document.getElementById("messageCount");
-
 const emptyState =
     document.getElementById("emptyState");
-
 const messagesContainer =
     document.getElementById("messagesContainer");
-
 const sentMessageCount =
     document.getElementById("sentMessageCount");
-
 const sentEmptyState =
     document.getElementById("sentEmptyState");
-
 const sentMessagesContainer =
     document.getElementById("sentMessagesContainer");
-
 const refreshButton =
     document.getElementById("refreshButton");
-
 const backButton =
     document.getElementById("backButton");
-
-
 // ============================================================
 // CURRENT STAFF
 // ============================================================
-
 let currentUser = null;
 let currentProfile = null;
-
-
 // ============================================================
 // ESCAPE HTML
 // ============================================================
-
 function escapeHTML(value) {
-
     return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }
-
-
 // ============================================================
 // FORM STATUS
 // ============================================================
-
 function showFormStatus(message, type) {
-
     formStatus.classList.remove(
         "hidden",
         "bg-red-50",
@@ -595,45 +499,31 @@ function showFormStatus(message, type) {
         "bg-blue-50",
         "text-blue-700"
     );
-
     if (type === "error") {
-
         formStatus.classList.add(
             "bg-red-50",
             "text-red-700"
         );
-
     }
-
     else if (type === "success") {
-
         formStatus.classList.add(
             "bg-green-50",
             "text-green-700"
         );
-
     }
-
     else {
-
         formStatus.classList.add(
             "bg-blue-50",
             "text-blue-700"
         );
-
     }
-
-    formStatus.textContent = message;
-
+    formStatus.textContent =
+        message;
 }
-
-
 // ============================================================
 // INBOX STATUS
 // ============================================================
-
 function showInboxStatus(message, type) {
-
     inboxStatus.classList.remove(
         "hidden",
         "bg-red-50",
@@ -643,55 +533,43 @@ function showInboxStatus(message, type) {
         "bg-blue-50",
         "text-blue-700"
     );
-
     if (type === "error") {
-
         inboxStatus.classList.add(
             "bg-red-50",
             "text-red-700"
         );
-
     }
-
     else if (type === "success") {
-
         inboxStatus.classList.add(
             "bg-green-50",
             "text-green-700"
         );
-
     }
-
     else {
-
         inboxStatus.classList.add(
             "bg-blue-50",
             "text-blue-700"
         );
-
     }
-
-    inboxStatus.textContent = message;
-
+    inboxStatus.textContent =
+        message;
 }
-
-
 // ============================================================
 // FORMAT DATE
 // ============================================================
-
 function formatDate(value) {
-
     if (!value) {
         return "Unknown date";
     }
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
+    const date =
+        new Date(value);
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
         return "Unknown date";
     }
-
     return date.toLocaleString(
         "en-GH",
         {
@@ -699,51 +577,38 @@ function formatDate(value) {
             timeStyle: "short"
         }
     );
-
 }
-
-
 // ============================================================
 // LOAD CURRENT STAFF
 // ============================================================
-
 async function loadCurrentStaff() {
-
     if (!window.CHA_SUPABASE) {
-
         throw new Error(
             "Supabase is not configured."
         );
-
     }
-
     const {
         data: authData,
         error: authError
     } =
-        await window.CHA_SUPABASE.auth.getUser();
-
+        await window.CHA_SUPABASE
+            .auth
+            .getUser();
     if (
         authError ||
         !authData ||
         !authData.user
     ) {
-
         window.location.href =
             "staff-login.html";
-
         return null;
-
     }
-
     currentUser =
         authData.user;
-
     console.log(
         "CHA CURRENT USER ID:",
         currentUser.id
     );
-
     const {
         data: profile,
         error: profileError
@@ -767,36 +632,28 @@ async function loadCurrentStaff() {
                 currentUser.id
             )
             .single();
-
     if (profileError) {
         throw profileError;
     }
-
     if (
         !profile ||
         profile.is_active !== true
     ) {
-
-        await window.CHA_SUPABASE.auth.signOut();
-
+        await window.CHA_SUPABASE
+            .auth
+            .signOut();
         window.location.href =
             "staff-login.html";
-
         return null;
-
     }
-
     currentProfile =
         profile;
-
     const departmentName =
         profile.departments?.name ||
         "Department";
-
     departmentTitle.textContent =
         departmentName +
         " — Messages";
-
     staffWelcome.textContent =
         "Welcome " +
         (
@@ -806,24 +663,17 @@ async function loadCurrentStaff() {
         ". Messages received by " +
         departmentName +
         " are shown below.";
-
     return profile;
-
 }
-
-
 // ============================================================
 // LOAD DEPARTMENTS
 // ============================================================
-
 async function loadDepartments() {
-
     recipientDepartment.innerHTML = `
         <option value="">
             Select department
         </option>
     `;
-
     const {
         data,
         error
@@ -840,87 +690,62 @@ async function loadDepartments() {
                     ascending: true
                 }
             );
-
     if (error) {
         throw error;
     }
-
     const departments =
         data || [];
-
     departments.forEach(
         function(department) {
-
             if (
                 currentProfile &&
                 department.id ===
                     currentProfile.department_id
             ) {
-
                 return;
-
             }
-
             const option =
                 document.createElement(
                     "option"
                 );
-
             option.value =
                 department.id;
-
             option.textContent =
                 department.name;
-
             recipientDepartment.appendChild(
                 option
             );
-
         }
     );
-
 }
-
-
 // ============================================================
 // LOAD INBOX
 // ============================================================
-
 async function loadInbox() {
-
-    messagesContainer.innerHTML = "";
-
+    messagesContainer.innerHTML =
+        "";
     messagesContainer.classList.add(
         "hidden"
     );
-
     emptyState.classList.add(
         "hidden"
     );
-
     messageCount.textContent =
         "0 Messages";
-
     try {
-
         if (
             !currentProfile ||
             !currentProfile.department_id
         ) {
-
             emptyState.classList.remove(
                 "hidden"
             );
-
             showInboxStatus(
                 "Your staff profile is not assigned to a department.",
                 "error"
             );
-
             return;
-
         }
-
         const {
             data,
             error
@@ -956,14 +781,11 @@ async function loadInbox() {
                         ascending: false
                     }
                 );
-
         if (error) {
             throw error;
         }
-
         const messages =
             data || [];
-
         messageCount.textContent =
             messages.length +
             (
@@ -971,27 +793,20 @@ async function loadInbox() {
                     ? " Message"
                     : " Messages"
             );
-
         if (
             messages.length === 0
         ) {
-
             emptyState.classList.remove(
                 "hidden"
             );
-
             return;
-
         }
-
         messages.forEach(
             function(item) {
-
                 const card =
                     document.createElement(
                         "article"
                     );
-
                 card.className =
                     "message-card border rounded-2xl p-5 " +
                     (
@@ -999,21 +814,16 @@ async function loadInbox() {
                             ? "bg-white border-slate-200"
                             : "bg-blue-50 border-blue-200"
                     );
-
                 const senderName =
                     item.sender?.full_name ||
                     "Unknown staff";
-
                 const senderDepartment =
                     item.sender_department?.name ||
                     "Unknown department";
-
                 const senderRole =
                     item.sender?.role ||
                     "Staff";
-
                 card.innerHTML = `
-
                     <div
                         class="flex flex-col
                                sm:flex-row
@@ -1021,15 +831,12 @@ async function loadInbox() {
                                sm:justify-between
                                gap-3"
                     >
-
                         <div>
-
                             <div
                                 class="flex flex-wrap
                                        items-center
                                        gap-2"
                             >
-
                                 <h3
                                     class="font-black
                                            text-lg
@@ -1039,7 +846,6 @@ async function loadInbox() {
                                         item.subject
                                     )}
                                 </h3>
-
                                 ${
                                     item.is_read
                                         ? ""
@@ -1056,9 +862,7 @@ async function loadInbox() {
                                             </span>
                                         `
                                 }
-
                             </div>
-
                             <p
                                 class="text-sm
                                       text-slate-500
@@ -1077,9 +881,7 @@ async function loadInbox() {
                                     senderRole
                                 )}
                             </p>
-
                         </div>
-
                         <span
                             class="text-xs
                                    text-slate-400"
@@ -1090,9 +892,7 @@ async function loadInbox() {
                                 )
                             )}
                         </span>
-
                     </div>
-
                     <div
                         class="mt-4
                                bg-slate-50
@@ -1105,7 +905,6 @@ async function loadInbox() {
                             item.message
                         )}
                     </div>
-
                     ${
                         item.is_read
                             ? ""
@@ -1128,50 +927,37 @@ async function loadInbox() {
                                 </button>
                             `
                     }
-
                 `;
-
                 messagesContainer.appendChild(
                     card
                 );
-
             }
         );
-
         messagesContainer.classList.remove(
             "hidden"
         );
-
         document
             .querySelectorAll(
                 ".mark-read-button"
             )
             .forEach(
                 function(button) {
-
                     button.addEventListener(
                         "click",
                         function() {
-
                             markMessageRead(
                                 this.dataset.id
                             );
-
                         }
                     );
-
                 }
             );
-
     }
-
     catch (error) {
-
         console.error(
             "CHA Inbox Error:",
             error
         );
-
         showInboxStatus(
             "Unable to load messages: " +
             (
@@ -1180,46 +966,32 @@ async function loadInbox() {
             ),
             "error"
         );
-
     }
-
 }
-
-
 // ============================================================
 // LOAD SENT MESSAGES
 // ============================================================
-
 async function loadSentMessages() {
-
-    sentMessagesContainer.innerHTML = "";
-
+    sentMessagesContainer.innerHTML =
+        "";
     sentMessagesContainer.classList.add(
         "hidden"
     );
-
     sentEmptyState.classList.add(
         "hidden"
     );
-
     sentMessageCount.textContent =
         "0 Sent";
-
     try {
-
         if (!currentUser) {
-
             throw new Error(
                 "Current user is not available."
             );
-
         }
-
         console.log(
             "CHA LOADING SENT MESSAGES FOR:",
             currentUser.id
         );
-
         const {
             data,
             error
@@ -1253,56 +1025,38 @@ async function loadSentMessages() {
                         ascending: false
                     }
                 );
-
         if (error) {
             throw error;
         }
-
         const messages =
             data || [];
-
         console.log(
             "CHA SENT MESSAGES FOUND:",
             messages.length
         );
-
         sentMessageCount.textContent =
             messages.length +
-            (
-                messages.length === 1
-                    ? " Sent"
-                    : " Sent"
-            );
-
+            " Sent";
         if (
             messages.length === 0
         ) {
-
             sentEmptyState.classList.remove(
                 "hidden"
             );
-
             return;
-
         }
-
         messages.forEach(
             function(item) {
-
                 const card =
                     document.createElement(
                         "article"
                     );
-
                 card.className =
                     "message-card border border-green-200 bg-white rounded-2xl p-5";
-
                 const recipientName =
                     item.recipient_department?.name ||
                     "Another department";
-
                 card.innerHTML = `
-
                     <div
                         class="flex flex-col
                                sm:flex-row
@@ -1310,9 +1064,7 @@ async function loadSentMessages() {
                                sm:justify-between
                                gap-3"
                     >
-
                         <div>
-
                             <h3
                                 class="font-black
                                        text-lg
@@ -1322,7 +1074,6 @@ async function loadSentMessages() {
                                     item.subject
                                 )}
                             </h3>
-
                             <p
                                 class="text-sm
                                       text-slate-500
@@ -1333,9 +1084,7 @@ async function loadSentMessages() {
                                     recipientName
                                 )}
                             </p>
-
                         </div>
-
                         <span
                             class="text-xs
                                    text-slate-400"
@@ -1346,9 +1095,7 @@ async function loadSentMessages() {
                                 )
                             )}
                         </span>
-
                     </div>
-
                     <div
                         class="mt-4
                                bg-slate-50
@@ -1361,10 +1108,9 @@ async function loadSentMessages() {
                             item.message
                         )}
                     </div>
-
                     <div class="mt-4">
-
                         <button
+                            type="button"
                             class="delete-sent-button
                                    bg-red-600
                                    hover:bg-red-700
@@ -1379,52 +1125,38 @@ async function loadSentMessages() {
                         >
                             🗑️ Delete from Sent
                         </button>
-
                     </div>
-
                 `;
-
                 sentMessagesContainer.appendChild(
                     card
                 );
-
             }
         );
-
         sentMessagesContainer.classList.remove(
             "hidden"
         );
-
         document
             .querySelectorAll(
                 ".delete-sent-button"
             )
             .forEach(
                 function(button) {
-
                     button.addEventListener(
                         "click",
                         function() {
-
                             deleteSentMessage(
                                 this.dataset.id
                             );
-
                         }
                     );
-
                 }
             );
-
     }
-
     catch (error) {
-
         console.error(
             "CHA Sent Messages Error:",
             error
         );
-
         showInboxStatus(
             "Unable to load sent messages: " +
             (
@@ -1433,35 +1165,25 @@ async function loadSentMessages() {
             ),
             "error"
         );
-
     }
-
 }
-
-
 // ============================================================
 // DELETE SENT MESSAGE
 // ============================================================
-
 async function deleteSentMessage(messageId) {
-
     const confirmed =
         window.confirm(
             "Delete this message from your Sent Messages?\n\nThe recipient will still be able to see their copy."
         );
-
     if (!confirmed) {
         return;
     }
-
     try {
-
         if (!currentUser) {
             throw new Error(
                 "Current user is not available."
             );
         }
-
         const {
             error
         } =
@@ -1478,27 +1200,20 @@ async function deleteSentMessage(messageId) {
                     "sender_id",
                     currentUser.id
                 );
-
         if (error) {
             throw error;
         }
-
         showInboxStatus(
             "Message removed from your Sent Messages.",
             "success"
         );
-
         await loadSentMessages();
-
     }
-
     catch (error) {
-
         console.error(
             "CHA Delete Sent Message Error:",
             error
         );
-
         showInboxStatus(
             "Unable to delete sent message: " +
             (
@@ -1507,31 +1222,21 @@ async function deleteSentMessage(messageId) {
             ),
             "error"
         );
-
     }
-
 }
-
-
 // ============================================================
 // MARK MESSAGE READ
 // ============================================================
-
 async function markMessageRead(messageId) {
-
     try {
-
         if (
             !currentProfile ||
             !currentProfile.department_id
         ) {
-
             throw new Error(
                 "Current staff department is not available."
             );
-
         }
-
         const {
             error
         } =
@@ -1548,24 +1253,17 @@ async function markMessageRead(messageId) {
                     "recipient_department_id",
                     currentProfile.department_id
                 );
-
         if (error) {
             throw error;
         }
-
         await loadInbox();
-
         await loadSentMessages();
-
     }
-
     catch (error) {
-
         console.error(
             "CHA Mark Read Error:",
             error
         );
-
         showInboxStatus(
             "Unable to mark message as read: " +
             (
@@ -1574,116 +1272,78 @@ async function markMessageRead(messageId) {
             ),
             "error"
         );
-
     }
-
 }
-
-
 // ============================================================
 // SEND MESSAGE
 // ============================================================
-
 messageForm.addEventListener(
     "submit",
     async function(event) {
-
         event.preventDefault();
-
         const recipientId =
             recipientDepartment.value;
-
         const subject =
             messageSubject.value.trim();
-
         const message =
             messageBody.value.trim();
-
         if (!recipientId) {
-
             showFormStatus(
                 "Please select a recipient department.",
                 "error"
             );
-
             return;
-
         }
-
         if (!subject) {
-
             showFormStatus(
                 "Please enter a subject.",
                 "error"
             );
-
             return;
-
         }
-
         if (!message) {
-
             showFormStatus(
                 "Please enter a message.",
                 "error"
             );
-
             return;
-
         }
-
         if (!currentUser) {
-
             showFormStatus(
                 "Your login session is not available. Please log in again.",
                 "error"
             );
-
             return;
-
         }
-
         if (
             !currentProfile ||
             !currentProfile.department_id
         ) {
-
             showFormStatus(
                 "Your staff profile is not assigned to a department.",
                 "error"
             );
-
             return;
-
         }
-
         if (
             recipientId ===
             currentProfile.department_id
         ) {
-
             showFormStatus(
                 "You cannot send a department message to your own department.",
                 "error"
             );
-
             return;
-
         }
-
         sendButton.disabled =
             true;
-
         sendButton.textContent =
             "Sending...";
-
         showFormStatus(
             "Sending message...",
             "info"
         );
-
         try {
-
             const {
                 error
             } =
@@ -1692,48 +1352,34 @@ messageForm.addEventListener(
                     .insert({
                         sender_id:
                             currentUser.id,
-
                         sender_department_id:
                             currentProfile.department_id,
-
                         recipient_department_id:
                             recipientId,
-
                         subject:
                             subject,
-
                         message:
                             message,
-
                         is_read:
                             false,
-
                         sender_deleted:
                             false
                     });
-
             if (error) {
                 throw error;
             }
-
             messageForm.reset();
-
             showFormStatus(
                 "Message sent successfully.",
                 "success"
             );
-
             await loadSentMessages();
-
         }
-
         catch (error) {
-
             console.error(
                 "CHA Send Message Error:",
                 error
             );
-
             showFormStatus(
                 "Unable to send message: " +
                 (
@@ -1742,151 +1388,93 @@ messageForm.addEventListener(
                 ),
                 "error"
             );
-
         }
-
         finally {
-
             sendButton.disabled =
                 false;
-
             sendButton.textContent =
                 "Send Message";
-
         }
-
     }
 );
-
-
 // ============================================================
 // REFRESH
 // ============================================================
-
 refreshButton.addEventListener(
     "click",
     async function() {
-
         refreshButton.disabled =
             true;
-
         refreshButton.textContent =
             "Refreshing...";
-
         try {
-
             await loadInbox();
-
             await loadSentMessages();
-
         }
-
         catch (error) {
-
             console.error(
                 "CHA Refresh Error:",
                 error
             );
-
         }
-
         finally {
-
             refreshButton.disabled =
                 false;
-
             refreshButton.textContent =
                 "↻ Refresh";
-
         }
-
     }
 );
-
-
 // ============================================================
 // BACK
 // ============================================================
-
 backButton.addEventListener(
     "click",
     function() {
-
         window.location.href =
             "staff-dashboard.html";
-
     }
 );
-
-
 // ============================================================
 // INITIALIZE
 // ============================================================
-
 async function initializeInbox() {
-
     try {
-
         loading.innerHTML = `
             <div class="text-3xl">
                 🔐
             </div>
-
             <p class="font-bold mt-3">
                 Loading Staff Messages...
             </p>
-
             <p class="text-sm text-slate-500 mt-2">
                 Checking your secure staff session...
             </p>
         `;
-
         const profile =
             await loadCurrentStaff();
-
         if (!profile) {
             return;
         }
-
         await loadDepartments();
-
-        /*
-         * IMPORTANT:
-         * currentUser is already loaded by
-         * loadCurrentStaff().
-         *
-         * We now load BOTH:
-         * 1. Received messages
-         * 2. Sent messages
-         */
-
         await loadInbox();
-
         await loadSentMessages();
-
         loading.classList.add(
             "hidden"
         );
-
         inboxPage.classList.remove(
             "hidden"
         );
-
     }
-
     catch (error) {
-
         console.error(
             "CHA Department Messages Error:",
             error
         );
-
         loading.innerHTML = `
-
             <div class="text-3xl">
                 ⚠️
             </div>
-
             <p
                 class="font-bold
                       mt-3
@@ -1894,7 +1482,6 @@ async function initializeInbox() {
             >
                 Unable to load Staff Messages
             </p>
-
             <p
                 class="text-sm
                       text-slate-500
@@ -1905,12 +1492,13 @@ async function initializeInbox() {
                     "Please try again."
                 )}
             </p>
-
             <button
+                type="button"
                 onclick="window.location.href='staff-dashboard.html'"
                 class="
                     mt-5
                     bg-blue-900
+                    hover:bg-blue-800
                     text-white
                     px-5
                     py-3
@@ -1920,21 +1508,13 @@ async function initializeInbox() {
             >
                 Return to Dashboard
             </button>
-
         `;
-
     }
-
 }
-
-
 // ============================================================
 // START
 // ============================================================
-
 initializeInbox();
-
 </script>
-
 </body>
 </html>
