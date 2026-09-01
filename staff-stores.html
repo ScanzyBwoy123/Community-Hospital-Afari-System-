@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CHA Stores</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .cha-logo {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+        border-radius: 50%;
+        background: white;
+        padding: 3px;
+    }
+
+    .store-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    }
+</style>
+</head>
+
+<body class="bg-slate-100 text-slate-800">
+
+<!-- ============================================================
+     HEADER
+============================================================= -->
+
+<header class="bg-blue-900 text-white shadow-lg">
+
+    <div class="max-w-7xl mx-auto px-4">
+
+        <div class="min-h-20 flex items-center justify-between gap-4">
+
+            <div class="flex items-center gap-3">
+
+                <img
+                    src="cha-logo.jpeg"
+                    alt="Community Hospital Afari Official Logo"
+                    class="cha-logo"
+                >
+
+                <div>
+                    <div class="font-black">
+                        COMMUNITY HOSPITAL AFARI
+                    </div>
+
+                    <div class="text-blue-200 text-sm">
+                        Stores / Inventory
+                    </div>
+                </div>
+
+            </div>
+
+            <button
+                id="backButton"
+                type="button"
+                class="
+                    bg-white
+                    text-blue-900
+                    hover:bg-blue-50
+                    px-4
+                    py-2
+                    rounded-lg
+                    font-bold
+                "
+            >
+                ← Dashboard
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- ============================================================
+     MAIN
+============================================================= -->
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+
+    <!-- LOADING -->
+
+    <div
+        id="loading"
+        class="
+            bg-white
+            rounded-2xl
+            shadow
+            p-8
+            text-center
+        "
+    >
+
+        <div class="text-3xl">
+            🔐
+        </div>
+
+        <p class="font-bold mt-3">
+            Checking staff authentication...
+        </p>
+
+        <p class="text-sm text-slate-500 mt-2">
+            Please wait.
+        </p>
+
+    </div>
+
+
+    <!-- STORES PAGE -->
+
+    <div
+        id="storesPage"
+        class="hidden"
+    >
+
+        <!-- WELCOME -->
+
+        <section
+            class="
+                bg-white
+                rounded-2xl
+                shadow
+                p-6
+                mb-8
+            "
+        >
+
+            <p class="text-sm text-slate-500">
+                Hospital Stores Management
+            </p>
+
+            <h1
+                class="
+                    text-3xl
+                    font-black
+                    text-slate-900
+                    mt-1
+                "
+            >
+                Stores / Inventory
+            </h1>
+
+            <p
+                id="staffWelcome"
+                class="
+                    text-sm
+                    text-slate-500
+                    mt-2
+                "
+            >
+                Authorized stores information.
+            </p>
+
+        </section>
+
+
+        <!-- MODULES -->
+
+        <section>
+
+            <div class="mb-5">
+
+                <h2
+                    class="
+                        text-2xl
+                        font-black
+                        text-slate-900
+                    "
+                >
+                    Stores Management
+                </h2>
+
+                <p class="text-sm text-slate-500 mt-1">
+                    Manage authorized hospital supplies,
+                    stock and inventory activities.
+                </p>
+
+            </div>
+
+
+            <div
+                class="
+                    grid
+                    sm:grid-cols-2
+                    lg:grid-cols-3
+                    gap-5
+                "
+            >
+
+                <!-- STOCK -->
+
+                <div class="store-card">
+
+                    <div class="text-4xl">
+                        📦
+                    </div>
+
+                    <h2 class="font-black text-xl mt-4">
+                        Stock Management
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        Monitor hospital supplies,
+                        available stock and inventory levels.
+                    </p>
+
+                </div>
+
+
+                <!-- SUPPLIES -->
+
+                <div class="store-card">
+
+                    <div class="text-4xl">
+                        🏥
+                    </div>
+
+                    <h2 class="font-black text-xl mt-4">
+                        Hospital Supplies
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        Manage authorized medical and
+                        non-medical hospital supplies.
+                    </p>
+
+                </div>
+
+
+                <!-- INVENTORY -->
+
+                <div class="store-card">
+
+                    <div class="text-4xl">
+                        📋
+                    </div>
+
+                    <h2 class="font-black text-xl mt-4">
+                        Inventory Records
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        Review inventory records and
+                        stock movement information.
+                    </p>
+
+                </div>
+
+
+                <!-- REQUESTS -->
+
+                <div class="store-card">
+
+                    <div class="text-4xl">
+                        📝
+                    </div>
+
+                    <h2 class="font-black text-xl mt-4">
+                        Supply Requests
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        Review authorized requests for
+                        hospital supplies.
+                    </p>
+
+                </div>
+
+
+                <!-- RECEIVING -->
+
+                <div class="store-card">
+
+                    <div class="text-4xl">
+                        🚚
+                    </div>
+
+                    <h2 class="font-black text-xl mt-4">
+                        Goods Received
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        Record and review supplies received
+                        by the hospital stores.
+                    </p>
+
+                </div>
+
+
+                <!-- REPORTS -->
+
+                <div class="store-card">
+
+                    <div class="text-4xl">
+                        📊
+                    </div>
+
+                    <h2 class="font-black text-xl mt-4">
+                        Stores Reports
+                    </h2>
+
+                    <p class="text-slate-500 text-sm mt-2">
+                        Review authorized stock and
+                        inventory activity reports.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SECURITY -->
+
+        <section
+            class="
+                mt-8
+                bg-blue-50
+                border
+                border-blue-100
+                rounded-2xl
+                p-6
+            "
+        >
+
+            <h2 class="font-black text-lg">
+                🔐 Stores Information Security
+            </h2>
+
+            <p
+                class="
+                    text-sm
+                    text-blue-900
+                    mt-2
+                "
+            >
+                Stores and inventory information is
+                restricted to authorized Community Hospital
+                Afari staff. Access and use this information
+                only when required for legitimate hospital
+                duties.
+            </p>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+<!-- ============================================================
+     SUPABASE CONFIGURATION
+============================================================= -->
+
+<script src="js/supabase.js"></script>
+
+
+<!-- ============================================================
+     APPLICATION LOGIC
+============================================================= -->
+
+<script>
+
+"use strict";
+
+
+// ============================================================
+// ELEMENTS
+// ============================================================
+
+const loading =
+    document.getElementById("loading");
+
+const storesPage =
+    document.getElementById("storesPage");
+
+const staffWelcome =
+    document.getElementById("staffWelcome");
+
+const backButton =
+    document.getElementById("backButton");
+
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeHTML(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+// ============================================================
+// LOAD STAFF
+// ============================================================
+
+async function loadStoresPage() {
+
+    try {
+
+        // ----------------------------------------------------
+        // CHECK SUPABASE
+        // ----------------------------------------------------
+
+        if (!window.CHA_SUPABASE) {
+
+            throw new Error(
+                "Supabase is not configured."
+            );
+
+        }
+
+
+        // ----------------------------------------------------
+        // CHECK AUTHENTICATION
+        // ----------------------------------------------------
+
+        const {
+            data: authData,
+            error: authError
+        } =
+            await window.CHA_SUPABASE
+                .auth
+                .getUser();
+
+
+        if (
+            authError ||
+            !authData ||
+            !authData.user
+        ) {
+
+            window.location.href =
+                "staff-login.html";
+
+            return;
+
+        }
+
+
+        const user =
+            authData.user;
+
+
+        // ----------------------------------------------------
+        // LOAD STAFF PROFILE
+        // ----------------------------------------------------
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await window.CHA_SUPABASE
+                .from("staff_profiles")
+                .select(`
+                    id,
+                    full_name,
+                    role,
+                    is_active,
+                    department_id,
+                    departments (
+                        name
+                    )
+                `)
+                .eq(
+                    "id",
+                    user.id
+                )
+                .single();
+
+
+        if (profileError) {
+
+            throw profileError;
+
+        }
+
+
+        // ----------------------------------------------------
+        // CHECK ACTIVE STAFF
+        // ----------------------------------------------------
+
+        if (
+            !profile ||
+            profile.is_active !== true
+        ) {
+
+            await window.CHA_SUPABASE
+                .auth
+                .signOut();
+
+            window.location.href =
+                "staff-login.html";
+
+            return;
+
+        }
+
+
+        // ----------------------------------------------------
+        // WELCOME MESSAGE
+        // ----------------------------------------------------
+
+        staffWelcome.textContent =
+            "Welcome " +
+            (
+                profile.full_name ||
+                "Staff Member"
+            ) +
+            ". You are authorized to access hospital stores and inventory information.";
+
+
+        // ----------------------------------------------------
+        // SHOW PAGE
+        // ----------------------------------------------------
+
+        loading.classList.add(
+            "hidden"
+        );
+
+        storesPage.classList.remove(
+            "hidden"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "CHA Stores Error:",
+            error
+        );
+
+
+        loading.innerHTML = `
+
+            <div class="text-3xl">
+                ⚠️
+            </div>
+
+            <p
+                class="
+                    font-bold
+                    mt-3
+                    text-red-700
+                "
+            >
+                Unable to load Stores
+            </p>
+
+            <p
+                class="
+                    text-sm
+                    text-slate-500
+                    mt-2
+                "
+            >
+                ${escapeHTML(
+                    error.message ||
+                    "Please try again."
+                )}
+            </p>
+
+            <button
+                type="button"
+                id="returnLoginButton"
+                class="
+                    mt-5
+                    bg-blue-900
+                    hover:bg-blue-800
+                    text-white
+                    px-5
+                    py-3
+                    rounded-xl
+                    font-bold
+                "
+            >
+                Return to Login
+            </button>
+
+        `;
+
+
+        const returnLoginButton =
+            document.getElementById(
+                "returnLoginButton"
+            );
+
+
+        if (returnLoginButton) {
+
+            returnLoginButton.addEventListener(
+                "click",
+                function() {
+
+                    window.location.href =
+                        "staff-login.html";
+
+                }
+            );
+
+        }
+
+    }
+
+}
+
+
+// ============================================================
+// BACK TO DASHBOARD
+// ============================================================
+
+backButton.addEventListener(
+    "click",
+    function() {
+
+        window.location.href =
+            "staff-dashboard.html";
+
+    }
+);
+
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+
+loadStoresPage();
+
+</script>
+
+</body>
+</html>
