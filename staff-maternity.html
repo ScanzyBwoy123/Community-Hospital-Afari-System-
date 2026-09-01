@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHA Maternity</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<header class="bg-blue-900 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="min-h-20 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <img
+                src="cha-logo.jpeg"
+                alt="Community Hospital Afari Official Logo"
+                class="w-12 h-12 rounded-full object-contain bg-white"
+            >
+            <div>
+                <div class="font-black">
+                    COMMUNITY HOSPITAL AFARI
+                </div>
+                <div class="text-blue-200 text-sm">
+                    Maternity Department
+                </div>
+            </div>
+        </div>
+        <button
+            id="backButton"
+            type="button"
+            class="bg-white text-blue-900 hover:bg-blue-50 px-4 py-2 rounded-lg font-bold"
+        >
+            ← Dashboard
+        </button>
+    </div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 py-8">
+<div
+    id="loading"
+    class="bg-white rounded-2xl shadow p-8 text-center"
+>
+    <div class="text-3xl">
+        🔐
+    </div>
+    <p class="font-bold mt-3">
+        Checking staff authentication...
+    </p>
+    <p class="text-sm text-slate-500 mt-2">
+        Please wait.
+    </p>
+</div>
+<div id="page" class="hidden">
+    <section class="bg-white rounded-2xl shadow p-6 mb-8">
+        <p class="text-sm text-slate-500">
+            Hospital Department
+        </p>
+        <h1 class="text-3xl font-black text-slate-900 mt-1">
+            Maternity
+        </h1>
+        <p
+            id="welcome"
+            class="text-sm text-slate-500 mt-2"
+        >
+            Authorized maternity services and antenatal care information.
+        </p>
+    </section>
+    <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="bg-white rounded-2xl shadow p-6">
+            <div class="text-4xl">
+                🤰
+            </div>
+            <h2 class="text-xl font-black mt-4">
+                Antenatal Care
+            </h2>
+            <p class="text-sm text-slate-500 mt-2">
+                Access authorized antenatal care information and maternity activities.
+            </p>
+        </div>
+        <div class="bg-white rounded-2xl shadow p-6">
+            <div class="text-4xl">
+                👶
+            </div>
+            <h2 class="text-xl font-black mt-4">
+                Maternal & Newborn Care
+            </h2>
+            <p class="text-sm text-slate-500 mt-2">
+                Access authorized maternal and newborn care information.
+            </p>
+        </div>
+        <div class="bg-white rounded-2xl shadow p-6">
+            <div class="text-4xl">
+                📋
+            </div>
+            <h2 class="text-xl font-black mt-4">
+                Maternity Records
+            </h2>
+            <p class="text-sm text-slate-500 mt-2">
+                Access authorized maternity records and clinical information.
+            </p>
+        </div>
+    </section>
+    <section
+        class="mt-8 bg-blue-50 border border-blue-100 rounded-2xl p-6"
+    >
+        <h2 class="font-black text-lg">
+            🔐 Security Notice
+        </h2>
+        <p class="text-sm text-blue-900 mt-2">
+            This department page is restricted to authorized
+            Community Hospital Afari staff. Patient information
+            must only be accessed when required for legitimate
+            hospital duties.
+        </p>
+    </section>
+</div>
+</main>
+<script src="js/supabase.js"></script>
+<script>
+"use strict";
+const loading =
+    document.getElementById("loading");
+const page =
+    document.getElementById("page");
+const welcome =
+    document.getElementById("welcome");
+const backButton =
+    document.getElementById("backButton");
+async function initializeMaternity() {
+    try {
+        if (!window.CHA_SUPABASE) {
+            throw new Error(
+                "Supabase is not configured."
+            );
+        }
+        const {
+            data: authData,
+            error: authError
+        } =
+            await window.CHA_SUPABASE
+                .auth
+                .getUser();
+        if (
+            authError ||
+            !authData ||
+            !authData.user
+        ) {
+            window.location.href =
+                "staff-login.html";
+            return;
+        }
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await window.CHA_SUPABASE
+                .from("staff_profiles")
+                .select(`
+                    id,
+                    full_name,
+                    role,
+                    is_active,
+                    departments (
+                        name
+                    )
+                `)
+                .eq(
+                    "id",
+                    authData.user.id
+                )
+                .single();
+        if (profileError) {
+            throw profileError;
+        }
+        if (
+            !profile ||
+            profile.is_active !== true
+        ) {
+            await window.CHA_SUPABASE
+                .auth
+                .signOut();
+            window.location.href =
+                "staff-login.html";
+            return;
+        }
+        welcome.textContent =
+            "Welcome " +
+            (
+                profile.full_name ||
+                "Staff Member"
+            ) +
+            ". You are authorized to access the Maternity Department.";
+        loading.classList.add(
+            "hidden"
+        );
+        page.classList.remove(
+            "hidden"
+        );
+    }
+    catch (error) {
+        console.error(
+            "CHA Maternity Error:",
+            error
+        );
+        loading.innerHTML = `
+            <div class="text-3xl">
+                ⚠️
+            </div>
+            <p
+                class="font-bold mt-3 text-red-700"
+            >
+                Unable to load Maternity
+            </p>
+            <p
+                class="text-sm text-slate-500 mt-2"
+            >
+                ${String(
+                    error.message ||
+                    "Please try again."
+                )}
+            </p>
+        `;
+    }
+}
+backButton.addEventListener(
+    "click",
+    function() {
+        window.location.href =
+            "staff-dashboard.html";
+    }
+);
+initializeMaternity();
+</script>
+</body>
+</html>
