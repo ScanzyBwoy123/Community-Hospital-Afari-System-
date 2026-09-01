@@ -1,776 +1,516 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>CHA Staff Registration</title>
-
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    </style>
-
+<meta charset="UTF-8">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+<title>CHA Staff Registration</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+    .cha-logo {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        display: block;
+        margin: 0 auto;
+        background: white;
+    }
+</style>
 </head>
-
-
 <body class="min-h-screen bg-slate-100">
-
 <div class="min-h-screen flex items-center justify-center px-4 py-10">
-
-    <div class="w-full max-w-lg">
-
-
-        <!-- =====================================================
-             HOSPITAL BRANDING
-        ====================================================== -->
-
-        <div class="text-center mb-8">
-
-            <div
-                class="
-                    mx-auto
-                    w-20
-                    h-20
-                    rounded-full
-                    bg-blue-900
-                    text-white
-                    flex
-                    items-center
-                    justify-center
-                    text-2xl
-                    font-black
-                    shadow-lg
-                "
-            >
-                CHA
-            </div>
-
-
-            <h1
-                class="
-                    text-2xl
-                    font-black
-                    text-slate-900
-                    mt-5
-                "
-            >
-                Community Hospital Afari
-            </h1>
-
-
-            <p class="text-slate-500 mt-1">
-                Staff Registration
-            </p>
-
-        </div>
-
-
-
-        <!-- =====================================================
-             REGISTRATION CARD
-        ====================================================== -->
-
-        <div
+<div class="w-full max-w-lg">
+    <!-- =====================================================
+         OFFICIAL HOSPITAL BRANDING
+    ====================================================== -->
+    <div class="text-center mb-8">
+        <img
+            src="cha-logo.jpeg"
+            alt="Community Hospital Afari Official Logo"
+            class="cha-logo shadow-lg"
+        >
+        <h1
             class="
-                bg-white
-                rounded-3xl
-                shadow-xl
-                border
-                p-7
+                text-2xl
+                font-black
+                text-slate-900
+                mt-5
             "
         >
-
-            <h2
+            Community Hospital Afari
+        </h1>
+        <p class="text-slate-500 mt-1">
+            Staff Registration
+        </p>
+    </div>
+    <!-- =====================================================
+         REGISTRATION CARD
+    ====================================================== -->
+    <div
+        class="
+            bg-white
+            rounded-3xl
+            shadow-xl
+            border
+            p-7
+        "
+    >
+        <h2
+            class="
+                text-xl
+                font-black
+                text-slate-900
+            "
+        >
+            Create Staff Account
+        </h2>
+        <p
+            class="
+                text-sm
+                text-slate-500
+                mt-1
+            "
+        >
+            Submit your information for hospital
+            administration approval.
+        </p>
+        <form
+            id="registerForm"
+            class="mt-7 space-y-5"
+        >
+            <!-- FULL NAME -->
+            <div>
+                <label
+                    for="fullName"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Full Name
+                </label>
+                <input
+                    id="fullName"
+                    type="text"
+                    required
+                    autocomplete="name"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="Enter your full name"
+                >
+            </div>
+            <!-- STAFF ID -->
+            <div>
+                <label
+                    for="staffId"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Staff ID
+                </label>
+                <input
+                    id="staffId"
+                    type="text"
+                    required
+                    autocomplete="off"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="Example: CHA-001"
+                >
+                <p
+                    class="
+                        text-xs
+                        text-slate-500
+                        mt-2
+                    "
+                >
+                    Enter the unique Staff ID assigned to you
+                    by the hospital.
+                </p>
+            </div>
+            <!-- EMAIL -->
+            <div>
+                <label
+                    for="email"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Email Address
+                </label>
+                <input
+                    id="email"
+                    type="email"
+                    required
+                    autocomplete="email"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="your@email.com"
+                >
+            </div>
+            <!-- PHONE -->
+            <div>
+                <label
+                    for="phone"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Phone Number
+                </label>
+                <input
+                    id="phone"
+                    type="tel"
+                    required
+                    autocomplete="tel"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="+233..."
+                >
+            </div>
+            <!-- DEPARTMENT -->
+            <div>
+                <label
+                    for="department"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Department
+                </label>
+                <select
+                    id="department"
+                    required
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                        bg-white
+                    "
+                >
+                    <option value="">
+                        Loading departments...
+                    </option>
+                </select>
+                <p
+                    class="
+                        text-xs
+                        text-slate-500
+                        mt-2
+                    "
+                >
+                    Select the hospital department where
+                    you work.
+                </p>
+            </div>
+            <!-- STAFF POSITION -->
+            <div>
+                <label
+                    for="role"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Staff Position
+                </label>
+                <select
+                    id="role"
+                    required
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                        bg-white
+                    "
+                >
+                    <option value="">
+                        Select your position
+                    </option>
+                    <option value="staff">Staff</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="nurse">Nurse</option>
+                    <option value="midwife">Midwife</option>
+                    <option value="receptionist">Receptionist</option>
+                    <option value="pharmacist">Pharmacist</option>
+                    <option value="laboratory_staff">Laboratory Staff</option>
+                    <option value="medical_records">Medical Records Staff</option>
+                    <option value="accounts">Accounts Staff</option>
+                    <option value="ambulance">Ambulance Staff</option>
+                    <option value="theatre">Theatre Staff</option>
+                    <option value="stores">Stores Staff</option>
+                </select>
+                <p
+                    class="
+                        text-xs
+                        text-slate-500
+                        mt-2
+                    "
+                >
+                    Select your actual job position.
+                </p>
+            </div>
+            <!-- PASSWORD -->
+            <div>
+                <label
+                    for="password"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Password
+                </label>
+                <input
+                    id="password"
+                    type="password"
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="At least 8 characters"
+                >
+                <p
+                    class="
+                        text-xs
+                        text-slate-500
+                        mt-2
+                    "
+                >
+                    Password must contain at least
+                    8 characters.
+                </p>
+            </div>
+            <!-- CONFIRM PASSWORD -->
+            <div>
+                <label
+                    for="confirmPassword"
+                    class="
+                        block
+                        text-sm
+                        font-bold
+                        text-slate-700
+                    "
+                >
+                    Confirm Password
+                </label>
+                <input
+                    id="confirmPassword"
+                    type="password"
+                    required
+                    minlength="8"
+                    autocomplete="new-password"
+                    class="
+                        w-full
+                        mt-2
+                        px-4
+                        py-3
+                        border
+                        border-slate-300
+                        rounded-xl
+                        outline-none
+                        focus:ring-2
+                        focus:ring-blue-600
+                    "
+                    placeholder="Enter password again"
+                >
+            </div>
+            <!-- SUBMIT -->
+            <button
+                id="registerButton"
+                type="submit"
                 class="
-                    text-xl
+                    w-full
+                    bg-blue-900
+                    hover:bg-blue-800
+                    text-white
                     font-black
-                    text-slate-900
+                    py-4
+                    rounded-xl
+                    transition
+                    disabled:opacity-50
+                    disabled:cursor-not-allowed
                 "
             >
-                Create Staff Account
-            </h2>
-
-
-            <p
+                Submit Registration
+            </button>
+        </form>
+        <!-- STATUS -->
+        <div
+            id="registerStatus"
+            class="
+                hidden
+                mt-5
+                p-4
+                rounded-xl
+                text-sm
+            "
+        ></div>
+        <!-- LOGIN -->
+        <div
+            class="
+                mt-7
+                pt-5
+                border-t
+                text-center
+            "
+        >
+            <p class="text-sm text-slate-500">
+                Already have an approved account?
+            </p>
+            <a
+                href="staff-login.html"
+                class="
+                    inline-block
+                    mt-2
+                    text-sm
+                    font-bold
+                    text-blue-800
+                    hover:underline
+                "
+            >
+                Go to Staff Login →
+            </a>
+        </div>
+        <!-- WEBSITE -->
+        <div
+            class="
+                mt-4
+                text-center
+            "
+        >
+            <a
+                href="index.html"
                 class="
                     text-sm
                     text-slate-500
-                    mt-1
+                    hover:underline
                 "
             >
-                Submit your information for hospital
-                administration approval.
-            </p>
-
-
-
-            <!-- =================================================
-                 REGISTRATION FORM
-            ================================================== -->
-
-            <form
-                id="registerForm"
-                class="mt-7 space-y-5"
-            >
-
-
-                <!-- =================================================
-                     FULL NAME
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="fullName"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Full Name
-                    </label>
-
-
-                    <input
-                        id="fullName"
-                        type="text"
-                        required
-                        autocomplete="name"
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                        "
-                        placeholder="Enter your full name"
-                    >
-
-                </div>
-
-
-
-                <!-- =================================================
-                     STAFF ID
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="staffId"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Staff ID
-                    </label>
-
-
-                    <input
-                        id="staffId"
-                        type="text"
-                        required
-                        autocomplete="off"
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                        "
-                        placeholder="Example: CHA-001"
-                    >
-
-                    <p
-                        class="
-                            text-xs
-                            text-slate-500
-                            mt-2
-                        "
-                    >
-                        Enter the unique Staff ID assigned to you
-                        by the hospital.
-                    </p>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     EMAIL
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="email"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Email Address
-                    </label>
-
-
-                    <input
-                        id="email"
-                        type="email"
-                        required
-                        autocomplete="email"
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                        "
-                        placeholder="your@email.com"
-                    >
-
-                </div>
-
-
-
-                <!-- =================================================
-                     PHONE
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="phone"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Phone Number
-                    </label>
-
-
-                    <input
-                        id="phone"
-                        type="tel"
-                        required
-                        autocomplete="tel"
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                        "
-                        placeholder="+233..."
-                    >
-
-                </div>
-
-
-
-                <!-- =================================================
-                     DEPARTMENT
-                     
-                     IMPORTANT:
-                     Department comes from the departments table.
-                     Example:
-                     Laboratory
-                     Emergency
-                     Administration
-                     Accounts / Billing
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="department"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Department
-                    </label>
-
-
-                    <select
-                        id="department"
-                        required
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                            bg-white
-                        "
-                    >
-
-                        <option value="">
-                            Loading departments...
-                        </option>
-
-                    </select>
-
-
-                    <p
-                        class="
-                            text-xs
-                            text-slate-500
-                            mt-2
-                        "
-                    >
-                        Select the hospital department where
-                        you work.
-                    </p>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     STAFF POSITION / ROLE
-                     
-                     IMPORTANT:
-                     This is the person's job position,
-                     NOT the department.
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="role"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Staff Position
-                    </label>
-
-
-                    <select
-                        id="role"
-                        required
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                            bg-white
-                        "
-                    >
-
-                        <option value="">
-                            Select your position
-                        </option>
-
-
-                        <option value="staff">
-                            Staff
-                        </option>
-
-
-                        <option value="doctor">
-                            Doctor
-                        </option>
-
-
-                        <option value="nurse">
-                            Nurse
-                        </option>
-
-
-                        <option value="midwife">
-                            Midwife
-                        </option>
-
-
-                        <option value="receptionist">
-                            Receptionist
-                        </option>
-
-
-                        <option value="pharmacist">
-                            Pharmacist
-                        </option>
-
-
-                        <option value="laboratory_staff">
-                            Laboratory Staff
-                        </option>
-
-
-                        <option value="medical_records">
-                            Medical Records Staff
-                        </option>
-
-
-                        <option value="accounts">
-                            Accounts Staff
-                        </option>
-
-
-                        <option value="ambulance">
-                            Ambulance Staff
-                        </option>
-
-
-                        <option value="theatre">
-                            Theatre Staff
-                        </option>
-
-
-                        <option value="stores">
-                            Stores Staff
-                        </option>
-
-                    </select>
-
-
-                    <p
-                        class="
-                            text-xs
-                            text-slate-500
-                            mt-2
-                        "
-                    >
-                        Select your actual job position.
-                    </p>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     PASSWORD
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="password"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Password
-                    </label>
-
-
-                    <input
-                        id="password"
-                        type="password"
-                        required
-                        minlength="8"
-                        autocomplete="new-password"
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                        "
-                        placeholder="At least 8 characters"
-                    >
-
-
-                    <p
-                        class="
-                            text-xs
-                            text-slate-500
-                            mt-2
-                        "
-                    >
-                        Password must contain at least
-                        8 characters.
-                    </p>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     CONFIRM PASSWORD
-                ================================================== -->
-
-                <div>
-
-                    <label
-                        for="confirmPassword"
-                        class="
-                            block
-                            text-sm
-                            font-bold
-                            text-slate-700
-                        "
-                    >
-                        Confirm Password
-                    </label>
-
-
-                    <input
-                        id="confirmPassword"
-                        type="password"
-                        required
-                        minlength="8"
-                        autocomplete="new-password"
-                        class="
-                            w-full
-                            mt-2
-                            px-4
-                            py-3
-                            border
-                            border-slate-300
-                            rounded-xl
-                            outline-none
-                            focus:ring-2
-                            focus:ring-blue-600
-                        "
-                        placeholder="Enter password again"
-                    >
-
-                </div>
-
-
-
-                <!-- =================================================
-                     SUBMIT
-                ================================================== -->
-
-                <button
-                    id="registerButton"
-                    type="submit"
-                    class="
-                        w-full
-                        bg-blue-900
-                        hover:bg-blue-800
-                        text-white
-                        font-black
-                        py-4
-                        rounded-xl
-                        transition
-                        disabled:opacity-50
-                        disabled:cursor-not-allowed
-                    "
-                >
-                    Submit Registration
-                </button>
-
-            </form>
-
-
-
-            <!-- =====================================================
-                 STATUS
-            ====================================================== -->
-
-            <div
-                id="registerStatus"
-                class="
-                    hidden
-                    mt-5
-                    p-4
-                    rounded-xl
-                    text-sm
-                "
-            ></div>
-
-
-
-            <!-- =====================================================
-                 LOGIN
-            ====================================================== -->
-
-            <div
-                class="
-                    mt-7
-                    pt-5
-                    border-t
-                    text-center
-                "
-            >
-
-                <p class="text-sm text-slate-500">
-                    Already have an approved account?
-                </p>
-
-
-                <a
-                    href="staff-login.html"
-                    class="
-                        inline-block
-                        mt-2
-                        text-sm
-                        font-bold
-                        text-blue-800
-                        hover:underline
-                    "
-                >
-                    Go to Staff Login →
-                </a>
-
-            </div>
-
-
-
-            <!-- =====================================================
-                 WEBSITE
-            ====================================================== -->
-
-            <div
-                class="
-                    mt-4
-                    text-center
-                "
-            >
-
-                <a
-                    href="index.html"
-                    class="
-                        text-sm
-                        text-slate-500
-                        hover:underline
-                    "
-                >
-                    ← Return to Hospital Website
-                </a>
-
-            </div>
-
+                ← Return to Hospital Website
+            </a>
         </div>
-
-
-
-        <!-- =====================================================
-             APPROVAL NOTICE
-        ====================================================== -->
-
-        <p
-            class="
-                text-center
-                text-xs
-                text-slate-400
-                mt-6
-            "
-        >
-            Registration does not grant immediate staff access.
-            Hospital administration must approve your account.
-        </p>
-
     </div>
-
+    <!-- APPROVAL NOTICE -->
+    <p
+        class="
+            text-center
+            text-xs
+            text-slate-400
+            mt-6
+        "
+    >
+        Registration does not grant immediate staff access.
+        Hospital administration must approve your account.
+    </p>
 </div>
-
-
-
-<!-- ============================================================
-     SUPABASE CONFIGURATION
-============================================================ -->
-
+</div>
+<!-- SUPABASE CONFIGURATION -->
 <script src="js/supabase.js"></script>
-
-
-
 <script>
-
 "use strict";
-
-
-// ============================================================
-// ELEMENTS
-// ============================================================
-
 const registerForm =
     document.getElementById("registerForm");
-
 const registerButton =
     document.getElementById("registerButton");
-
 const registerStatus =
     document.getElementById("registerStatus");
-
 const departmentSelect =
     document.getElementById("department");
-
 const roleSelect =
     document.getElementById("role");
-
-
-
-// ============================================================
-// SHOW STATUS
-// ============================================================
-
-function showStatus(
-    message,
-    type
-) {
-
+function showStatus(message, type) {
     registerStatus.classList.remove(
         "hidden",
         "bg-red-50",
@@ -780,517 +520,269 @@ function showStatus(
         "bg-blue-50",
         "text-blue-700"
     );
-
-
     if (type === "error") {
-
         registerStatus.classList.add(
             "bg-red-50",
             "text-red-700"
         );
-
-    }
-
-    else if (type === "success") {
-
+    } else if (type === "success") {
         registerStatus.classList.add(
             "bg-green-50",
             "text-green-700"
         );
-
-    }
-
-    else {
-
+    } else {
         registerStatus.classList.add(
             "bg-blue-50",
             "text-blue-700"
         );
-
     }
-
-
-    registerStatus.textContent =
-        message;
-
+    registerStatus.textContent = message;
 }
-
-
-
-// ============================================================
-// LOAD DEPARTMENTS
-// ============================================================
-
 async function loadDepartments() {
-
     departmentSelect.innerHTML = `
         <option value="">
             Loading departments...
         </option>
     `;
-
-
     try {
-
         if (!window.CHA_SUPABASE) {
-
             throw new Error(
                 "Hospital database is not configured."
             );
-
         }
-
-
         const {
             data,
             error
         } =
             await window.CHA_SUPABASE
                 .from("departments")
-                .select(
-                    "id, name"
-                )
-                .eq(
-                    "is_active",
-                    true
-                )
+                .select("id, name")
+                .eq("is_active", true)
                 .order(
                     "name",
                     {
                         ascending: true
                     }
                 );
-
-
         if (error) {
-
             throw error;
-
         }
-
-
-        if (
-            !data ||
-            data.length === 0
-        ) {
-
+        if (!data || data.length === 0) {
             throw new Error(
                 "No active hospital departments were found."
             );
-
         }
-
-
         departmentSelect.innerHTML = `
             <option value="">
                 Select your department
             </option>
         `;
-
-
-        data.forEach(
-            function(department) {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    department.id;
-
-
-                option.textContent =
-                    department.name;
-
-
-                departmentSelect.appendChild(
-                    option
-                );
-
-            }
-        );
-
+        data.forEach(function(department) {
+            const option =
+                document.createElement("option");
+            option.value =
+                department.id;
+            option.textContent =
+                department.name;
+            departmentSelect.appendChild(option);
+        });
     }
-
     catch (error) {
-
         console.error(
             "CHA department loading error:",
             error
         );
-
-
         departmentSelect.innerHTML = `
             <option value="">
                 Unable to load departments
             </option>
         `;
-
-
         showStatus(
             "Unable to load hospital departments. Please refresh the page and try again.",
             "error"
         );
-
     }
-
 }
-
-
-
-// ============================================================
-// STAFF REGISTRATION
-// ============================================================
-
 registerForm.addEventListener(
     "submit",
     async function(event) {
-
         event.preventDefault();
-
-
         if (!window.CHA_SUPABASE) {
-
             showStatus(
                 "The hospital authentication system is not configured correctly.",
                 "error"
             );
-
             return;
-
         }
-
-
-        // ====================================================
-        // GET FORM VALUES
-        // ====================================================
-
         const fullName =
             document
                 .getElementById("fullName")
                 .value
                 .trim();
-
-
         const staffId =
             document
                 .getElementById("staffId")
                 .value
                 .trim();
-
-
         const email =
             document
                 .getElementById("email")
                 .value
                 .trim()
                 .toLowerCase();
-
-
         const phone =
             document
                 .getElementById("phone")
                 .value
                 .trim();
-
-
         const departmentId =
             departmentSelect.value;
-
-
         const role =
             roleSelect.value
                 .trim()
                 .toLowerCase();
-
-
         const password =
             document
                 .getElementById("password")
                 .value;
-
-
         const confirmPassword =
             document
                 .getElementById("confirmPassword")
                 .value;
-
-
-
-        // ====================================================
-        // VALIDATE FORM
-        // ====================================================
-
         if (!fullName) {
-
             showStatus(
                 "Please enter your full name.",
                 "error"
             );
-
             return;
-
         }
-
-
         if (!staffId) {
-
             showStatus(
                 "Please enter your Staff ID.",
                 "error"
             );
-
             return;
-
         }
-
-
         if (!email) {
-
             showStatus(
                 "Please enter your email address.",
                 "error"
             );
-
             return;
-
         }
-
-
         if (!phone) {
-
             showStatus(
                 "Please enter your phone number.",
                 "error"
             );
-
             return;
-
         }
-
-
         if (!departmentId) {
-
             showStatus(
                 "Please select your department.",
                 "error"
             );
-
             return;
-
         }
-
-
         if (!role) {
-
             showStatus(
                 "Please select your staff position.",
                 "error"
             );
-
             return;
-
         }
-
-
         if (password.length < 8) {
-
             showStatus(
                 "Password must contain at least 8 characters.",
                 "error"
             );
-
             return;
-
         }
-
-
-        if (
-            password !==
-            confirmPassword
-        ) {
-
+        if (password !== confirmPassword) {
             showStatus(
                 "Passwords do not match.",
                 "error"
             );
-
             return;
-
         }
-
-
-
-        // ====================================================
-        // DISABLE BUTTON
-        // ====================================================
-
-        registerButton.disabled =
-            true;
-
+        registerButton.disabled = true;
         registerButton.textContent =
             "Creating account...";
-
-
         showStatus(
             "Creating your staff account securely...",
             "info"
         );
-
-
-
-        // ====================================================
-        // SEND TO NETLIFY FUNCTION
-        // ====================================================
-
         try {
-
             const response =
                 await fetch(
                     "/.netlify/functions/register-staff",
                     {
-
-                        method:
-                            "POST",
-
+                        method: "POST",
                         headers: {
                             "Content-Type":
                                 "application/json"
                         },
-
                         body:
                             JSON.stringify({
-
                                 fullName:
                                     fullName,
-
                                 staffId:
                                     staffId,
-
                                 email:
                                     email,
-
                                 password:
                                     password,
-
                                 phone:
                                     phone,
-
                                 role:
                                     role,
-
                                 departmentId:
                                     departmentId
-
                             })
-
                     }
                 );
-
-
-
-            // =================================================
-            // READ RESPONSE
-            // =================================================
-
             let result;
-
-
             try {
-
                 result =
                     await response.json();
-
             }
-
             catch (jsonError) {
-
                 throw new Error(
                     "The registration server returned an invalid response."
                 );
-
             }
-
-
-
-            // =================================================
-            // HANDLE ERROR
-            // =================================================
-
             if (!response.ok) {
-
                 throw new Error(
                     result.error ||
                     "Unable to complete staff registration."
                 );
-
             }
-
-
-
-            // =================================================
-            // SUCCESS
-            // =================================================
-
             showStatus(
                 result.message ||
                 "Registration submitted successfully. Your account is pending hospital administration approval.",
                 "success"
             );
-
-
             registerForm.reset();
-
-
-            // Reload departments after reset
-
             await loadDepartments();
-
         }
-
-
         catch (error) {
-
             console.error(
                 "CHA Staff Registration Error:",
                 error
             );
-
-
             showStatus(
                 error.message ||
                 "Unable to create your staff account. Please try again.",
                 "error"
             );
-
         }
-
-
-        // ====================================================
-        // RESTORE BUTTON
-        // ====================================================
-
         registerButton.disabled =
             false;
-
         registerButton.textContent =
             "Submit Registration";
-
     }
 );
-
-
-
-// ============================================================
-// INITIALIZE
-// ============================================================
-
 loadDepartments();
-
 </script>
-
 </body>
-
 </html>
